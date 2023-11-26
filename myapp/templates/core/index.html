@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<hr>
+
+<h3>Página de control de servicios.</h3>
+{% if request.user.is_authenticated %}
+<hr>
+
+<h4>Bienvenido, {{ user.username | upper }}</h4>
+
+<hr>
+{% endif %}
+
+
+{% endblock %}
