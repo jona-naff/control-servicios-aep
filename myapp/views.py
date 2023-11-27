@@ -83,9 +83,13 @@ def get_estados(request):
 
 
 def get_municipios(request, estadoid):
-    municipios = list(Municipios.objects.filter(estadoid=estadoid).values())
+    if estadoid < 1:
+        municipios = list(Municipios.objects.values())[0:200]
+    else:
+        municipios = [list(Municipios.objects.values())[0]]
+        municipios += list(Municipios.objects.filter(estadoid=estadoid).values())
     
-    if (len(municipios)>0):
+    if (len(municipios)>1):
             data={'message':"Success",'municipios': municipios}
     else:
         data={'message': "Not Found"}
@@ -94,9 +98,13 @@ def get_municipios(request, estadoid):
 
 
 def get_colonias(request, municipioid):
-    colonias = list(Colonias.objects.filter(municipioid=municipioid).values())
+    if municipioid<1:
+        colonias = list(Colonias.objects.values())[0:200]
+    else:
+        colonias = [list(Colonias.objects.values())[0]]
+        colonias += list(Colonias.objects.filter(municipioid=municipioid).values())
     
-    if (len(colonias)>0):
+    if (len(colonias)>1):
             data={'message':"Success",'colonias': colonias}
     else:
         data={'message': "Not Found"}
@@ -144,9 +152,8 @@ def operator_and(val1,val2):
 
 
 def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, coloniaid):
-    #avaluos = list(Avaluos.objects.filter(coloniaid=coloniaid).values())
-    #ids = [{'cliente_id': cliente_id, 'tipo_id': tipo_id, 'estatus_id': estatus_id, 'coloniaid': coloniaid}]
-    ids=[]#[Q(cliente_id=cliente_id), Q(tipo_id=tipo_id), Q(valuador_id=valuador_id), Q(estatus_id=estatus_id), Q(coloniaid=coloniaid)]
+
+    ids=[]
 
     data = [cliente_id, tipo_id, valuador_id, estatus_id, coloniaid]
     compare = [0,0,0,0,0]

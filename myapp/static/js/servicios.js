@@ -164,7 +164,7 @@ const listarColonias = async (municipioid) =>{
         console.log(data);
         
         if(data.message=="Success"){
-            let opciones=`<option value=0>Todas las colonias</option>`;
+            let opciones=``;
             data.colonias.forEach((colonia)=>{
                 opciones+=`<option value='${colonia.coloniaid}'>${colonia.nombre}</option>`;
             });
@@ -182,7 +182,7 @@ const listarMunicipios = async (estadoid) =>{
         const response=await fetch("./municipios/"+estadoid);
         const data =await response.json();
         if(data.message=="Success"){
-            let opciones=`<option value=0>Todos los municipios</option>`;
+            let opciones=``;
             data.municipios.forEach((municipio)=>{
                 opciones+=`<option value='${municipio.municipioid}'>${municipio.nombre}</option>`;
             });
