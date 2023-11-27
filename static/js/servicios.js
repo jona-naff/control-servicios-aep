@@ -1,18 +1,18 @@
-const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id,coloniaid) => {
+const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid) => {
     try{
-        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + coloniaid);
+        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estadoid + '/' + coloniaid);
         const data =await response.json();
         console.log(data);
         if(data.message=="Success"){
             let opciones=``;
             data.avaluos.forEach((avaluo)=>{
-                opciones+=`<tr value="${avaluo.avaluoid}">`;
-                opciones+=`<td><input type="checkbox" id="${avaluo.avaluoid}"></input></td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.ubicacion}</td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.fechas}</td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.cliente}</td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.valuador}</td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.estatus}</td>`;
+                opciones+=`<tr value="${avaluo.id}">`;
+                opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
+                opciones+=`<td>${avaluo.ubicacion}</td>`;
+                opciones+=`<td>${avaluo.fechas}</td>`;
+                opciones+=`<td>${avaluo.cliente}</td>`;
+                opciones+=`<td>${avaluo.valuador}</td>`;
+                opciones+=`<td>${avaluo.estatus}</td>`;
                 opciones+=`</tr>`;
             });
             cboTabla.innerHTML = opciones;
@@ -26,20 +26,6 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id,colonia
      
 };
 
-let dataTable;
-let dataTableIsInitialized;
-const initDataTable=async()=>{
-
-    if(dataTableIsInitialized){
-        dataTable.destroy();
-    }
-
-    await mostrarTabla_Inicial();
-
-    dataTable=$('#cboTabla').DataTable({});
-    console.log(dataTable);
-    dataTableIsInitialized = true;
-};
 
 const mostrarTabla_Inicial = async () => {
     try{
@@ -50,13 +36,13 @@ const mostrarTabla_Inicial = async () => {
         if(data.message=="Success"){
             let opciones=``;
             data.avaluos.forEach((avaluo)=>{
-                opciones+=`<tr value="${avaluo.avaluoid}">`;
-                opciones+=`<td><input type="checkbox" id="${avaluo.avaluoid}"></input></td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.ubicacion}</td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.fechas}</td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.cliente}</td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.valuador}</td>`;
-                opciones+=`<td value="${avaluo.avaluoid}">${avaluo.estatus}</td>`;
+                opciones+=`<tr value="${avaluo.id}">`;
+                opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
+                opciones+=`<td>${avaluo.ubicacion}</td>`;
+                opciones+=`<td>${avaluo.fechas}</td>`;
+                opciones+=`<td>${avaluo.cliente}</td>`;
+                opciones+=`<td>${avaluo.valuador}</td>`;
+                opciones+=`<td>${avaluo.estatus}</td>`;
                 opciones+=`</tr>`;
             });
             cboTabla.innerHTML = opciones;
@@ -218,7 +204,7 @@ const listarEstados=async()=>{
 };
 
 //let parametros_sec = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "coloniaid":0}
-let parametros = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "coloniaid":0};
+let parametros = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "estadoid":0,"coloniaid":0};
 const cargaInicial=async()=>{
     await listarClientes();
     await listarTipos();
@@ -230,32 +216,35 @@ const cargaInicial=async()=>{
     cboCliente.addEventListener("change",(event)=>{
         parametros.cliente_id = event.target.value
         console.log(parametros);
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 
     cboTipo.addEventListener("change",(event)=>{
         parametros.tipo_id = event.target.value
         console.log(parametros);
 
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 
     cboValuador.addEventListener("change",(event)=>{
         parametros.valuador_id = event.target.value
         console.log(parametros);
 
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 
     cboEstatus.addEventListener("change",(event)=>{
         parametros.estatus_id = event.target.value
         console.log(parametros);
 
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 
     cboEstado.addEventListener("change",(event)=>{
+        parametros.estadoid = event.target.value
         listarMunicipios(event.target.value);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
+
     });
 
     cboMunicipio.addEventListener("change",(event)=>{
@@ -266,7 +255,7 @@ const cargaInicial=async()=>{
         parametros.coloniaid = event.target.value
         console.log(parametros);
 
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 };
 

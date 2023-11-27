@@ -113,7 +113,7 @@ def get_colonias(request, municipioid):
 
 
 def get_avaluos_inic(request):
-    avaluos = Avaluos.objects.select_related('cliente','tipo','valuador','estatus')
+    avaluos = Avaluos.objects.order_by('avaluoid').select_related('cliente','tipo','valuador','estatus')
     avaluos_dic = []
     for avaluo in avaluos:
         id = str(avaluo.avaluoid)
@@ -142,24 +142,30 @@ def get_avaluos_inic(request):
 
 def reduce(function, iterable):
     it = iter(iterable)
-    value = next(it)
-    for element in it:
-        value = function(value, element)
+    if len(list(iterable))>0:
+        value = next(it,Q())
+        for element in it:
+            value = function(value, element)
+    else:
+        value = Q()
     return value
 
 def operator_and(val1,val2):
     return val1 & val2
 
+def operator_or(val1,val2):
+    return val1 | val2
 
-def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, coloniaid):
+
+def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid):
 
     ids=[]
 
-    data = [cliente_id, tipo_id, valuador_id, estatus_id, coloniaid]
-    compare = [0,0,0,0,0]
+    data = [cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid]
+    compare = [0,0,0,0,0,0]
     
     if data == compare:
-        avaluos = Avaluos.objects.select_related('cliente','tipo','valuador','estatus')
+        avaluos = Avaluos.objects.order_by('avaluoid').select_related('cliente','tipo','valuador','estatus')
   
     else:
         if cliente_id != 0:
@@ -172,9 +178,26 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, coloniaid
             ids.append(Q(estatus_id=estatus_id))
         if coloniaid != 0:
             ids.append(Q(coloniaid=coloniaid))
-            
 
-        avaluos = Avaluos.objects.filter(reduce(operator_and,ids)).select_related('cliente','tipo','valuador','estatus')
+        ids_or = []
+        if estadoid != 0:
+            municipios = list(Municipios.objects.filter(estadoid=estadoid).values())
+            if len(municipios)>0:
+                for municipio in municipios:
+                    municipio_id_loc = municipio["municipioid"]
+                    colonias = list(Colonias.objects.filter(municipioid=municipio_id_loc).values())
+                    if len(colonias)>0:
+                        for colonia in colonias:
+                            colonia_id_loc = colonia["coloniaid"]
+                            ids_or.append(Q(coloniaid=colonia_id_loc))
+                    else:
+                        pass
+            else:
+                pass
+
+        avaluos = Avaluos.objects.filter(reduce(operator_and,ids) & reduce(operator_or,ids_or)).order_by('avaluoid').select_related('cliente','tipo','valuador','estatus')
+    
+           # avaluos = Avaluos.objects.filter(reduce(operator_and,ids)).select_related('cliente','tipo','valuador','estatus')
 
           
     avaluos_dic = []
