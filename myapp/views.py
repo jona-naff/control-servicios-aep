@@ -113,7 +113,7 @@ def get_colonias(request, municipioid):
 
 
 def get_avaluos_inic(request):
-    avaluos = Avaluos.objects.order_by('avaluoid').select_related('cliente','tipo','valuador','estatus')
+    avaluos = Avaluos.objects.order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
     avaluos_dic = []
     for avaluo in avaluos:
         id = str(avaluo.avaluoid)
@@ -165,7 +165,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
     compare = [0,0,0,0,0,0]
     
     if data == compare:
-        avaluos = Avaluos.objects.order_by('avaluoid').select_related('cliente','tipo','valuador','estatus')
+        avaluos = Avaluos.objects.order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
   
     else:
         if cliente_id != 0:
@@ -195,10 +195,8 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
             else:
                 pass
 
-        avaluos = Avaluos.objects.filter(reduce(operator_and,ids) & reduce(operator_or,ids_or)).order_by('avaluoid').select_related('cliente','tipo','valuador','estatus')
+        avaluos = Avaluos.objects.filter(reduce(operator_and,ids) & reduce(operator_or,ids_or)).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
     
-           # avaluos = Avaluos.objects.filter(reduce(operator_and,ids)).select_related('cliente','tipo','valuador','estatus')
-
           
     avaluos_dic = []
     for avaluo in avaluos:

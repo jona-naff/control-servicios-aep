@@ -8,9 +8,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de servicios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'styles/bootstrap-datepicker.min.css' %}">
     <script src="{% static 'js/servicios.js' %}"></script>
     <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
     <script src="{% static 'styles/bootstrap-combined.min.css' %}"></script>
 
 </head>
@@ -38,8 +43,9 @@
         
         <div class="tab-content">
           <div class="tab-pane fade active show" id="caracteristicas">
+            <br>
             <h3>Control de Servicios</h3>
-
+            <br>
             <div class="col-md-4">
                 <h4>Características</h4>
                 <p>Clientes: <select name="" id="cboCliente"></select></p>
@@ -47,6 +53,7 @@
                 <p>Valuadores: <select name="" id="cboValuador"></select></p>
                 <p>Estatus: <select name="" id="cboEstatus"></select></p>
             </div>
+            <br>
             <div class="col-md-4">
             <h4>Ubicación</h4>
             <p>Estado: <select name="" id="cboEstado"></select></p>
@@ -54,81 +61,155 @@
             <p>Colonia: <select name="" id="cboColonia"></select></p>
             </div>
           </div>
-          <div class="tab-pane fade" id="fechas">
-            <div class="container">
-                <div class="row">
-                    <div class="span12">
-                        <table class="table-condensed table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                  <th colspan="7" >
-                                    <a class="btn"><i class="icon-chevron-left"></i></a>
-                                    <a class="btn">February 2012</a>
-                                    <a class="btn"><i class="icon-chevron-right"></i></a>
-                                  </th>
-                                </tr>
-                                <tr>
-                                    <th>Su</th>
-                                    <th>Mo</th>
-                                    <th>Tu</th>
-                                    <th>We</th>
-                                    <th>Th</th>
-                                    <th>Fr</th>
-                                    <th>Sa</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="muted">29</td>
-                                    <td class="muted">30</td>
-                                    <td class="muted">31</td>
-                                    <td>1</td>
-                                    <td>2</td>
-                                    <td>3</td>
-                                    <td>4</td>
-                                </tr>
-                                <tr>
-                                    <td>5</td>
-                                    <td>6</td>
-                                    <td>7</td>
-                                    <td>8</td>
-                                    <td>9</td>
-                                    <td>10</td>
-                                    <td>11</td>
-                                </tr>
-                                <tr>
-                                    <td>12</td>
-                                    <td>13</td>
-                                    <td>14</td>
-                                    <td>15</td>
-                                    <td>16</td>
-                                    <td>17</td>
-                                    <td>18</td>
-                                </tr>
-                                <tr>
-                                    <td>19</td>
-                                    <td><strong>20</strong></td>
-                                    <td>21</td>
-                                    <td>22</td>
-                                    <td>23</td>
-                                    <td>24</td>
-                                    <td>25</td>
-                                </tr>
-                                <tr>
-                                    <td>26</td>
-                                    <td>27</td>
-                                    <td>28</td>
-                                    <td>29</td>
-                                    <td class="muted">1</td>
-                                    <td class="muted">2</td>
-                                    <td class="muted">3</td>
-                                </tr>
-                            </tbody>
-                        </table>    
+          
+
+
+          <div class="tab-pane" id="fechas">
+            <br>
+            <h4>Fechas</h4>
+            <br>
+            <table>
+              <tr>
+                <td>
+                    Alta 
+                </td>
+                <td>
+                  <div class="datepicker input-group date position-relative border-1 p-4">
+                    <input type="text" id="alta_calendar" class="form-control" data-provide="datepicker">
+                    <div class="input-group-addon">
+                      <span class="glyphicon glyphicon-th"></span>
                     </div>
+                   </div>
+                </td>
+                <td>
+                    a  
+                </td>
+                <td>
+                  <div class="datepicker position-relative border-1 p-4">
+                    <input type="text" name="" data-provide="datepicker">
+                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    Solicitud 
+                </td>
+                <td>
+                  <div class="datepicker input-group date position-relative border-1 p-4">
+                    <input type="text" id="alta_calendar" class="form-control" data-provide="datepicker">
+                    <div class="input-group-addon">
+                      <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                   </div>
+                </td>
+                <td>
+                    a  
+                </td>
+                <td>
+                  <div class="datepicker position-relative border-1 p-4">
+                    <input type="text" name="" data-provide="datepicker">
+                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    Entrega cliente
+                </td>
+                <td>
+                  <div class="datepicker input-group date position-relative border-1 p-4">
+                    <input type="text" id="alta_calendar" class="form-control" data-provide="datepicker">
+                    <div class="input-group-addon">
+                      <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                   </div>
+                </td>
+                <td>
+                    a  
+                </td>
+                <td>
+                  <div class="datepicker position-relative border-1 p-4">
+                    <input type="text" name="" data-provide="datepicker">
+                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    Entrega valuador 
+                </td>
+                <td>
+                  <div class="datepicker input-group date position-relative border-1 p-4">
+                    <input type="text" id="alta_calendar" class="form-control" data-provide="datepicker">
+                    <div class="input-group-addon">
+                      <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                   </div>
+                </td>
+                <td>
+                    a  
+                </td>
+                <td>
+                  <div class="datepicker position-relative border-1 p-4">
+                    <input type="text" name="" data-provide="datepicker">
+                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    Cobro
+                </td>
+                <td>
+                  <div class="datepicker input-group date position-relative border-1 p-4">
+                    <input type="text" id="alta_calendar" class="form-control" data-provide="datepicker">
+                    <div class="input-group-addon">
+                      <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                   </div>
+                </td>
+                <td>
+                    a  
+                </td>
+                <td>
+                  <div class="datepicker position-relative border-1 p-4">
+                    <input type="text" name="" data-provide="datepicker">
+                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    Pago
+                </td>
+                <td>
+                  <div class="datepicker input-group date position-relative border-1 p-4">
+                    <input type="text" id="alta_calendar" class="form-control" data-provide="datepicker">
+                    <div class="input-group-addon">
+                      <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                   </div>
+                </td>
+                <td>
+                    a  
+                </td>
+                <td>
+                  <div class="datepicker position-relative border-1 p-4">
+                    <input type="text" name="" data-provide="datepicker">
+                   </div>
+                </td>
+              </tr>
+            </table>
+          </div> 
+
+          
+          <!--<input type="text" class="" data-provide="datepicker">
+          <div class="tab-pane" id="fechas">
+            <div class="input-group date" data-provide="datepicker">
+              <input type="text" class="form-control">
+                <div class="input-group-addon">
+                    
                 </div>
             </div>
-          </div>
+          </div>-->
+        
+          <br>
           <div class="tab-pane fade" id="informacion">
             <table class="table">
               <tr>
@@ -162,11 +243,13 @@
                 </tr>
               </table>
           </div>
-          <div class="tab-pane fade" id="fichas">fichas</div>
+
+          <div class="tab-pane fade" id="fichas">
+            fichas
+          </div>
         </div>
-      </div>
-    
-    
+      
+      
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
@@ -182,29 +265,46 @@
                           
             </tbody>
         </table>
-    
-   <!-- <div/>
-</div>-->
+      </div>
 
 
 <script>
-    $(".nav a").on("click", function(){
-      $(".nav a").removeClass("nav-link active");
-      $(".nav a").addClass("nav-link");
-      $(this).addClass("nav-link active");
-      elemento = $(this).attr('href');
-      $("#caracteristicas").removeClass();
-      $("#caracteristicas").addClass("tab-pane fade");
-      $("#fechas").removeClass();
-      $("#fechas").addClass("tab-pane fade");
-      $("#informacion").removeClass();
-      $("#informacion").addClass("tab-pane fade");
-      $("#fichas").removeClass();
-      $("#fichas").addClass("tab-pane fade");
-      $(elemento).removeClass();
-      $(elemento).addClass("tab-pane fade active show")
-    
+$(".nav a").on("click", function(){
+    $(".nav a").removeClass("nav-link active");
+    $(".nav a").addClass("nav-link");
+    $(this).addClass("nav-link active");
+    elemento = $(this).attr('href');
+    $("#caracteristicas").removeClass();
+    $("#caracteristicas").addClass("tab-pane fade");
+    $("#fechas").removeClass();
+    $("#fechas").addClass("tab-pane fade");
+    $("#informacion").removeClass();
+    $("#informacion").addClass("tab-pane fade");
+    $("#fichas").removeClass();
+    $("#fichas").addClass("tab-pane fade");
+    $(elemento).removeClass();
+    $(elemento).addClass("tab-pane fade active show");
+    $('#datepicker').datepicker({
+        autoclose:true,
+        clearBtn:true,
+        container:'.datepicker',
+        //endDate:'0d',
+        //startDate:'-5d',
+        format:'dd/mm/yyyy',
+        todayHighlight:true,
     });
+    $('#alta_button').on("click", function(){
+      $('#datepicker').datepicker({
+        autoclose:true,
+        clearBtn:true,
+        container:'.datepicker',
+        //endDate:'0d',
+        //startDate:'-5d',
+        format:'dd/mm/yyyy',
+        todayHighlight:true,
+    });
+    });
+  });
   </script>
 
     {% endblock %}
