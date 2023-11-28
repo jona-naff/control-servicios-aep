@@ -88,25 +88,7 @@
                    </div>
                 </td>
               </tr>
-              <tr>
-                <td>
-                    Entrega cliente
-                </td>
-                <td>
-                  <div class="datepicker input-group date position-relative border-1 p-4">
-                    <input type="text" id="dtcliente_inicial" class="form-control" data-provide="datepicker">
-                    
-                   </div>
-                </td>
-                <td>
-                    a  
-                </td>
-                <td>
-                  <div class="datepicker position-relative border-1 p-4">
-                    <input type="text" id="dtcliente_final" class="form-control" data-provide="datepicker">
-                   </div>
-                </td>
-              </tr>
+              
               <tr>
                 <td>
                     Entrega valuador 
@@ -122,42 +104,6 @@
                 <td>
                   <div class="datepicker position-relative border-1 p-4">
                     <input type="text" id="dtvaluador_final" class="form-control" data-provide="datepicker">
-                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                    Cobro
-                </td>
-                <td>
-                  <div class="datepicker input-group date position-relative border-1 p-4">
-                    <input type="text" id="dtcobro_inicial" class="form-control" data-provide="datepicker">
-                   </div>
-                </td>
-                <td>
-                    a  
-                </td>
-                <td>
-                  <div class="datepicker position-relative border-1 p-4">
-                    <input type="text" id="dtcobro_final" class="form-control" data-provide="datepicker">
-                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                    Pago
-                </td>
-                <td>
-                  <div class="datepicker input-group date position-relative border-1 p-4">
-                    <input type="text" id="dtpago_inicial" class="form-control" data-provide="datepicker">
-                   </div>
-                </td>
-                <td>
-                    a  
-                </td>
-                <td>
-                  <div class="datepicker position-relative border-1 p-4">
-                    <input type="text" id="dtpago_final" class="form-control" data-provide="datepicker">
                    </div>
                 </td>
               </tr>
@@ -258,6 +204,8 @@ $(".nav a").on("click", function(){
         //format:'yyyy-mm-dd',
         todayHighlight:true,
     });
+    let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00'};
+
     $('#dtsolicitud_inicial').datepicker().on('changeDate', function (event) {
     // Your custom logic here
     parametros_fechas.dtsolicitud_inicial = event.format();
@@ -266,11 +214,23 @@ $(".nav a").on("click", function(){
     $('#dtsolicitud_final').datepicker().on('changeDate', function (event) {
     // Your custom logic here
     parametros_fechas.dtsolicitud_final = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final);//,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final);
+    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final);
 
     console.log(event.format());
     });
 
+    $('#dtvaluador_inicial').datepicker().on('changeDate', function (event) {
+    // Your custom logic here
+    parametros_fechas.dtvaluador_inicial = event.format();
+    console.log(event.format());
+    });
+    $('#dtvaluador_final').datepicker().on('changeDate', function (event) {
+    // Your custom logic here
+    parametros_fechas.dtvaluador_final = event.format();
+    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final);
+
+    console.log(event.format());
+    });
     
 
   });

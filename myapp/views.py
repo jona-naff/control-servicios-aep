@@ -159,6 +159,7 @@ def operator_or(val1,val2):
     return val1 | val2
 
 
+
 def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid):
 
     ids=[]
@@ -229,17 +230,19 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
     return JsonResponse(data)
 
 
-def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final):#, dtvaluador_inicial, dtvaluador_final):
 
-    if dtsolicitud_inicial == '0000-00-00' or dtsolicitud_final == '0000-00-00':
-        solicitud_range =  Q()
-    #if dtvaluador_inicial == '0000-00-00' or dtvaluador_final == '0000-00-00':
-    #    valuador_range =  Q()
-    else:
+
+def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final):
+
+    solicitud_range =  Q()
+    valuador_range =  Q()
+    if dtsolicitud_inicial != '0000-00-00' and dtsolicitud_inicial != '' and dtsolicitud_final != '0000-00-00' and dtsolicitud_final != '':
         solicitud_range = Q(dtsolicitud__range=[dtsolicitud_inicial,dtsolicitud_final])
-     #   valuador_range = Q(dtvaluador__range=[dtvaluador_inicial,dtvaluador_final])
 
-    avaluos = Avaluos.objects.filter(solicitud_range).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
+    if dtvaluador_inicial != '0000-00-00' and dtvaluador_inicial != '' and dtvaluador_final != '0000-00-00' and dtvaluador_final != '':
+        valuador_range = Q(dtvaluador__range=[dtvaluador_inicial,dtvaluador_final])
+
+    avaluos = Avaluos.objects.filter(solicitud_range & valuador_range).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
     
     avaluos_dic = []
     for avaluo in avaluos:

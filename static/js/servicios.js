@@ -26,9 +26,9 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
 };
 
 
-const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final) => {
+const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final,dtvaluador_inicial, dtvaluador_final) => {
     try{
-        const response=await fetch("./avaluos/"+ dtsolicitud_inicial + '/' + dtsolicitud_final );
+        const response=await fetch("./avaluos/"+ dtsolicitud_inicial + '/' + dtsolicitud_final + '/' + dtvaluador_inicial + '/' + dtvaluador_final );
         const data =await response.json();
         if(data.message=="Success"){
             let opciones=``;
