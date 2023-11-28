@@ -2,14 +2,41 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
     try{
         const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estadoid + '/' + coloniaid);
         const data =await response.json();
-        console.log(data);
         if(data.message=="Success"){
             let opciones=``;
             data.avaluos.forEach((avaluo)=>{
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td>${avaluo.ubicacion}</td>`;
-                opciones+=`<td>${avaluo.fechas}</td>`;
+                opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
+                opciones+=`<td>${avaluo.cliente}</td>`;
+                opciones+=`<td>${avaluo.valuador}</td>`;
+                opciones+=`<td>${avaluo.estatus}</td>`;
+                opciones+=`</tr>`;
+            });
+            cboTabla.innerHTML = opciones;
+            
+        }else{
+            alert("Avaluo no encontrado");
+        }
+    }catch(error){
+        console.log(error);
+    }   
+     
+};
+
+
+const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final) => {
+    try{
+        const response=await fetch("./avaluos/"+ dtsolicitud_inicial + '/' + dtsolicitud_final );
+        const data =await response.json();
+        if(data.message=="Success"){
+            let opciones=``;
+            data.avaluos.forEach((avaluo)=>{
+                opciones+=`<tr value="${avaluo.id}">`;
+                opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
+                opciones+=`<td>${avaluo.ubicacion}</td>`;
+                opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
@@ -31,7 +58,6 @@ const mostrarTabla_Inicial = async () => {
     try{
         const response=await fetch("./avaluos/");
         const data =await response.json();
-        console.log(data);
 
         if(data.message=="Success"){
             let opciones=``;
@@ -39,7 +65,7 @@ const mostrarTabla_Inicial = async () => {
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td>${avaluo.ubicacion}</td>`;
-                opciones+=`<td>${avaluo.fechas}</td>`;
+                opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
@@ -56,11 +82,11 @@ const mostrarTabla_Inicial = async () => {
      
 };
 
+
 const listarClientes=async()=>{
     try{
         const response=await fetch("./clientes");
         const data=await response.json();
-        console.log(data);
 
         if(data.message=="Success"){
             let opciones=``;
@@ -82,7 +108,6 @@ const listarTipos=async()=>{
     try{
         const response=await fetch("./tipos");
         const data=await response.json();
-        console.log(data);
 
         if(data.message=="Success"){
             let opciones=``;
@@ -104,7 +129,6 @@ const listarValuadores=async()=>{
     try{
         const response=await fetch("./valuadores");
         const data=await response.json();
-        console.log(data);
         
         if(data.message=="Success"){
             let opciones=``;
@@ -125,7 +149,6 @@ const listarEstatus=async()=>{
     try{
         const response=await fetch("./estatus");
         const data=await response.json();
-        console.log(data);
         
         if(data.message=="Success"){
             let opciones=``;
@@ -147,7 +170,6 @@ const listarColonias = async (municipioid) =>{
     try{
         const response=await fetch("./colonias/"+municipioid);
         const data =await response.json();
-        console.log(data);
         
         if(data.message=="Success"){
             let opciones=``;
@@ -186,7 +208,6 @@ const listarEstados=async()=>{
     try{
         const response=await fetch("./estados");
         const data=await response.json();
-        
         if(data.message=="Success"){
             let opciones=``;
             data.estados.forEach((estado)=>{
@@ -205,6 +226,7 @@ const listarEstados=async()=>{
 
 //let parametros_sec = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "coloniaid":0}
 let parametros = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "estadoid":0,"coloniaid":0};
+let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00'};
 const cargaInicial=async()=>{
     await listarClientes();
     await listarTipos();
@@ -215,33 +237,28 @@ const cargaInicial=async()=>{
 
     cboCliente.addEventListener("change",(event)=>{
         parametros.cliente_id = event.target.value
-        console.log(parametros);
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 
     cboTipo.addEventListener("change",(event)=>{
-        parametros.tipo_id = event.target.value
-        console.log(parametros);
-
+        parametros.tipo_id = event.target.value;
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 
     cboValuador.addEventListener("change",(event)=>{
-        parametros.valuador_id = event.target.value
-        console.log(parametros);
-
+        parametros.valuador_id = event.target.value;
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 
     cboEstatus.addEventListener("change",(event)=>{
-        parametros.estatus_id = event.target.value
-        console.log(parametros);
-
+        parametros.estatus_id = event.target.value;
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
 
     cboEstado.addEventListener("change",(event)=>{
-        parametros.estadoid = event.target.value
+        console.log(event.target.value);
+        parametros.estadoid = event.target.value;
+        
         listarMunicipios(event.target.value);
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
 
@@ -252,10 +269,23 @@ const cargaInicial=async()=>{
     });
 
     cboColonia.addEventListener("change",(event)=>{
-        parametros.coloniaid = event.target.value
-        console.log(parametros);
-
+        parametros.coloniaid = event.target.value;
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
+    });
+    dtsolicitud_inicial.addEventListener("change",(event)=>{
+        parametros_fechas.dtsolicitud_inicial = event.target.value;
+        console.log(event.target.value);
+    });
+    dtsolicitud_final.addEventListener("change",(event)=>{
+        parametros_fechas.dtsolicitud_final = event.target.value;
+        mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtvaluador_inicial,parametros.dtvaluador_final);
+    });
+    dtvaluador_inicial.addEventListener("change",(event)=>{
+        parametros_fechas.dtvaluador_inicial = event.target.value;
+    });
+    dtvaluador_final.addEventListener("change",(event)=>{
+        parametros_fechas.dtvaluador_final = event.target.value;
+        mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtvaluador_inicial,parametros.dtvaluador_final);
     });
 };
 

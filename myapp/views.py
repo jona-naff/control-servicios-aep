@@ -119,14 +119,16 @@ def get_avaluos_inic(request):
         id = str(avaluo.avaluoid)
         cliente = str(avaluo.cliente)
         ubicacion = str(avaluo.calle) 
-        fechas = str(avaluo.dtsolicitud)
+        dtsolicitud = str(avaluo.dtsolicitud)
+        dtvaluador = str(avaluo.dtvaluador)
         valuador = str(avaluo.valuador)
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
         
         avaluos_dic.append({'id': id, 
                             'ubicacion': ubicacion, 
-                            'fechas' : fechas,
+                            'dtsolicitud' : dtsolicitud,
+                            'dtvaluador' : dtvaluador,
                             'cliente': cliente,
                             'valuador':valuador,
                             'estatus': estatus,
@@ -203,14 +205,16 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
         id = str(avaluo.avaluoid)
         cliente = str(avaluo.cliente)
         ubicacion = str(avaluo.calle) 
-        fechas = str(avaluo.dtsolicitud)
+        dtsolicitud = str(avaluo.dtsolicitud)
+        dtvaluador = str(avaluo.dtvaluador)
         valuador = str(avaluo.valuador)
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
         
         avaluos_dic.append({'id': id, 
                             'ubicacion': ubicacion, 
-                            'fechas' : fechas,
+                            'dtsolicitud' : dtsolicitud,
+                            'dtvaluador' : dtvaluador,
                             'cliente': cliente,
                             'valuador':valuador,
                             'estatus': estatus,
@@ -223,4 +227,46 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
         data={'message': "Not Found"}
         
     return JsonResponse(data)
+
+
+def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final):#, dtvaluador_inicial, dtvaluador_final):
+
+    if dtsolicitud_inicial == '0000-00-00' or dtsolicitud_final == '0000-00-00':
+        solicitud_range =  Q()
+    #if dtvaluador_inicial == '0000-00-00' or dtvaluador_final == '0000-00-00':
+    #    valuador_range =  Q()
+    else:
+        solicitud_range = Q(dtsolicitud__range=[dtsolicitud_inicial,dtsolicitud_final])
+     #   valuador_range = Q(dtvaluador__range=[dtvaluador_inicial,dtvaluador_final])
+
+    avaluos = Avaluos.objects.filter(solicitud_range).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
+    
+    avaluos_dic = []
+    for avaluo in avaluos:
+        id = str(avaluo.avaluoid)
+        cliente = str(avaluo.cliente)
+        ubicacion = str(avaluo.calle) 
+        dtsolicitud = str(avaluo.dtsolicitud)
+        dtvaluador = str(avaluo.dtvaluador)
+        valuador = str(avaluo.valuador)
+        estatus = str(avaluo.estatus)
+        tipo = str(avaluo.tipo)
+        
+        avaluos_dic.append({'id': id, 
+                            'ubicacion': ubicacion, 
+                            'dtsolicitud' : dtsolicitud,
+                            'dtvaluador' : dtvaluador,
+                            'cliente': cliente,
+                            'valuador':valuador,
+                            'estatus': estatus,
+                            'tipo': tipo
+                            })
+        
+    if (len(avaluos_dic)>0):
+            data={'message':"Success",'avaluos': avaluos_dic}
+    else:
+        data={'message': "Not Found"}
+        
+    return JsonResponse(data)
+
 
