@@ -12,7 +12,7 @@ urlpatterns = [
     path("servicios/municipios/<int:estadoid>", views.get_municipios, name="get_municipios"),
     path("servicios/colonias/<int:municipioid>", views.get_colonias, name="get_colonias"),
     path("servicios/avaluos/", views.get_avaluos_inic, name="get_avaluos_inic"),
-    path("servicios/avaluos/<str:dtsolicitud_inicial>/<str:dtsolicitud_final>/<str:dtvaluador_inicial>/<str:dtvaluador_final>", views.get_avaluos_bydate, name="get_avaluos_inic"),
+    path("servicios/avaluos/<str:dtsolicitud_inicial>/<str:dtsolicitud_final>/<str:dtcliente_inicial>/<str:dtcliente_final>/<str:dtvaluador_inicial>/<str:dtvaluador_final>/<str:dtcobro_inicial>/<str:dtcobro_final>", views.get_avaluos_bydate, name="get_avaluos_inic"),
     path("servicios/avaluos/<int:cliente_id>/<int:tipo_id>/<int:valuador_id>/<int:estatus_id>/<int:estadoid>/<int:coloniaid>", views.get_avaluos, name="get_avaluos"),
     path('logout/',views.exit,name='exit'),
 ]

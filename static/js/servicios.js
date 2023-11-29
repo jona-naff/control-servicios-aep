@@ -18,6 +18,8 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
             
         }else{
             alert("Avaluo no encontrado");
+            let opciones=``;
+            cboTabla.innerHTML = opciones;
         }
     }catch(error){
         console.log(error);
@@ -26,9 +28,9 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
 };
 
 
-const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final,dtvaluador_inicial, dtvaluador_final) => {
+const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final, dtcliente_inicial, dtcliente_final, dtvaluador_inicial, dtvaluador_final, dtcobro_inicial, dtcobro_final) => {
     try{
-        const response=await fetch("./avaluos/"+ dtsolicitud_inicial + '/' + dtsolicitud_final + '/' + dtvaluador_inicial + '/' + dtvaluador_final );
+        const response=await fetch("./avaluos/"+ dtsolicitud_inicial + '/' + dtsolicitud_final + '/' + dtcliente_inicial + '/' + dtcliente_final + '/' + dtvaluador_inicial + '/' + dtvaluador_final + '/' + dtcobro_inicial + '/' + dtcobro_final);
         const data =await response.json();
         if(data.message=="Success"){
             let opciones=``;
@@ -46,6 +48,8 @@ const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final,dtv
             
         }else{
             alert("Avaluo no encontrado");
+            let opciones=``;
+            cboTabla.innerHTML = opciones;
         }
     }catch(error){
         console.log(error);
@@ -75,6 +79,8 @@ const mostrarTabla_Inicial = async () => {
             
         }else{
             alert("Avaluo no encontrado");
+            let opciones=``;
+            cboTabla.innerHTML = opciones;
         }
     }catch(error){
         console.log(error);
@@ -226,7 +232,8 @@ const listarEstados=async()=>{
 
 //let parametros_sec = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "coloniaid":0}
 let parametros = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "estadoid":0,"coloniaid":0};
-let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00'};
+let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtcliente_inicial":'0000-00-00', "dtcliente_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00', "dtcobro_inicial":'0000-00-00', "dtcobro_final":'0000-00-00'};
+
 const cargaInicial=async()=>{
     await listarClientes();
     await listarTipos();
@@ -272,21 +279,7 @@ const cargaInicial=async()=>{
         parametros.coloniaid = event.target.value;
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
-    dtsolicitud_inicial.addEventListener("change",(event)=>{
-        parametros_fechas.dtsolicitud_inicial = event.target.value;
-        console.log(event.target.value);
-    });
-    dtsolicitud_final.addEventListener("change",(event)=>{
-        parametros_fechas.dtsolicitud_final = event.target.value;
-        mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtvaluador_inicial,parametros.dtvaluador_final);
-    });
-    dtvaluador_inicial.addEventListener("change",(event)=>{
-        parametros_fechas.dtvaluador_inicial = event.target.value;
-    });
-    dtvaluador_final.addEventListener("change",(event)=>{
-        parametros_fechas.dtvaluador_final = event.target.value;
-        mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtvaluador_inicial,parametros.dtvaluador_final);
-    });
+
 };
 
 

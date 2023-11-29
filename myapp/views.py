@@ -121,6 +121,9 @@ def get_avaluos_inic(request):
         ubicacion = str(avaluo.calle) 
         dtsolicitud = str(avaluo.dtsolicitud)
         dtvaluador = str(avaluo.dtvaluador)
+        dtcliente = str(avaluo.dtcliente)
+        dtcobro = str(avaluo.dtcobro)
+        dtpago = str(avaluo.dtpago)
         valuador = str(avaluo.valuador)
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
@@ -129,6 +132,9 @@ def get_avaluos_inic(request):
                             'ubicacion': ubicacion, 
                             'dtsolicitud' : dtsolicitud,
                             'dtvaluador' : dtvaluador,
+                            'dtcliente' : dtcliente,
+                            'dtcobro' : dtcobro,
+                            'dtpago' : dtpago,
                             'cliente': cliente,
                             'valuador':valuador,
                             'estatus': estatus,
@@ -208,6 +214,9 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
         ubicacion = str(avaluo.calle) 
         dtsolicitud = str(avaluo.dtsolicitud)
         dtvaluador = str(avaluo.dtvaluador)
+        dtcliente = str(avaluo.dtcliente)
+        dtcobro = str(avaluo.dtcobro)
+        dtpago = str(avaluo.dtpago)
         valuador = str(avaluo.valuador)
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
@@ -216,6 +225,9 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
                             'ubicacion': ubicacion, 
                             'dtsolicitud' : dtsolicitud,
                             'dtvaluador' : dtvaluador,
+                            'dtcliente' : dtcliente,
+                            'dtcobro' : dtcobro,
+                            'dtpago' : dtpago,
                             'cliente': cliente,
                             'valuador':valuador,
                             'estatus': estatus,
@@ -232,25 +244,40 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
 
 
 
-def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final):
+def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final):
 
     solicitud_range =  Q()
     valuador_range =  Q()
-    if dtsolicitud_inicial != '0000-00-00' and dtsolicitud_inicial != '' and dtsolicitud_final != '0000-00-00' and dtsolicitud_final != '':
+    cliente_range =  Q()
+    cobro_range =  Q()
+
+    if (dtsolicitud_inicial != '0000-00-00' and dtsolicitud_inicial != '') and (dtsolicitud_final != '0000-00-00' and dtsolicitud_final != ''):
         solicitud_range = Q(dtsolicitud__range=[dtsolicitud_inicial,dtsolicitud_final])
 
-    if dtvaluador_inicial != '0000-00-00' and dtvaluador_inicial != '' and dtvaluador_final != '0000-00-00' and dtvaluador_final != '':
+    if (dtvaluador_inicial != '0000-00-00' and dtvaluador_inicial != '') and (dtvaluador_final != '0000-00-00' and dtvaluador_final != ''):
         valuador_range = Q(dtvaluador__range=[dtvaluador_inicial,dtvaluador_final])
 
-    avaluos = Avaluos.objects.filter(solicitud_range & valuador_range).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
+    if (dtcliente_inicial != '0000-00-00' and dtcliente_inicial != '') and (dtcliente_final != '0000-00-00' and dtcliente_final != ''):
+        cliente_range = Q(dtcliente__range=[dtcliente_inicial,dtcliente_final])
+
+    if (dtcobro_inicial != '0000-00-00' and dtcobro_inicial != '') and (dtcobro_final != '0000-00-00' and dtcobro_final != ''):
+        cobro_range = Q(dtcobro__range=[dtcobro_inicial,dtcobro_final])
+
+
+    avaluos = Avaluos.objects.filter(solicitud_range & valuador_range & cliente_range & cobro_range).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
     
     avaluos_dic = []
     for avaluo in avaluos:
         id = str(avaluo.avaluoid)
         cliente = str(avaluo.cliente)
         ubicacion = str(avaluo.calle) 
+
         dtsolicitud = str(avaluo.dtsolicitud)
         dtvaluador = str(avaluo.dtvaluador)
+        dtcliente = str(avaluo.dtcliente)
+        dtcobro = str(avaluo.dtcobro)
+        dtpago = str(avaluo.dtpago)
+
         valuador = str(avaluo.valuador)
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
@@ -259,6 +286,9 @@ def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final, dtvaluad
                             'ubicacion': ubicacion, 
                             'dtsolicitud' : dtsolicitud,
                             'dtvaluador' : dtvaluador,
+                            'dtcliente' : dtcliente,
+                            'dtcobro' : dtcobro,
+                            'dtpago' : dtpago,
                             'cliente': cliente,
                             'valuador':valuador,
                             'estatus': estatus,
