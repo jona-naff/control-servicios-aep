@@ -316,7 +316,7 @@ def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final, dtvaluad
     return JsonResponse(data)
 
 
-def generar_pdf(request):
+def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid):
     #Crear Bytestream buffer
     buf = io.BytesIO()
     # Crear canvas
@@ -326,13 +326,16 @@ def generar_pdf(request):
     textob.setTextOrigin(inch,inch)
     textob.setFont("Helvetica", 14)
 
-    data = get_avaluos_inic(request)
+    data = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid)
     data = json.loads(data.content)
     avaluos = data['avaluos']
     lines =[]
 
     for avaluo in avaluos:
-        renglon = str(avaluo['id']) + ' ' + avaluo['ubicacion']
+        renglon = str(avaluo['id']) + ' ' 
+        renglon += avaluo['ubicacion'] + ' '
+        renglon += avaluo['cliente'] + ' '
+        renglon += avaluo['valuador'] + ' '
         lines.append(renglon)
     #Loop
     for line in lines:

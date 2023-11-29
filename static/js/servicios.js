@@ -1,3 +1,13 @@
+function generarPdf(cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid) {
+    try{
+        const response=fetch("./avaluos/generar_pdf/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estadoid + '/' + coloniaid);
+        
+    }catch(error){
+        console.log(error);
+    }   
+     
+};
+
 const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid) => {
     try{
         const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estadoid + '/' + coloniaid);
@@ -279,6 +289,17 @@ const cargaInicial=async()=>{
         parametros.coloniaid = event.target.value;
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
     });
+    document.getElementById('generar_fichas').addEventListener('click', function() {
+        // Construct the URL based on parameters
+        var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
+        url += parametros.estadoid + '/' +  parametros.coloniaid;
+        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_pdf/' + url;
+
+        // Redirect to the constructed URL
+        console.log(redirectUrl);
+        window.location.href = redirectUrl;
+    });
+    
 
 };
 
