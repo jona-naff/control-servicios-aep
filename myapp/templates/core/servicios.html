@@ -247,7 +247,7 @@ $(".nav a").on("click", function(){
     parametros_fechas.dtsolicitud_inicial = event.format();
     console.log(event.format());
     });
-    
+
     $('#dtsolicitud_final').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtsolicitud_final = event.format();
     mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
@@ -259,6 +259,7 @@ $(".nav a").on("click", function(){
     parametros_fechas.dtvaluador_inicial = event.format();
     console.log(event.format());
     });
+    
     $('#dtvaluador_final').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtvaluador_final = event.format();
     mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);

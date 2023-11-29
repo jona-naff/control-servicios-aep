@@ -1,10 +1,23 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from .models import  Avaluos, Clientes, Estados, Municipios, Colonias, Tipos, Valuadores, Estatus
+import csv
+
 from django.db.models import Q
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import pagesizes
+
+import json
+
 # Create your views here.
+
+
+
 
 def index(request):
     return render(request,'core/index.html')
@@ -141,7 +154,7 @@ def get_avaluos_inic(request):
                             'tipo': tipo
                             })
     if (len(avaluos_dic)>0):
-            data={'message':"Success",'avaluos': avaluos_dic}
+            data={'message':"Success",'avaluos': avaluos_dic[0:15]}
     else:
         data={'message': "Not Found"}
         
@@ -301,5 +314,37 @@ def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final, dtvaluad
         data={'message': "Not Found"}
         
     return JsonResponse(data)
+
+
+def generar_pdf(request):
+    #Crear Bytestream buffer
+    buf = io.BytesIO()
+    # Crear canvas
+    c = canvas.Canvas(buf,pagesize=letter, bottomup=0)
+    #Create a text object
+    textob = c.beginText()
+    textob.setTextOrigin(inch,inch)
+    textob.setFont("Helvetica", 14)
+
+    data = get_avaluos_inic(request)
+    data = json.loads(data.content)
+    avaluos = data['avaluos']
+    lines =[]
+
+    for avaluo in avaluos:
+        renglon = str(avaluo['id']) + ' ' + avaluo['ubicacion']
+        lines.append(renglon)
+    #Loop
+    for line in lines:
+        textob.textLine(line)
+
+    #Finish Up
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    #Return stuff
+    return FileResponse(buf, as_attachment=True, filename='servicios.pdf')
 
 
