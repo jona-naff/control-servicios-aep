@@ -351,3 +351,5 @@ def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
     return FileResponse(buf, as_attachment=True, filename='servicios.pdf')
 
 
+def nuevo_avaluo(request):
+    return render(request, 'core/nuevo_avaluo.html')

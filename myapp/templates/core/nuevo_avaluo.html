@@ -1,0 +1,932 @@
+<div id="mainTab" style="height: 1200px;">
+
+    <div id="regresar"><a href="">regresar...</a></div>
+
+        <form id="avaluoForm" name="form" action="" method="post">
+
+            <table style="width:100%">
+
+
+
+                <tbody><tr>
+
+                    <td valign="top">
+
+                        <fieldset>
+
+                            <legend>Avalúo</legend>
+
+                            <ol>
+
+                                <li>
+
+                                    <label for="m2c">M2 Contrucción</label>
+
+                                    <input name="m2c" class="number" type="text" value="">
+
+                                    <div class="spacer">
+
+                                </div></li>
+
+
+
+                                <li>
+
+
+
+                                    <label for="m2t">M2 Terreno</label>
+
+                                    <input name="m2t" class="number" type="text" value="">
+
+                                    <div class="spacer">
+
+                                </div></li>
+
+                                <li>
+
+                                    <label for="valor">Valor del Avalúo</label>
+
+                                    <input name="valor" class="number" type="text" value="">
+
+                                    <div class="spacer">
+
+                                </div></li>
+
+                                <li>
+
+
+
+                                    <label for="nofactura">Numero de Factura</label>
+
+                                    <input name="nofactura" type="text" value="">
+
+                                    <div class="spacer">
+
+                                </div></li>
+
+                                <li>
+
+
+
+                                    <label for="monto">Importe facturado</label>
+
+                                    <input name="monto" class="number" type="text" value="">
+
+                                    <div class="spacer">
+
+                                </div></li>
+
+                                <li>
+
+
+
+                                    <label for="edad">Edad</label>
+
+                                    <input name="edad" class="digits" type="text" value="">
+
+                                    <div class="spacer">
+
+                                </div></li>
+
+
+
+                                <li>
+
+                                    <label for="tipoid">Tipo de servicio</label>
+
+                                    <select name="tipoid" id="tiposCombo">
+
+                                        
+                                        <option value="1" selected="">
+
+                                        AV</option> 
+                                        <option value="4">
+
+                                        EP</option> 
+                                        <option value="3">
+
+                                        EX</option> 
+                                        <option value="8">
+
+                                        LE</option> 
+                                        <option value="7">
+
+                                        LT</option> 
+                                        <option value="2">
+
+                                        OV</option> 
+                                        <option value="5">
+
+                                        SUP</option> 
+                                        <option value="6">
+
+                                        VER</option> 
+                                    </select>
+
+                                </li>
+                                <div id="campos_supervision_1">
+                                	                                </div>
+								<div id="campos_supervision_2">
+                                								
+                                </div>
+                                <li>
+
+                                    <label for="clienteid">Cliente del servicio</label>
+
+                                    <select name="clienteid" id="clientesCombo">
+
+                                        
+                                        <option value="7">
+
+                                        BNS</option> 
+                                        <option value="13">
+
+                                        BX+ (Ve por mas)</option> 
+                                        <option value="17">
+
+                                        BXT (Bancomext)</option> 
+                                        <option value="6">
+
+                                        CASA (Controladora de avalúos SA)</option> 
+                                        <option value="16">
+
+                                        CB (Coldwell Banker)</option> 
+                                        <option value="3">
+
+                                        Fiscal</option> 
+                                        <option value="8">
+
+                                        GDF (Gobierno del Distrito Federal)</option> 
+                                        <option value="10">
+
+                                        GF (Gobierno Federal)</option> 
+                                        <option value="11">
+
+                                        GFI (Grupo Financiero Interacciones)</option> 
+                                        <option value="21">
+
+                                        GICSA</option> 
+                                        <option value="15">
+
+                                        IG (Inmobiliaria Graciela S.C.)</option> 
+                                        <option value="5">
+
+                                        Interno</option> 
+                                        <option value="9">
+
+                                        LN (Lotería Nacional)</option> 
+                                        <option value="18">
+
+                                        MC(Mitel Capital)</option> 
+                                        <option value="2">
+
+                                        MIFEL</option> 
+                                        <option value="4">
+
+                                        PARA TI</option> 
+                                        <option value="1" selected="">
+
+                                        Público en general </option> 
+                                        <option value="19">
+
+                                        SBL(Sabadell)</option> 
+                                        <option value="14">
+
+                                        SFG (Sofagro)</option> 
+                                        <option value="12">
+
+                                        STB (ScotiaBank)</option> 
+                                        <option value="20">
+
+                                        Vaproy</option> 
+                                    </select>
+
+                                </li>
+
+
+
+                                <li>
+
+                                    <label for="valuadorid">Valuador acargo</label>
+
+                                    <select name="valuadorid" id="valuadoresCombo">
+
+                                        
+                                        <option value="7">
+
+                                        AG</option> 
+                                        <option value="1" selected="">
+
+                                        AM</option> 
+                                        <option value="15">
+
+                                        AV</option> 
+                                        <option value="9">
+
+                                        CG</option> 
+                                        <option value="14">
+
+                                        CMV</option> 
+                                        <option value="3">
+
+                                        FR</option> 
+                                        <option value="2">
+
+                                        MV</option> 
+                                        <option value="16">
+
+                                        PMX</option> 
+                                        <option value="12">
+
+                                        RG</option> 
+                                        <option value="13">
+
+                                        Valdic</option> 
+                                        <option value="11">
+
+                                        VP</option> 
+                                    </select>
+
+                                </li>
+
+
+
+                                <li>
+
+                                    <label for="estatusid">Estatus</label>
+
+                                    <select name="estatusid" id="estatusCombo">
+
+                                        
+                                        <option value="3">
+
+                                        CANCELADO</option> 
+                                        <option value="4">
+
+                                        CORTESIA</option> 
+                                        <option value="2">
+
+                                        FACTURADO</option> 
+                                        <option value="1" selected="">
+
+                                        POR FACTURAR</option> 
+                                    </select>
+
+                                </li>
+
+
+
+                                <li>
+
+                                    <label for="tipoimbid">Tipo de Inmueble</label>
+
+                                    <select name="tipoimbid" id="tiposimbCombo">
+
+                                        
+                                        <option value="66">
+
+                                        Bodega</option> 
+                                        <option value="77">
+
+                                        Casa Club</option> 
+                                        <option value="78">
+
+                                        Casa de Mantenimiento</option> 
+                                        <option value="5">
+
+                                        Casa en condominio</option> 
+                                        <option value="2">
+
+                                        Casa sola</option> 
+                                        <option value="69">
+
+                                        Casa uso de Suelo</option> 
+                                        <option value="83">
+
+                                        Clínica Medica</option> 
+                                        <option value="3">
+
+                                        Departamento</option> 
+                                        <option value="62">
+
+                                        Desarrollo</option> 
+                                        <option value="65">
+
+                                        Edificio</option> 
+                                        <option value="71">
+
+                                        Estacionamiento</option> 
+                                        <option value="72">
+
+                                        Gasolinera</option> 
+                                        <option value="84">
+
+                                        Hospital</option> 
+                                        <option value="76">
+
+                                        Hotel</option> 
+                                        <option value="80">
+
+                                        INDEFINIDO</option> 
+                                        <option value="61">
+
+                                        Invernadero</option> 
+                                        <option value="68">
+
+                                        Local Comercial</option> 
+                                        <option value="63">
+
+                                        Locales</option> 
+                                        <option value="79">
+
+                                        Lote</option> 
+                                        <option value="67">
+
+                                        Nave Industrial</option> 
+                                        <option value="64">
+
+                                        Oficina</option> 
+                                        <option value="73">
+
+                                        Parcela</option> 
+                                        <option value="74">
+
+                                        Penthouse</option> 
+                                        <option value="82">
+
+                                        Predio Rustico</option> 
+                                        <option value="6">
+
+                                        Quinta</option> 
+                                        <option value="4">
+
+                                        Rancho</option> 
+                                        <option value="81">
+
+                                        Restaurante</option> 
+                                        <option value="1" selected="">
+
+                                        Terreno</option> 
+                                        <option value="70">
+
+                                        Terreno Industrial</option> 
+                                        <option value="75">
+
+                                        Terrenos con construcciones</option> 
+                                        <option value="7">
+
+                                        Tiempo compartido</option> 
+                                        <option value="8">
+
+                                        Villa</option> 
+                                    </select>
+
+                                </li>
+
+
+
+
+
+                            </ol>
+
+                        </fieldset>
+
+
+
+                    </td>
+
+                    <td valign="top">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        <fieldset>
+
+                            <legend>Fechas</legend>
+
+                            <ol>
+
+                                <li>
+
+                                    <label for="dtsolicitud">Solicitud</label>
+
+                                    <input id="dtsolicitud" name="dtsolicitud" type="text" value="" class="hasDatepicker"><button type="button" class="ui-datepicker-trigger">...</button>
+
+                                </li>
+
+
+
+                                <li>
+
+
+
+                                    <label for="dtvaluador">Entrega Valuador</label>
+
+                                    <input id="dtvaluador" name="dtvaluador" type="text" value="" class="hasDatepicker"><button type="button" class="ui-datepicker-trigger">...</button>
+
+                                </li>
+
+                                <li>
+
+                                    <label for="dtcliente">Entrega Cliente</label>
+
+                                    <input id="dtcliente" name="dtcliente" type="text" value="" class="hasDatepicker"><button type="button" class="ui-datepicker-trigger">...</button>
+
+                                </li>
+
+                                <li>
+
+
+
+                                    <label for="dtcobro">Cobro Cliente</label>
+
+                                    <input id="dtcobro" name="dtcobro" type="text" value="" class="hasDatepicker"><button type="button" class="ui-datepicker-trigger">...</button>
+
+                                </li>
+
+                                <li>
+
+                                    <label for="dtpago">Pago Valuador</label>
+
+                                    <input id="dtpago" name="dtpago" type="text" value="" class="hasDatepicker"><button type="button" class="ui-datepicker-trigger">...</button>
+
+                                </li>
+
+
+
+
+
+                            </ol>
+
+                        </fieldset>
+
+
+
+
+
+                        <div id="slider">
+
+                            <div id="imagenSlide" class="pics">
+
+                                
+                            </div><div id="nav" class="nav"></div>
+
+                        </div>
+
+
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td colspan="2" align="center">
+
+                    <input name="Enviar" value="Enviar" type="submit">
+
+                    <input class="cancel" name="Cancelar" value="Cancelar" type="submit">
+
+                    </td>
+
+                </tr>
+
+
+
+            </tbody></table>
+
+
+
+
+
+            <div style="height:50px">
+
+            <div style="float: left; margin-left: 2em; display: none;" id="loading-2">
+
+                <img src="/SICOIN/components/com_propiedades/images/loader.gif">
+
+            </div>
+
+            <div class="spacer"></div>
+
+            </div>
+
+
+
+
+
+            <div id="innerTab">
+
+
+
+
+
+                <ul style="height: 30px;" class="ui-tabs-nav">
+
+                    <li class="ui-tabs-selected"><a href="#ubicacion-1"><span>Ubicación</span></a></li>
+
+                    <li class=""><a href="#comentarios-2"><span>Comentarios</span></a></li>
+
+                    <li class=""><a href="#honoraios-3"><span>Honorarios</span></a></li>
+
+                    <li class=""><a href="#imagenes-4"><span>Imagenes</span></a></li>
+
+                </ul>
+
+
+
+                <div id="ubicacion-1" class="ui-tabs-panel" style="display: block;">
+
+
+
+                    <fieldset>
+
+                        <legend>Ubicación</legend>
+
+
+
+                        <div id="ubicacion">
+
+
+
+                            <ol>
+
+                                <li>
+
+                                    <label for="estadoid">Estado</label>
+
+                                    <select name="estadoid" id="estadosCombo">
+
+                                        
+                                        <option value="1">
+
+                                        AGUASCALIENTES</option> 
+                                        <option value="2">
+
+                                        BAJA CALIFORNIA NORTE</option> 
+                                        <option value="3">
+
+                                        BAJA CALIFORNIA SUR</option> 
+                                        <option value="4">
+
+                                        CAMPECHE</option> 
+                                        <option value="5">
+
+                                        CHIAPAS</option> 
+                                        <option value="6">
+
+                                        CHIHUAHUA</option> 
+                                        <option value="9">
+
+                                        CIUDAD DE MEXICO</option> 
+                                        <option value="7">
+
+                                        COAHUILA</option> 
+                                        <option value="8">
+
+                                        COLIMA</option> 
+                                        <option value="10">
+
+                                        DURANGO</option> 
+                                        <option value="11">
+
+                                        ESTADO DE MEXICO</option> 
+                                        <option value="12">
+
+                                        GUANAJUATO</option> 
+                                        <option value="13">
+
+                                        GUERRERO</option> 
+                                        <option value="14">
+
+                                        HIDALGO</option> 
+                                        <option value="33" selected="">
+
+                                        INDEFINIDO</option> 
+                                        <option value="15">
+
+                                        JALISCO</option> 
+                                        <option value="16">
+
+                                        MICHOACAN</option> 
+                                        <option value="17">
+
+                                        MORELOS</option> 
+                                        <option value="18">
+
+                                        NAYARIT</option> 
+                                        <option value="19">
+
+                                        NUEVO LEON</option> 
+                                        <option value="20">
+
+                                        OAXACA</option> 
+                                        <option value="21">
+
+                                        PUEBLA</option> 
+                                        <option value="22">
+
+                                        QUERETARO</option> 
+                                        <option value="23">
+
+                                        QUINTANA ROO</option> 
+                                        <option value="24">
+
+                                        SAN LUIS POTOSI</option> 
+                                        <option value="25">
+
+                                        SINALOA</option> 
+                                        <option value="26">
+
+                                        SONORA</option> 
+                                        <option value="27">
+
+                                        TABASCO</option> 
+                                        <option value="28">
+
+                                        TAMAULIPAS</option> 
+                                        <option value="29">
+
+                                        TLAXCALA</option> 
+                                        <option value="30">
+
+                                        VERACRUZ</option> 
+                                        <option value="31">
+
+                                        YUCATAN</option> 
+                                        <option value="32">
+
+                                        ZACATECAS</option> 
+                                    </select>
+
+                                </li>
+
+                                <li>
+
+                                    <label for="municipioid">Municipio</label>
+
+                                    <select name="municipioid" id="municipiosCombo">
+
+                                        
+                                        <option value="2411" selected="">
+
+                                        INDEFINIDO</option>
+                                    </select>
+
+                                </li>
+
+                                <li>
+
+                                    <label for="coloniaid">Colonia</label>
+
+                                    <select name="coloniaid" id="coloniasCombo">
+
+                                        
+                                        <option value="50144" selected="">
+
+                                        INDEFINIDA</option> 
+                                        <option value="50149">
+
+                                        INDEFINIDA II</option> 
+                                    </select>
+
+                                </li>
+
+
+
+
+
+
+
+
+
+                            </ol>
+
+
+
+                            <table style="width:100%">
+
+                                <tbody><tr>
+
+                                    <td><ol>
+
+
+
+                                            <li>
+
+                                                <label for="calle">Calle</label>
+
+                                                <input name="calle" class="required" type="text" value="">
+
+                                                <div class="spacer">
+
+                                            </div></li>
+
+
+
+                                            <li>
+
+
+
+                                                <label for="entrecalle1">Entre Calle (1)</label>
+
+                                                <input name="entrecalle1" type="text" value="">
+
+                                                <div class="spacer">
+
+                                            </div></li>
+
+                                            <li>
+
+
+
+                                                <label for="entrecalle2">Entre Calle (2)</label>
+
+                                                <input name="entrecalle2" type="text" value="">
+
+                                                <div class="spacer">
+
+                                            </div></li>
+
+                                        </ol>
+
+                                    </td>
+
+                                    <td>
+
+                                        <ol>
+
+                                            <li>
+
+
+
+                                                <label for="numero">Numero Exterior</label>
+
+                                                <input name="numero" type="text" value="">
+
+                                                <div class="spacer">
+
+                                            </div></li>
+
+                                            <li>
+
+
+
+                                                <label for="numeroint">Numero Interior</label>
+
+                                                <input name="numeroint" type="text" value="">
+
+                                                <div class="spacer">
+
+                                            </div></li>
+
+                                            <li>
+
+
+
+                                                <label for="manzana">Manzana</label>
+
+                                                <input name="manzana" type="text" value="">
+
+                                                <div class="spacer">
+
+                                            </div></li>
+
+                                            <li>
+
+
+
+                                                <label for="lote">Lote</label>
+
+                                                <input name="lote" type="text" value="">
+
+                                                <div class="spacer">
+
+                                            </div></li>
+
+                                        </ol>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody></table>
+
+
+
+
+
+                        </div>
+
+
+
+                    </fieldset>
+
+
+
+                    <input name="avaluoid" value="1166" type="hidden">
+
+                    <input name="option" value="com_avaluos" type="hidden">
+
+                    <input name="task" value="NuevoAvaluo" type="hidden">
+
+                    <input name="ops" value="new" type="hidden">
+
+                    <input name="tipoidoriginal" value="1" type="hidden">
+
+
+
+                </div>
+
+
+
+                <div id="comentarios-2" class="ui-tabs-panel ui-tabs-hide">
+
+
+
+                    <input name="crearComentario" value="Nuevo" type="button">
+
+
+
+                    <div id="comentariosContainer" style="padding: 10px; display: block;"><div id="comentariosTable_wrapper" class="dataTables_wrapper"><div id="comentariosTable_processing" class="dataTables_processing" style="visibility: hidden;">Procesando...</div><table classname="minimalist" class="minimalist" id="comentariosTable" style="width: 0px;"><thead><tr><th class="sorting_asc">Fecha</th><th>Comentario</th><th>Borrar</th></tr></thead><tbody><tr><td valign="top" colspan="3" style="text-align: center;">No hay objectos en la tabla</td></tr></tbody></table></div><div id="comentariosTable_paginate" class="dataTables_paginate"><div id="comentariosTable_previous" class="paginate_disabled_previous"></div><div id="comentariosTable_next" class="paginate_disabled_next"></div></div><div id="comentariosTable_info" class="dataTables_info">Mostrando 0 a 0 de 0 objetos </div></div>
+
+
+
+                </div>
+
+                <div id="honoraios-3" class="ui-tabs-panel ui-tabs-hide">
+
+
+
+                    <input name="crearHonorario" value="Nuevo" type="button">
+
+
+
+                    <div id="honorariosContainer" style="padding: 10px; display: block;"><div id="honorariosTable_wrapper" class="dataTables_wrapper"><div id="honorariosTable_processing" class="dataTables_processing" style="visibility: hidden;">Procesando...</div><table classname="minimalist" class="minimalist" id="honorariosTable" style="width: 0px;"><thead><tr><th class="sorting_asc">Razon social</th><th>Monto</th><th>Borrar</th></tr></thead><tbody><tr><td valign="top" colspan="3" style="text-align: center;">No hay objectos en la tabla</td></tr></tbody></table></div><div id="honorariosTable_paginate" class="dataTables_paginate"><div id="honorariosTable_previous" class="paginate_disabled_previous"></div><div id="honorariosTable_next" class="paginate_disabled_next"></div></div><div id="honorariosTable_info" class="dataTables_info">Mostrando 0 a 0 de 0 objetos </div></div>
+
+
+
+                </div>
+
+                <div id="imagenes-4" class="ui-tabs-panel ui-tabs-hide">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Seleccione una imagen y presione el boton subir</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+
+                            <td><input id="fileToUpload" type="file" size="45" name="fileToUpload" class="input"></td></tr>
+
+                        </tbody>
+
+                        <tfoot>
+
+                            <tr>
+
+                                <td><input uploadctrlid="fileToUpload" type="button" name="buttonUpload" value="Subir"></td>
+
+                            </tr>
+
+                        </tfoot>
+
+
+
+                    </table>
+
+                    <div id="imagesContainer" style="padding: 10px; display: block;"><div id="imagesTable_wrapper" class="dataTables_wrapper"><div id="imagesTable_processing" class="dataTables_processing" style="visibility: hidden;">Procesando...</div><table classname="minimalist" class="minimalist" id="imagesTable" style="width: 0px;"><thead><tr><th class="sorting_asc">Imagen</th><th>Borrar</th></tr></thead><tbody><tr><td valign="top" colspan="2" style="text-align: center;">No hay objectos en la tabla</td></tr></tbody></table></div><div id="imagesTable_paginate" class="dataTables_paginate"><div id="imagesTable_previous" class="paginate_disabled_previous"></div><div id="imagesTable_next" class="paginate_disabled_next"></div></div><div id="imagesTable_info" class="dataTables_info">Mostrando 0 a 0 de 0 objetos </div></div>
+
+                </div>
+
+
+
+              
+
+            </div>
+
+        </form>
+
+    </div>

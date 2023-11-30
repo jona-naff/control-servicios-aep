@@ -15,6 +15,7 @@ urlpatterns = [
     path("servicios/avaluos/<str:dtsolicitud_inicial>/<str:dtsolicitud_final>/<str:dtcliente_inicial>/<str:dtcliente_final>/<str:dtvaluador_inicial>/<str:dtvaluador_final>/<str:dtcobro_inicial>/<str:dtcobro_final>", views.get_avaluos_bydate, name="get_avaluos_inic"),
     path("servicios/avaluos/<int:cliente_id>/<int:tipo_id>/<int:valuador_id>/<int:estatus_id>/<int:estadoid>/<int:coloniaid>", views.get_avaluos, name="get_avaluos"),
     path('servicios/avaluos/generar_pdf/<int:cliente_id>/<int:tipo_id>/<int:valuador_id>/<int:estatus_id>/<int:estadoid>/<int:coloniaid>',views.generar_pdf,name="generar_pdf"),
+    path("servicios/avaluos/nuevo_avaluo", views.nuevo_avaluo, name="nuevo_avaluo"),
     path('logout/',views.exit,name='exit'),
 ]
 
