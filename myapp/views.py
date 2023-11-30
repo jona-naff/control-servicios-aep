@@ -24,12 +24,13 @@ def index(request):
 
 @login_required
 def servicios(request):
-    conteo_tipo_servicio = Tipos.objects.all()
-    avaluos_por_mes = Avaluos.objects.raw("select '1' as avaluoid, CASE WHEN MONTH(dtcreate) = 1 THEN 'Enero' WHEN MONTH(dtcreate) = 2 THEN 'Febrero' WHEN MONTH(dtcreate) = 3 THEN 'Marzo' WHEN MONTH(dtcreate) = 4 THEN 'Abril' WHEN MONTH(dtcreate) = 5 THEN 'Mayo' WHEN MONTH(dtcreate) = 6 THEN 'Junio' WHEN MONTH(dtcreate) = 7 THEN 'Julio' WHEN MONTH(dtcreate) = 8 THEN 'Agosto' WHEN MONTH(dtcreate) = 9 THEN 'Septiembre' WHEN MONTH(dtcreate) = 10 THEN 'Octubre' WHEN MONTH(dtcreate) = 11 THEN 'Noviembre' WHEN MONTH(dtcreate) = 12 THEN 'Diciembre' ELSE 'Esto no es un mes' END AS 'mes', year(dtcreate) as anho,count(*) as numero from avaluos where coloniaid<>50144 group by month(dtcreate), year(dtcreate) order by year(dtcreate) desc, month(dtcreate) desc")
-    return render(request,'core/servicios.html',{
-         'conteo_tipo_servicio': conteo_tipo_servicio,
-         'avaluos_por_mes': avaluos_por_mes
-    })
+   # conteo_tipo_servicio = Tipos.objects.all()
+   # avaluos_por_mes = Avaluos.objects.raw("select '1' as avaluoid, CASE WHEN MONTH(dtcreate) = 1 THEN 'Enero' WHEN MONTH(dtcreate) = 2 THEN 'Febrero' WHEN MONTH(dtcreate) = 3 THEN 'Marzo' WHEN MONTH(dtcreate) = 4 THEN 'Abril' WHEN MONTH(dtcreate) = 5 THEN 'Mayo' WHEN MONTH(dtcreate) = 6 THEN 'Junio' WHEN MONTH(dtcreate) = 7 THEN 'Julio' WHEN MONTH(dtcreate) = 8 THEN 'Agosto' WHEN MONTH(dtcreate) = 9 THEN 'Septiembre' WHEN MONTH(dtcreate) = 10 THEN 'Octubre' WHEN MONTH(dtcreate) = 11 THEN 'Noviembre' WHEN MONTH(dtcreate) = 12 THEN 'Diciembre' ELSE 'Esto no es un mes' END AS 'mes', year(dtcreate) as anho,count(*) as numero from avaluos where coloniaid<>50144 group by month(dtcreate), year(dtcreate) order by year(dtcreate) desc, month(dtcreate) desc")
+   # return render(request,'core/servicios.html',{
+   #      'conteo_tipo_servicio': conteo_tipo_servicio,
+   #      'avaluos_por_mes': avaluos_por_mes
+   # })
+   return render(request,'core/servicios.html')
 
 
 def exit(request):
@@ -95,12 +96,12 @@ def get_estados(request):
     return JsonResponse(data)
 
 
-def get_municipios(request, estadoid):
-    if estadoid < 1:
+def get_municipios(request, estado_id):
+    if estado_id < 1:
         municipios = list(Municipios.objects.values())[0:200]
     else:
         municipios = [list(Municipios.objects.values())[0]]
-        municipios += list(Municipios.objects.filter(estadoid=estadoid).values())
+        municipios += list(Municipios.objects.filter(estado_id=estado_id).values())
     
     if (len(municipios)>1):
             data={'message':"Success",'municipios': municipios}
@@ -110,12 +111,12 @@ def get_municipios(request, estadoid):
     return JsonResponse(data)
 
 
-def get_colonias(request, municipioid):
-    if municipioid<1:
+def get_colonias(request, municipio_id):
+    if municipio_id<1:
         colonias = list(Colonias.objects.values())[0:200]
     else:
         colonias = [list(Colonias.objects.values())[0]]
-        colonias += list(Colonias.objects.filter(municipioid=municipioid).values())
+        colonias += list(Colonias.objects.filter(municipio_id=municipio_id).values())
     
     if (len(colonias)>1):
             data={'message':"Success",'colonias': colonias}
@@ -140,7 +141,7 @@ def get_avaluos_inic(request):
         valuador = str(avaluo.valuador)
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
-        
+        colonia = str(avaluo.colonia.municipio_id)
         avaluos_dic.append({'id': id, 
                             'ubicacion': ubicacion, 
                             'dtsolicitud' : dtsolicitud,
@@ -151,10 +152,11 @@ def get_avaluos_inic(request):
                             'cliente': cliente,
                             'valuador':valuador,
                             'estatus': estatus,
-                            'tipo': tipo
+                            'tipo': tipo,
+                            'colonia':colonia
                             })
     if (len(avaluos_dic)>0):
-            data={'message':"Success",'avaluos': avaluos_dic[0:15]}
+            data={'message':"Success",'avaluos': avaluos_dic}
     else:
         data={'message': "Not Found"}
         
@@ -179,11 +181,11 @@ def operator_or(val1,val2):
 
 
 
-def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid):
+def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id):
 
     ids=[]
 
-    data = [cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid]
+    data = [cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id]
     compare = [0,0,0,0,0,0]
     
     if data == compare:
@@ -198,22 +200,19 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
             ids.append(Q(valuador_id=valuador_id))
         if estatus_id != 0:
             ids.append(Q(estatus_id=estatus_id))
-        if coloniaid != 0:
-            ids.append(Q(coloniaid=coloniaid))
+        if colonia_id != 0:
+            ids.append(Q(colonia_id=colonia_id))
+        if municipio_id != 0:
+            ids.append(Q(colonia__municipio_id=municipio_id))
 
         ids_or = []
-        if estadoid != 0:
-            municipios = list(Municipios.objects.filter(estadoid=estadoid).values())
+        if estado_id != 0:
+            municipios = list(Municipios.objects.filter(estado_id=estado_id).values())
             if len(municipios)>0:
                 for municipio in municipios:
-                    municipio_id_loc = municipio["municipioid"]
-                    colonias = list(Colonias.objects.filter(municipioid=municipio_id_loc).values())
-                    if len(colonias)>0:
-                        for colonia in colonias:
-                            colonia_id_loc = colonia["coloniaid"]
-                            ids_or.append(Q(coloniaid=colonia_id_loc))
-                    else:
-                        pass
+                    municipio_id_loc = municipio["municipio_id"]
+                    ids_or.append(Q(colonia__municipio_id=municipio_id_loc))
+                    
             else:
                 pass
 
@@ -233,7 +232,6 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
         valuador = str(avaluo.valuador)
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
-        
         avaluos_dic.append({'id': id, 
                             'ubicacion': ubicacion, 
                             'dtsolicitud' : dtsolicitud,
@@ -244,7 +242,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
                             'cliente': cliente,
                             'valuador':valuador,
                             'estatus': estatus,
-                            'tipo': tipo
+                            'tipo': tipo,
                             })
         
     if (len(avaluos_dic)>0):
@@ -255,6 +253,19 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
     return JsonResponse(data)
 
 
+def get_avaluos_bymunicipio(request,municipio_id):
+    avaluos = Avaluos.objects.filter(colonia__municipio_id=municipio_id).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
+    avaluos_dic = []
+    if len(avaluos)>0:
+        for avaluo in avaluos:
+            colonia = str(avaluo.colonia.municipio_id)
+            avaluos_dic.append({'colonia': colonia})
+
+        if (len(avaluos_dic)>0):
+            data={'message':"Success",'avaluos': avaluos_dic}
+    else:
+        data={'message': "Not Found"}
+    return JsonResponse(data)
 
 
 def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final):
@@ -316,7 +327,7 @@ def get_avaluos_bydate(request, dtsolicitud_inicial, dtsolicitud_final, dtvaluad
     return JsonResponse(data)
 
 
-def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid):
+def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id,colonia_id):
     #Crear Bytestream buffer
     buf = io.BytesIO()
     # Crear canvas
@@ -326,7 +337,7 @@ def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid,
     textob.setTextOrigin(inch,inch)
     textob.setFont("Helvetica", 14)
 
-    data = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid)
+    data = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
     data = json.loads(data.content)
     avaluos = data['avaluos']
     lines =[]

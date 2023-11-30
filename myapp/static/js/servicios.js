@@ -1,6 +1,16 @@
-const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid) => {
+function generarPdf(cliente_id, tipo_id, valuador_id, estatus_id, estadoid, coloniaid) {
     try{
-        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estadoid + '/' + coloniaid);
+        const response=fetch("./avaluos/generar_pdf/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estadoid + '/' + coloniaid);
+        
+    }catch(error){
+        console.log(error);
+    }   
+     
+};
+
+const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, colonia_id) => {
+    try{
+        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + colonia_id);
         const data =await response.json();
         if(data.message=="Success"){
             let opciones=``;
@@ -8,7 +18,7 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td>${avaluo.ubicacion}</td>`;
-                opciones+=`<td>${avaluo.fechas}</td>`;
+                opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
@@ -18,6 +28,8 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
             
         }else{
             alert("Avaluo no encontrado");
+            let opciones=``;
+            cboTabla.innerHTML = opciones;
         }
     }catch(error){
         console.log(error);
@@ -26,9 +38,9 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
 };
 
 
-const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final) => {
+const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final, dtcliente_inicial, dtcliente_final, dtvaluador_inicial, dtvaluador_final, dtcobro_inicial, dtcobro_final) => {
     try{
-        const response=await fetch("./avaluos/"+ dtsolicitud_inicial + '/' + dtsolicitud_final );
+        const response=await fetch("./avaluos/"+ dtsolicitud_inicial + '/' + dtsolicitud_final + '/' + dtcliente_inicial + '/' + dtcliente_final + '/' + dtvaluador_inicial + '/' + dtvaluador_final + '/' + dtcobro_inicial + '/' + dtcobro_final);
         const data =await response.json();
         if(data.message=="Success"){
             let opciones=``;
@@ -36,7 +48,7 @@ const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final) =>
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td>${avaluo.ubicacion}</td>`;
-                opciones+=`<td>${avaluo.fechas}</td>`;
+                opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
@@ -46,6 +58,8 @@ const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final) =>
             
         }else{
             alert("Avaluo no encontrado");
+            let opciones=``;
+            cboTabla.innerHTML = opciones;
         }
     }catch(error){
         console.log(error);
@@ -65,7 +79,7 @@ const mostrarTabla_Inicial = async () => {
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td>${avaluo.ubicacion}</td>`;
-                opciones+=`<td>${avaluo.fechas}</td>`;
+                opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
@@ -75,6 +89,8 @@ const mostrarTabla_Inicial = async () => {
             
         }else{
             alert("Avaluo no encontrado");
+            let opciones=``;
+            cboTabla.innerHTML = opciones;
         }
     }catch(error){
         console.log(error);
@@ -166,15 +182,15 @@ const listarEstatus=async()=>{
 };
 
 
-const listarColonias = async (municipioid) =>{
+const listarColonias = async (municipio_id) =>{
     try{
-        const response=await fetch("./colonias/"+municipioid);
+        const response=await fetch("./colonias/"+municipio_id);
         const data =await response.json();
         
         if(data.message=="Success"){
             let opciones=``;
             data.colonias.forEach((colonia)=>{
-                opciones+=`<option value='${colonia.coloniaid}'>${colonia.nombre}</option>`;
+                opciones+=`<option value='${colonia.colonia_id}'>${colonia.nombre}</option>`;
             });
             cboColonia.innerHTML = opciones;
         }else{
@@ -185,17 +201,18 @@ const listarColonias = async (municipioid) =>{
     }   
 };
 
-const listarMunicipios = async (estadoid) =>{
+const listarMunicipios = async (estado_id) =>{
     try{
-        const response=await fetch("./municipios/"+estadoid);
+        const response=await fetch("./municipios/"+estado_id);
         const data =await response.json();
+        console.log(data);
         if(data.message=="Success"){
             let opciones=``;
             data.municipios.forEach((municipio)=>{
-                opciones+=`<option value='${municipio.municipioid}'>${municipio.nombre}</option>`;
+                opciones+=`<option value='${municipio.municipio_id}'>${municipio.nombre}</option>`;
             });
             cboMunicipio.innerHTML = opciones;
-            listarColonias(data.municipios[0].municipioid);
+            listarColonias(data.municipios[0].municipio_id);
         }else{
             alert("Municipios no encontrados");
         }
@@ -211,10 +228,10 @@ const listarEstados=async()=>{
         if(data.message=="Success"){
             let opciones=``;
             data.estados.forEach((estado)=>{
-                opciones+=`<option value='${estado.estadoid}'>${estado.nombre}</option>`;
+                opciones+=`<option value='${estado.estado_id}'>${estado.nombre}</option>`;
             });
             cboEstado.innerHTML = opciones;
-            listarMunicipios(data.estados[0].estadoid);
+            listarMunicipios(data.estados[0].estado_id);
             
         }else{
             alert("Estados no encontrados");
@@ -225,8 +242,9 @@ const listarEstados=async()=>{
 };
 
 //let parametros_sec = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "coloniaid":0}
-let parametros = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "estadoid":0,"coloniaid":0};
-let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00'};
+let parametros = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "estado_id":0,"colonia_id":0};
+let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtcliente_inicial":'0000-00-00', "dtcliente_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00', "dtcobro_inicial":'0000-00-00', "dtcobro_final":'0000-00-00'};
+
 const cargaInicial=async()=>{
     await listarClientes();
     await listarTipos();
@@ -237,30 +255,30 @@ const cargaInicial=async()=>{
 
     cboCliente.addEventListener("change",(event)=>{
         parametros.cliente_id = event.target.value
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.colonia_id);
     });
 
     cboTipo.addEventListener("change",(event)=>{
         parametros.tipo_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.colonia_id);
     });
 
     cboValuador.addEventListener("change",(event)=>{
         parametros.valuador_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.colonia_id);
     });
 
     cboEstatus.addEventListener("change",(event)=>{
         parametros.estatus_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.colonia_id);
     });
 
     cboEstado.addEventListener("change",(event)=>{
         console.log(event.target.value);
-        parametros.estadoid = event.target.value;
+        parametros.estado_id = event.target.value;
         
         listarMunicipios(event.target.value);
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.colonia_id);
 
     });
 
@@ -269,24 +287,21 @@ const cargaInicial=async()=>{
     });
 
     cboColonia.addEventListener("change",(event)=>{
-        parametros.coloniaid = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estadoid,parametros.coloniaid);
+        parametros.colonia_id = event.target.value;
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.colonia_id);
     });
-    dtsolicitud_inicial.addEventListener("change",(event)=>{
-        parametros_fechas.dtsolicitud_inicial = event.target.value;
-        console.log(event.target.value);
+    document.getElementById('generar_fichas').addEventListener('click', function() {
+        // Construct the URL based on parameters
+        var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
+        url += parametros.estadoid + '/' +  parametros.coloniaid;
+        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_pdf/' + url;
+
+        // Redirect to the constructed URL
+        console.log(redirectUrl);
+        window.location.href = redirectUrl;
     });
-    dtsolicitud_final.addEventListener("change",(event)=>{
-        parametros_fechas.dtsolicitud_final = event.target.value;
-        mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtvaluador_inicial,parametros.dtvaluador_final);
-    });
-    dtvaluador_inicial.addEventListener("change",(event)=>{
-        parametros_fechas.dtvaluador_inicial = event.target.value;
-    });
-    dtvaluador_final.addEventListener("change",(event)=>{
-        parametros_fechas.dtvaluador_final = event.target.value;
-        mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtvaluador_inicial,parametros.dtvaluador_final);
-    });
+    
+
 };
 
 

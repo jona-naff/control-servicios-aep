@@ -55,11 +55,48 @@ class Estatus(models.Model):
     class Meta:
         managed = True
         db_table = "estatus"
+        
+class Estados(models.Model):
+    estado_id = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=250)
+    clave = models.CharField(max_length=10)
+    
+    class Meta:
+        managed = True
+        db_table = "estados"
+        
+
+class Municipios(models.Model):
+    municipio_id = models.IntegerField(primary_key=True)
+    #estadoid = models.IntegerField()
+    estado = models.ForeignKey(Estados, to_field='estado_id', on_delete=models.CASCADE)
+
+    nombre = models.CharField(max_length=250)
+    
+    class Meta:
+        managed = True
+        db_table = "municipios"
+        
+        
+class Colonias(models.Model):
+    colonia_id = models.IntegerField(primary_key=True)
+    #municipioid = models.IntegerField()
+    municipio = models.ForeignKey(Municipios, to_field='municipio_id', on_delete=models.CASCADE)
+
+    nombre = models.CharField(max_length=250)
+    
+    
+    class Meta:
+        managed = True
+        db_table = "colonias"
+  
 
 class Avaluos(models.Model):
     avaluoid = models.IntegerField(primary_key=True)
-    coloniaid = models.IntegerField()
+    #colonia_id = models.IntegerField()
     
+    colonia = models.ForeignKey(Colonias, to_field='colonia_id', on_delete=models.CASCADE)
+
     cliente = models.ForeignKey(Clientes, to_field='clienteid', on_delete=models.CASCADE)
     
     tipo = models.ForeignKey(Tipos, to_field='tipoid', on_delete=models.CASCADE)
@@ -85,35 +122,3 @@ class Avaluos(models.Model):
     class Meta:
         managed = True
         db_table = "avaluos"
-        
-        
-class Estados(models.Model):
-    estadoid = models.IntegerField(primary_key=True)
-    nombre = models.CharField(max_length=250)
-    clave = models.CharField(max_length=10)
-    
-    class Meta:
-        managed = False
-        db_table = "estados"
-        
-
-class Municipios(models.Model):
-    municipioid = models.IntegerField(primary_key=True)
-    estadoid = models.IntegerField()
-    nombre = models.CharField(max_length=250)
-    
-    class Meta:
-        managed = False
-        db_table = "municipios"
-        
-        
-class Colonias(models.Model):
-    coloniaid = models.IntegerField(primary_key=True)
-    municipioid = models.IntegerField()
-    nombre = models.CharField(max_length=250)
-    
-    
-    class Meta:
-        managed = False
-        db_table = "colonias"
-  
