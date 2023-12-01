@@ -14,6 +14,8 @@ from reportlab.lib import pagesizes
 
 import json
 
+from .forms import AvaluoForm
+
 # Create your views here.
 
 
@@ -363,4 +365,19 @@ def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
 
 
 def nuevo_avaluo(request):
-    return render(request, 'core/nuevo_avaluo.html')
+    if request.method == 'GET':       
+        return render(request, 'core/nuevo_avaluo.html',{
+            'form': AvaluoForm
+        })
+    else: 
+        try:
+            form = AvaluoForm(request.POST)
+            nuevo_avaluo = form.save(commit=False)
+            nuevo_avaluo.save()
+            print(nuevo_avaluo)
+            return redirect('get_avaluos_inic')
+        except ValueError:
+            return render(request, 'core/nuevo_avaluo.html',{
+            'form': AvaluoForm,
+            'error': 'Please provide valide data'
+                })
