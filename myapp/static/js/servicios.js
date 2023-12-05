@@ -68,36 +68,6 @@ const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final, dt
 };
 
 
-const mostrarTabla_Inicial = async () => {
-    try{
-        const response=await fetch("./avaluos/");
-        const data =await response.json();
-
-        if(data.message=="Success"){
-            let opciones=``;
-            data.avaluos.forEach((avaluo)=>{
-                opciones+=`<tr value="${avaluo.id}">`;
-                opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
-                opciones+=`<td>${avaluo.ubicacion}</td>`;
-                opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
-                opciones+=`<td>${avaluo.cliente}</td>`;
-                opciones+=`<td>${avaluo.valuador}</td>`;
-                opciones+=`<td>${avaluo.estatus}</td>`;
-                opciones+=`</tr>`;
-            });
-            cboTabla.innerHTML = opciones;
-            
-        }else{
-            alert("Avaluo no encontrado");
-            let opciones=``;
-            cboTabla.innerHTML = opciones;
-        }
-    }catch(error){
-        console.log(error);
-    }   
-     
-};
-
 
 const listarClientes=async()=>{
     try{
@@ -251,7 +221,6 @@ const cargaInicial=async()=>{
     await listarValuadores();
     await listarEstatus();
     await listarEstados();
-    await mostrarTabla_Inicial();
 
     cboCliente.addEventListener("change",(event)=>{
         parametros.cliente_id = event.target.value

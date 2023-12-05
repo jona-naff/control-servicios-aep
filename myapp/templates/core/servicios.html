@@ -18,11 +18,15 @@
     <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
     <script src="{% static 'styles/bootstrap-combined.min.css' %}"></script>
 
+    <style>
+      .PagGeneral {
+          display: none;
+      };
+      #cboTabla {
+        display: none;
+      }
+  </style>
 </head>
-
-    
-
-
 
     <div class="container">
 
@@ -135,7 +139,7 @@
                 <td>
                   <div class="datepicker input-group date position-relative border-1 p-4">
                     <input type="text" id="dtcobro_inicial" class="form-control" data-provide="datepicker">
-                   </div>
+                  </div>
                 </td>
                 <td>
                     a  
@@ -206,21 +210,86 @@
         </div>
       
         <br>
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Ubicación</th>
-                    <th>Fechas</th>
-                    <th>Cliente</th>
-                    <th>Valuador</th>
-                    <th>Estatus</th>
-                </tr>
-            </thead>
-            <tbody id="cboTabla">
-                          
-            </tbody>
+
+        {{ paginator_info }}
+        {{ avaluos_pag }}
+        {{ has_previous }}
+        
+      <div class="PagGeneral" >
+        <nav aria-label="Page navigation example">
+            <ul id="ul-parent" class="pagination">
+                
+        
+        
+        {% if avaluos_pag.has_previous %}
+        
+        <li class="page-item"><a class="page-link" href="?page=1">&laquo Primera</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ avaluos_pag.previous_page_number }}">Anterior</a></li>
+        
+        
+        {% else %}
+        
+        <li class="page-item"><a class="page-link disabled" href="?page=1">&laquo Primera</a></li>
+        <li class="page-item"><a class="page-link disabled" href="?page=1">Anterior</a></li>
+        
+        {% endif %}
+        
+        <!--<li class="page-item"><a class="page-link disabled" href="#">Página {{ avaluos_pag.number }} de {{ avaluos_pag.paginator.num_pages }}</a></li>-->
+        
+        <!--<li class="page-item"><a class="page-link"  id="cboPags" href="?page=10">prueba</a></li>  -->      
+
+        {% for i in nums %}
+        
+        <li id="numpag{{ forloop.counter }}" class="page-item"><a class="page-link"  id="cboPags{{ forloop.counter }}" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+        
+        {% endfor %}
+        
+        
+        {% if avaluos_pag.has_next %}
+        
+        <li class="page-item"><a class="page-link" href="?page={{ avaluos_pag.next_page_number }}">Siguiente</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ avaluos_pag.paginator.num_pages }}">Ultima &raquo</a></li>
+        
+        {% endif %}
+        
+        </ul>
+        </nav>
+      </div>
+
+       <!--<table class="table table-striped table-hover">
+          <thead>
+              <tr>
+                  <th>Id</th>
+                  <th>Ubicación</th>
+                  <th>Fechas</th>
+                  <th>Cliente</th>
+                  <th>Valuador</th>
+                  <th>Estatus</th>
+              </tr>
+          </thead>
+          <tbody >
+              {% for avaluo in avaluos_pag %}
+      
+              <tr  id="{{ avaluos_pag.number }}">
+                  <td>{{avaluo.id}}</td>
+                  <td>{{avaluo.ubicacion}}</td>
+                  <td>{{avaluo.fechas}}</td>
+                  <td>{{avaluo.cliente}}</td>
+                  <td>{{avaluo.valuador}}</td>
+                  <td>{{avaluo.estatus}}</td>
+              </tr>
+              
+              {% endfor %}
+          </tbody>
+      </table>-->
+
+       <table id="cboTabla" class="table table-striped table-hover">  
+
         </table>
+        
+
+        
+        
       </div>
 
 
@@ -240,6 +309,7 @@ $(".nav a").on("click", function(){
     $("#fichas").addClass("tab-pane fade");
     $(elemento).removeClass();
     $(elemento).addClass("tab-pane fade active show");
+
     $.fn.datepicker.defaults.format = "yyyy-mm-dd";
     $('#datepicker').datepicker({
         autoclose:true,
@@ -299,8 +369,33 @@ $(".nav a").on("click", function(){
     });
     
     
-  });
+});
+            
   </script>
+
+  
+      <!--<script>
+          $(document).ready(function() {
+              // Attach click event listener to links
+              $('.page-link').on('click', function(e) {
+                  e.preventDefault(); // Prevent the default behavior of the link
+  
+                  // Get the id of the clicked link
+                  var clickedLinkId = $(this).attr('id');
+  
+                  // Find the next element with the same class
+                  var nextElementId = $(this).parent().next('.page-item').find('.page-link').attr('id');
+  
+                  // Output the results to the console (you can modify this part based on your needs)
+                  pags = clickedLinkId;
+                  pags = pags.slice(7);
+                  
+                  console.log('Clicked Link ID:', pags);
+
+                  console.log('Next Element ID:', nextElementId);
+              });
+          });
+      </script>-->
 
     {% endblock %}
 

@@ -11,10 +11,13 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import pagesizes
+from django.core.serializers import serialize
 
 import json
 
 from .forms import AvaluoForm
+
+from django.core.paginator import Paginator 
 
 # Create your views here.
 
@@ -28,9 +31,45 @@ def index(request):
 def servicios(request):
     conteo_tipo_servicio = Tipos.objects.all()
     avaluos_por_mes = Avaluos.objects.raw("select '1' as avaluoid, CASE WHEN MONTH(dtcreate) = 1 THEN 'Enero' WHEN MONTH(dtcreate) = 2 THEN 'Febrero' WHEN MONTH(dtcreate) = 3 THEN 'Marzo' WHEN MONTH(dtcreate) = 4 THEN 'Abril' WHEN MONTH(dtcreate) = 5 THEN 'Mayo' WHEN MONTH(dtcreate) = 6 THEN 'Junio' WHEN MONTH(dtcreate) = 7 THEN 'Julio' WHEN MONTH(dtcreate) = 8 THEN 'Agosto' WHEN MONTH(dtcreate) = 9 THEN 'Septiembre' WHEN MONTH(dtcreate) = 10 THEN 'Octubre' WHEN MONTH(dtcreate) = 11 THEN 'Noviembre' WHEN MONTH(dtcreate) = 12 THEN 'Diciembre' ELSE 'Esto no es un mes' END AS 'mes', year(dtcreate) as anho,count(*) as numero from avaluos where colonia_id<>50144 group by month(dtcreate), year(dtcreate) order by year(dtcreate) desc, month(dtcreate) desc")
+    avaluos = Avaluos.objects.order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
+    avaluos_dic = []
+    for avaluo in avaluos:
+        id = str(avaluo.avaluoid)
+        cliente = str(avaluo.cliente)
+        ubicacion = str(avaluo.calle) 
+        dtsolicitud = str(avaluo.dtsolicitud)
+        dtvaluador = str(avaluo.dtvaluador)
+        dtcliente = str(avaluo.dtcliente)
+        dtcobro = str(avaluo.dtcobro)
+        dtpago = str(avaluo.dtpago)
+        valuador = str(avaluo.valuador)
+        estatus = str(avaluo.estatus)
+        tipo = str(avaluo.tipo)
+        colonia = str(avaluo.colonia.municipio_id)
+        avaluos_dic.append({'id': id, 
+                            'ubicacion': ubicacion, 
+                            'dtsolicitud' : dtsolicitud,
+                            'dtvaluador' : dtvaluador,
+                            'dtcliente' : dtcliente,
+                            'dtcobro' : dtcobro,
+                            'dtpago' : dtpago,
+                            'cliente': cliente,
+                            'valuador':valuador,
+                            'estatus': estatus,
+                            'tipo': tipo,
+                            'colonia':colonia
+                            })
+    p = Paginator(avaluos_dic,40)
+    page = request.GET.get('page')
+    avaluos_pag = p.get_page(page)
+    nums = []
+    for i in range(avaluos_pag.paginator.num_pages):
+        nums.append(i)
     return render(request,'core/servicios.html',{
          'conteo_tipo_servicio': conteo_tipo_servicio,
-         'avaluos_por_mes': avaluos_por_mes
+         'avaluos_por_mes': avaluos_por_mes,
+         'avaluos_pag': avaluos_pag,
+         'nums': nums,
     })
    #return render(request,'core/servicios.html')
 
@@ -158,12 +197,30 @@ def get_avaluos_inic(request):
                             'colonia':colonia
                             })
     if (len(avaluos_dic)>0):
-            data={'message':"Success",'avaluos': avaluos_dic}
+            p = Paginator(avaluos_dic,40)
+            page = request.GET.get('page')
+            avaluos_pag = p.get_page(page)
+            nums = []
+            for i in range(avaluos_pag.paginator.num_pages):
+                nums.append(i)
+            has_previous = avaluos_pag.has_previous()
+            paginator_info = {
+                'current_page': avaluos_pag.number,
+                'num_pages': avaluos_pag.paginator.num_pages,
+                'per_page': avaluos_pag.paginator.per_page,
+                'count': avaluos_pag.paginator.count,
+                'has_previous' : avaluos_pag.has_previous(),
+                'has_next' : avaluos_pag.has_next(),
+                'nums':nums,
+            }
+
+            data={'message':"Success",'paginator_info': paginator_info, "avaluos": avaluos_dic}
+            
     else:
         data={'message': "Not Found"}
         
+    #return render(request, 'core/paginacion.html', {'avaluos': avaluos_dic,'avaluos_pag': avaluos_pag,'nums':nums,'has_previous': avaluos_pag.has_previous(),'paginator_info': paginator_info})
     return JsonResponse(data)
-
 
 def reduce(function, iterable):
     it = iter(iterable)
@@ -220,7 +277,13 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
 
         avaluos = Avaluos.objects.filter(reduce(operator_and,ids) & reduce(operator_or,ids_or)).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
     
-          
+
+    avaluos_tot = Avaluos.objects.values()
+    count_avaluos = 1
+    for avaluo in avaluos_tot:
+        count_avaluos += 1
+    
+    
     avaluos_dic = []
     for avaluo in avaluos:
         id = str(avaluo.avaluoid)
@@ -246,9 +309,12 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
                             'estatus': estatus,
                             'tipo': tipo,
                             })
-        
+    
     if (len(avaluos_dic)>0):
-            data={'message':"Success",'avaluos': avaluos_dic}
+
+            num_pags = len(avaluos_dic)//40 + 1
+            num_pags_tot = count_avaluos//40 + 1
+            data={'message':"Success",'avaluos': avaluos_dic, 'num_pags': num_pags, 'num_pags_tot': num_pags_tot}
     else:
         data={'message': "Not Found"}
         

@@ -1,20 +1,96 @@
-function generarPdf(cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id) {
+const cantidadPaginas = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,pag) => {
     try{
-        const response=fetch("./avaluos/generar_pdf/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id);
-        
+        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id);
+        const data =await response.json();
+
+        if(data.message=="Success"){
+            
+            const given = [cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id];
+
+            if (given.every(element => element === 0)){
+                return 0;
+            }else{
+                return data.num_pags;
+            }
+        }else{
+            return 0;
+        }
     }catch(error){
         console.log(error);
     }   
      
 };
 
-const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id) => {
+const hideLiElements = (num_pags) => {
+    // Get elements by class name
+    const liElements = document.getElementsByClassName("page-item");
+
+    // Iterate through each li element
+    for (let i = 0; i < liElements.length; i++) {
+        const li = liElements[i];
+
+        // Extract the numeric part from the id
+        const idSuffix = li.id.match(/\d+$/); // Extracts numeric part from the end of the id
+        const id = idSuffix ? parseInt(idSuffix[0]) : NaN; // Convert to number or NaN if no numeric part found
+
+        // Check if the id is greater than num_pags
+        if (!isNaN(id) && id > num_pags) {
+            // Hide the li element
+            li.style.display = "none";
+        } else {
+            // Show the li element (in case it was previously hidden)
+            li.style.display = "list-item";
+        }
+    }
+};
+
+
+/*const hideLiElements = (num_pags) => {
+    // Get the parent element (ul) by its id
+    const myList = document.getElementById("ul-parent");
+
+    // Iterate through each li element
+    const liElements = myList.getElementsByTagName("li");
+    for (let i = 0; i < liElements.length; i++) {
+        const li = liElements[i];
+
+        // Get the id attribute value and convert it to a number
+        const id = li.id;
+        id = id.slice(6);
+        id = parseInt(id);
+        console.log(id);
+        // Check if the id is greater than num_pags
+        if (id > num_pags) {
+            // Hide the li element
+            li.style.display = "none";
+        } else {
+            // Show the li element (in case it was previously hidden)
+            li.style.display = "list-item";
+        }
+    }
+};*/
+
+
+const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,pag) => {
     try{
         const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id);
         const data =await response.json();
+        console.log(data)
+
         if(data.message=="Success"){
-            let opciones=``;
-            data.avaluos.forEach((avaluo)=>{
+            let opciones=`<thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Ubicación</th>
+                                    <th>Fechas</th>
+                                    <th>Cliente</th>
+                                    <th>Valuador</th>
+                                    <th>Estatus</th>
+                                </tr>
+                            </thead>
+                            <tbody >`;
+            const range = data.avaluos.slice((pag - 1) * 40, pag * 40);
+            range.forEach((avaluo)=>{
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td>${avaluo.ubicacion}</td>`;
@@ -24,12 +100,42 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 opciones+=`<td>${avaluo.estatus}</td>`;
                 opciones+=`</tr>`;
             });
+            const given = [cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id];
+            
+          
+
+            if (given.every(element => element === 0)){
+                
+                $('.PagGeneral').hide();
+                //$('#cboTabla').hide();
+                console.log(given);
+                let alternativa = ``;
+                cboTabla.innerHTML = alternativa;
+            }else{
+            console.log(data.num_pags);
+            
+            $('.PagGeneral').show();
+            //$('#cboTabla').show();
             cboTabla.innerHTML = opciones;
+            for (let i = 1; i <= data.num_pags_tot+1; i++) {
+                ind = String(i);
+                loc_id = '#numpag'+ind;
+                console.log(loc_id);
+                $(loc_id).show();
+                } 
+            for (let i = data.num_pags + 1; i <= data.num_pags_tot; i++) {
+                ind = String(i);
+                loc_id = '#numpag'+ind;
+                console.log(loc_id);
+                $(loc_id).hide();
+                } 
+            
+            }
             
         }else{
             alert("Avaluo no encontrado");
-            let opciones=``;
-            cboTabla.innerHTML = opciones;
+            let alternativa=``;
+            cboTabla.innerHTML = alternativa;
         }
     }catch(error){
         console.log(error);
@@ -68,14 +174,25 @@ const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final, dt
 };
 
 
-const mostrarTabla_Inicial = async () => {
+
+const mostrarTabla_Inicial = async (pag) => {
     try{
         const response=await fetch("./avaluos/");
         const data =await response.json();
-
         if(data.message=="Success"){
-            let opciones=``;
-            data.avaluos.forEach((avaluo)=>{
+            let opciones=`<thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Ubicación</th>
+                                <th>Fechas</th>
+                                <th>Cliente</th>
+                                <th>Valuador</th>
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody >`;
+            const range = data.avaluos.slice((pag - 1) * 40, pag * 40);
+            range.forEach((avaluo)=>{
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td>${avaluo.ubicacion}</td>`;
@@ -85,6 +202,7 @@ const mostrarTabla_Inicial = async () => {
                 opciones+=`<td>${avaluo.estatus}</td>`;
                 opciones+=`</tr>`;
             });
+            opciones+=`</tbody>`;
             cboTabla.innerHTML = opciones;
             
         }else{
@@ -98,6 +216,44 @@ const mostrarTabla_Inicial = async () => {
      
 };
 
+const Paginacion=async()=>{
+    try{
+        const response=await fetch("./avaluos/");
+        const data =await response.json();
+        if(data.message=="Success"){
+            let opciones=`<thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Ubicación</th>
+                                <th>Fechas</th>
+                                <th>Cliente</th>
+                                <th>Valuador</th>
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody >`;
+            data.avaluos.forEach((avaluo)=>{
+                opciones+=`<tr value="${avaluo.id}">`;
+                opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
+                opciones+=`<td>${avaluo.ubicacion}</td>`;
+                opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
+                opciones+=`<td>${avaluo.cliente}</td>`;
+                opciones+=`<td>${avaluo.valuador}</td>`;
+                opciones+=`<td>${avaluo.estatus}</td>`;
+                opciones+=`</tr>`;
+            });
+            opciones+=`</tbody>`;
+            cboTabla.innerHTML = opciones;
+            
+        }else{
+            alert("Avaluo no encontrado");
+            let opciones=``;
+            cboTabla.innerHTML = opciones;
+        }
+    }catch(error){
+        console.log(error);
+    }   
+};
 
 const listarClientes=async()=>{
     try{
@@ -245,54 +401,62 @@ const listarEstados=async()=>{
 let parametros = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "estado_id":0,"municipio_id":0,"colonia_id":0};
 let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtcliente_inicial":'0000-00-00', "dtcliente_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00', "dtcobro_inicial":'0000-00-00', "dtcobro_final":'0000-00-00'};
 
+let pag = 1;
+
 const cargaInicial=async()=>{
     await listarClientes();
     await listarTipos();
     await listarValuadores();
     await listarEstatus();
     await listarEstados();
-    await mostrarTabla_Inicial();
 
     cboCliente.addEventListener("change",(event)=>{
         parametros.cliente_id = event.target.value
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
     });
 
     cboTipo.addEventListener("change",(event)=>{
         parametros.tipo_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
     });
 
     cboValuador.addEventListener("change",(event)=>{
         parametros.valuador_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
     });
 
     cboEstatus.addEventListener("change",(event)=>{
         parametros.estatus_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id);
+        
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
     });
 
     cboEstado.addEventListener("change",(event)=>{
         console.log(event.target.value);
-        parametros.estado_id = event.target.value;
-        
+        parametros.estado_id = parseInt(event.target.value);
+        let num_pags = cantidadPaginas(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        console.log(num_pags);
+        hideLiElements(num_pags);
         listarMunicipios(event.target.value);
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
 
     });
 
     cboMunicipio.addEventListener("change",(event)=>{
         parametros.municipio_id = event.target.value;
         listarColonias(event.target.value);
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
 
     });
 
     cboColonia.addEventListener("change",(event)=>{
         parametros.colonia_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
     });
+
+
+
+    
 
     document.getElementById('generar_fichas').addEventListener('click', function() {
         // Construct the URL based on parameters
@@ -311,5 +475,31 @@ const cargaInicial=async()=>{
 
 window.addEventListener("load", async () => {
     await cargaInicial();
+});
+
+
+$(document).ready(function() {
+        // Attach click event listener to links
+    $('.page-link').on('click', function(e) {
+        e.preventDefault(); // Prevent the default behavior of the link
+
+        // Get the id of the clicked link
+        var clickedLinkId = $(this).attr('id');
+
+        // Find the next element with the same class
+        var nextElementId = $(this).parent().next('.page-item').find('.page-link').attr('id');
+
+        // Output the results to the console (you can modify this part based on your needs)
+        pag = clickedLinkId;
+        pag = pag.slice(7);
+        
+        console.log('Clicked Link ID:', pag);
+
+        console.log('Next Element ID:', nextElementId);
+        console.log([parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id]);
+        
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        
+    });
 });
 
