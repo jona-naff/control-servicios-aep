@@ -15,7 +15,7 @@ from django.core.serializers import serialize
 
 import json
 
-from .forms import AvaluoForm
+from .forms import AvaluoForm, ColoniaForm
 
 from django.core.paginator import Paginator 
 
@@ -440,7 +440,7 @@ def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
 def nuevo_avaluo(request):
     if request.method == 'GET':       
         return render(request, 'core/nuevo_avaluo.html',{
-            'form': AvaluoForm
+            'AvaluoForm': AvaluoForm
         })
     else: 
         try:
@@ -448,9 +448,28 @@ def nuevo_avaluo(request):
             nuevo_avaluo = form.save(commit=False)
             nuevo_avaluo.save()
             print(nuevo_avaluo)
-            return redirect('get_avaluos_inic')
+            return redirect('servicios')
         except ValueError:
             return render(request, 'core/nuevo_avaluo.html',{
             'form': AvaluoForm,
+            'error': 'Please provide valide data'
+                })
+
+
+def nueva_colonia(request):
+    if request.method == 'GET':       
+        return render(request, 'core/nueva_colonia.html',{
+            'ColoniaForm': ColoniaForm
+        })
+    else: 
+        try:
+            form = ColoniaForm(request.POST)
+            nueva_colonia = form.save(commit=False)
+            nueva_colonia.save()
+            print(nueva_colonia)
+            return redirect('servicios')
+        except ValueError:
+            return render(request, 'core/nueva_colonia.html',{
+            'form': ColoniaForm,
             'error': 'Please provide valide data'
                 })

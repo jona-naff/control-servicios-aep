@@ -5,16 +5,16 @@
 <br>
 <br>
 <div align="center">
-<h1>Editar Avalúo</h1>
+<h1>Agregar Colonia</h1>
 
 {{error}}
 
-<form action="nuevo_avaluo" method="POST">
+<form action="nueva_colonia" method="POST">
 
     {% csrf_token %}
     <br>
 
-        {{ AvaluoForm.as_p }}
+        {{ ColoniaForm.as_p }}
     
     <button>
         Save

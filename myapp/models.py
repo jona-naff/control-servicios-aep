@@ -82,7 +82,8 @@ class Colonias(models.Model):
     colonia_id = models.IntegerField(primary_key=True)
     #municipioid = models.IntegerField()
     municipio = models.ForeignKey(Municipios, to_field='municipio_id', on_delete=models.CASCADE)
-
+    cp = models.IntegerField()
+    homoclave = models.IntegerField()
     nombre = models.CharField(max_length=250)
     
     

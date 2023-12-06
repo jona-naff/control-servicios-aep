@@ -3,4 +3,4 @@ from .models import *
 
 # Register your models here.
 
-admin.site.register([Avaluos,Clientes,Valuadores,Estatus])
+admin.site.register([Avaluos,Clientes,Valuadores,Estatus,Colonias])

@@ -507,9 +507,26 @@ $(document).ready(function() {
 
         // Output the results to the console (you can modify this part based on your needs)
         pag = clickedLinkId;
-        
+        nextpag = nextElementId;
         pag = pag.slice(7);
         pag = parseInt(pag);
+        nextpag = nextpag.slice(7);
+        nextpag = parseInt(nextpag);
+
+        if (pag == "Primera") {
+            mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
+        } else if (pag == "Ultima") {
+            mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
+        } else if (pag == "Anterior") {
+            if (pag > 1) {
+                
+                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag-1);
+            }
+            mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
+        } else if (pag == "Siguiente") {
+            mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,nextpag);
+        } 
+        
         
         console.log('Clicked Link ID:', pag);
 
