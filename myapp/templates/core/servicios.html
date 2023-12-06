@@ -64,7 +64,6 @@
             <p>Municipio: <select name="" id="cboMunicipio"></select></p>
             <p>Colonia: <select name="" id="cboColonia"></select></p>
             </div>
-            <a href="{% url 'nuevo_avaluo' %}">Nuevo avaluo</a>
           </div>
           
 
@@ -151,7 +150,6 @@
                 </td>
               </tr>
             </table>
-            <a href="{% url 'nuevo_avaluo' %}">Nuevo avaluo</a>
           </div> 
 
           
@@ -198,41 +196,36 @@
                   
                 </tr>
               </table>
-              <a href="{% url 'nuevo_avaluo' %}">Nuevo avaluo</a>
           </div> 
 
           <div class="tab-pane fade" id="fichas">
             <br>
             <a class="" id="generar_fichas" href="">Generar fichas</a>
             <br>
-            <a href="{% url 'nuevo_avaluo' %}">Nuevo avaluo</a>
           </div>
         </div>
       
         <br>
 
-        {{ paginator_info }}
-        {{ avaluos_pag }}
-        {{ has_previous }}
         
-      <div class="PagGeneral" >
+      <div class="PagGeneral">
         <nav aria-label="Page navigation example">
             <ul id="ul-parent" class="pagination">
                 
         
         
-        {% if avaluos_pag.has_previous %}
+       <!--{% if avaluos_pag.has_previous %}
         
         <li class="page-item"><a class="page-link" href="?page=1">&laquo Primera</a></li>
         <li class="page-item"><a class="page-link" href="?page={{ avaluos_pag.previous_page_number }}">Anterior</a></li>
         
         
-        {% else %}
+        {% else %}-->
         
-        <li class="page-item"><a class="page-link disabled" href="?page=1">&laquo Primera</a></li>
-        <li class="page-item"><a class="page-link disabled" href="?page=1">Anterior</a></li>
+        <li class="page-item"><a id="Primera" class="page-link disabled" href="">&laquo Primera</a></li>
+        <li class="page-item"><a id="Anterior"class="page-link disabled" href="">Anterior</a></li>
         
-        {% endif %}
+        <!--{% endif %}-->
         
         <!--<li class="page-item"><a class="page-link disabled" href="#">Página {{ avaluos_pag.number }} de {{ avaluos_pag.paginator.num_pages }}</a></li>-->
         
@@ -247,8 +240,8 @@
         
         {% if avaluos_pag.has_next %}
         
-        <li class="page-item"><a class="page-link" href="?page={{ avaluos_pag.next_page_number }}">Siguiente</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{ avaluos_pag.paginator.num_pages }}">Ultima &raquo</a></li>
+        <li class="page-item"><a id="Siguiente" class="page-link" href="?page={{ avaluos_pag.next_page_number }}">Siguiente</a></li>
+        <li class="page-item"><a id="Ultima" class="page-link" href="?page={{ avaluos_pag.paginator.num_pages }}">Ultima &raquo</a></li>
         
         {% endif %}
         

@@ -86,9 +86,10 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                                     <th>Cliente</th>
                                     <th>Valuador</th>
                                     <th>Estatus</th>
+                                    <th>Detalles</th>
                                 </tr>
                             </thead>
-                            <tbody >`;
+                            <tbody>`;
             const range = data.avaluos.slice((pag - 1) * 40, pag * 40);
             range.forEach((avaluo)=>{
                 opciones+=`<tr value="${avaluo.id}">`;
@@ -98,11 +99,12 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
-                opciones+=`</tr>`;
+                opciones+=`<td><a class="nav-link" href="/servicios/avaluo/${avaluo.id}">Detalle</a></td>`;
+                opciones+=`</tr></tbody>`;
             });
             const given = [cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id];
             
-          
+            
 
             if (given.every(element => element === 0)){
                 
@@ -117,16 +119,28 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
             $('.PagGeneral').show();
             //$('#cboTabla').show();
             cboTabla.innerHTML = opciones;
+            console.log(pag);
+            console.log(data.num_pags);
+            let limit = data.num_pags;
+            if(pag === 1){
+                $('#Primera').removeClass().addClass('page-link disabled');
+                $('#Anterior').removeClass().addClass('page-link disabled');
+            }else if (pag === limit){
+                $('#Ultima, #Siguiente').removeClass().addClass('page-link disabled');
+                $('#Primera, #Anterior').removeClass().addClass('page-link');
+
+            }else {
+                $('#Primera, #Anterior').removeClass().addClass('page-link');
+                $('#Ultima, #Siguiente').removeClass().addClass('page-link');
+            }
             for (let i = 1; i <= data.num_pags_tot+1; i++) {
                 ind = String(i);
                 loc_id = '#numpag'+ind;
-                console.log(loc_id);
                 $(loc_id).show();
                 } 
             for (let i = data.num_pags + 1; i <= data.num_pags_tot; i++) {
                 ind = String(i);
                 loc_id = '#numpag'+ind;
-                console.log(loc_id);
                 $(loc_id).hide();
                 } 
             
@@ -468,14 +482,16 @@ const cargaInicial=async()=>{
         console.log(redirectUrl);
         window.location.href = redirectUrl;
     });
-    
 
 };
+
+
 
 
 window.addEventListener("load", async () => {
     await cargaInicial();
 });
+
 
 
 $(document).ready(function() {
@@ -485,18 +501,19 @@ $(document).ready(function() {
 
         // Get the id of the clicked link
         var clickedLinkId = $(this).attr('id');
-
+        
         // Find the next element with the same class
         var nextElementId = $(this).parent().next('.page-item').find('.page-link').attr('id');
 
         // Output the results to the console (you can modify this part based on your needs)
         pag = clickedLinkId;
+        
         pag = pag.slice(7);
+        pag = parseInt(pag);
         
         console.log('Clicked Link ID:', pag);
 
         console.log('Next Element ID:', nextElementId);
-        console.log([parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id]);
         
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
         

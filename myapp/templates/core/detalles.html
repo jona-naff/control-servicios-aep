@@ -1,0 +1,51 @@
+{% for i in avaluo %}
+<div align="center">
+<table>
+    <tr>
+        <td>Servicio:</td><td>{{ i.avaluoid }}</td> 
+    </tr>
+    <tr>
+        <td>Tipo servicio:</td><td>{{ i.tip }}</td>
+    </tr>
+    <tr>
+        <td>M2 Construcción:</td><td>{{ i.m2c }}</td>
+    </tr>
+    <tr>
+        <td>M2 terreno:</td><td>{{ i.m2t }}</td>
+    </tr>
+    <tr>
+        <td>No. Factura:</td><td>{{ i.nofactura }}</td>
+    </tr>
+    <tr>
+        <td>Tipo Inmueble:</td><td>{{ i.tipoinm }}</td>
+    </tr>
+    <tr>
+        <td>Valor inmueble:</td><td>{{ i.valor }}</td>
+    </tr>
+    <tr>
+        <td>Estado:</td><td>{{ i.estado }}</td>
+    </tr>
+    <tr>
+        <td>Municipio:</td><td>{{ i.municipio }}</td>
+    </tr>
+    <tr>
+        <td>Colonia:</td><td>{{ i.colo }}</td>
+    </tr>
+    <tr>
+        <td>Calle:</td><td>{{ i.calle }}</td>
+    </tr>
+    <tr>
+        <td>Num. Ext.:</td><td>{{ i.numero }}</td>
+    </tr>
+    <tr>
+        <td>Num. Int.:</td><td>{{ i.numeroint }}</td>
+    </tr>
+    <tr>
+        <td>Manzana:</td><td>{{ i.manzana }}</td>
+    </tr>
+    <tr>
+        <td>Lote:</td><td>{{ i.lote }}</td>
+    </tr>
+</table>
+</div>
+{% endfor %}
