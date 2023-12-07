@@ -311,6 +311,13 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
     for avaluo in avaluos:
         id = str(avaluo.avaluoid)
         cliente = str(avaluo.cliente)
+        municipioid = avaluo.colonia.municipio_id
+        municipio = Municipios.objects.filter(municipio_id=municipioid)
+        municipio_nombre = municipio[0].nombre
+        #estadoid = Municipios.objects.filter(municipio_id=municipioid)
+        estadoid = municipio[0].estado.estado_id
+        estado = Estados.objects.filter(estado_id=estadoid)
+        estado_nombre=estado[0].nombre
         ubicacion = str(avaluo.calle) 
         dtsolicitud = str(avaluo.dtsolicitud)
         dtvaluador = str(avaluo.dtvaluador)
@@ -321,6 +328,8 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
         avaluos_dic.append({'id': id, 
+                            'estado': estado_nombre,
+                            'municipio': municipio_nombre,
                             'ubicacion': ubicacion, 
                             'dtsolicitud' : dtsolicitud,
                             'dtvaluador' : dtvaluador,

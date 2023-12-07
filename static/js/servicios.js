@@ -86,21 +86,25 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                                     <th>Cliente</th>
                                     <th>Valuador</th>
                                     <th>Estatus</th>
-                                    <th>Detalles</th>
+                                    <th>Folio</th>
                                 </tr>
                             </thead>
                             <tbody>`;
+            
             const range = data.avaluos.slice((pag - 1) * 40, pag * 40);
             range.forEach((avaluo)=>{
+                let dtsol = `${avaluo.dtsolicitud}`;
+                let folio = `${avaluo.tipo}-${avaluo.cliente} / ` + dtsol.slice(5,7) + `-` + dtsol.slice(2,4) + `<br> / ${avaluo.valuador}`;
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
-                opciones+=`<td>${avaluo.ubicacion}</td>`;
+                opciones+=`<td> ${avaluo.estado}, <br> ${avaluo.municipio}, <br> ${avaluo.ubicacion}</td>`;
                 opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
-                opciones+=`<td><a class="nav-link" href="/servicios/avaluo/${avaluo.id}">Detalle</a></td>`;
-                opciones+=`</tr></tbody>`;
+                opciones+=`<td>` + folio +  `<br> Dictamen: <br> Proyecto: </td>`;
+                opciones+=`<td></tr><div sytle="display: flex; align-items: center; justify-content: center;"><a class="nav-link" href="/servicios/avaluo/${avaluo.id}">Detalle</a></div></td>`;
+                opciones+=`</tbody>`;
             });
             const given = [cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id];
             
