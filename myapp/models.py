@@ -118,7 +118,7 @@ class Avaluos(models.Model):
     lote = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"Avaluo {self.avaluoid}"    
+        return f"Servicio {self.avaluoid}"    
     
     class Meta:
         managed = True

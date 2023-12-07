@@ -3,6 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from .models import  Avaluos, Clientes, Estados, Municipios, Colonias, Tipos, Valuadores, Estatus
+from openpyxl import Workbook
+import openpyxl
+from openpyxl.styles import *
+import decimal
+
 import csv
 
 from django.db.models import Q
@@ -18,6 +23,17 @@ import json
 from .forms import AvaluoForm, ColoniaForm
 
 from django.core.paginator import Paginator 
+
+import io
+from django.http import HttpResponse
+from django.views.generic import View
+import io
+
+from django.http.response import HttpResponse
+
+from xlsxwriter.workbook import Workbook
+
+
 
 # Create your views here.
 
@@ -435,6 +451,58 @@ def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
 
     #Return stuff
     return FileResponse(buf, as_attachment=True, filename='servicios.pdf')
+
+
+def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id):
+    # Your dictionary data
+    data = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
+    data = json.loads(data.content)
+    avaluos = data['avaluos']
+    data = {
+        'Id':[],
+        'Ubicacion':[],
+        'Fechas':[],
+        'Cliente':[],
+        'Valuador':[],
+        'Estatus':[],
+    }
+    for avaluo in avaluos:
+        data["Id"].append(avaluo["id"])
+        data["Ubicacion"].append(avaluo["ubicacion"])
+        data["Fechas"].append(avaluo["dtsolicitud"])
+        data["Cliente"].append(avaluo["cliente"])
+        data["Valuador"].append(avaluo["valuador"])
+        data["Estatus"].append(avaluo["estatus"])
+
+
+
+    # Create a response object with appropriate Excel headers
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="output.xlsx"'
+
+    # Create a new Excel workbook and add a worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+
+    # Write headers to the Excel file and apply formatting
+    headers = list(data.keys())
+    for col_num, header in enumerate(headers, start=1):
+        cell = worksheet.cell(row=1, column=col_num, value=header)
+        cell.font = openpyxl.styles.Font(bold=True)
+        cell.fill = openpyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
+
+    # Write data to the Excel file and apply formatting
+    num_rows = max(len(data[field]) for field in headers)
+    for row_num in range(1, num_rows + 1):
+        for col_num, field in enumerate(headers, start=1):
+            cell = worksheet.cell(row=row_num + 1, column=col_num, value=data[field][row_num - 1])
+            cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
+
+    # Save the workbook to the response
+    workbook.save(response)
+    
+
+    return response
 
 
 def nuevo_avaluo(request):

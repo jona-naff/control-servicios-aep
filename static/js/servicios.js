@@ -470,8 +470,6 @@ const cargaInicial=async()=>{
 
 
 
-    
-
     document.getElementById('generar_fichas').addEventListener('click', function() {
         // Construct the URL based on parameters
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
@@ -483,7 +481,26 @@ const cargaInicial=async()=>{
         window.location.href = redirectUrl;
     });
 
+    document.getElementById('generar_excel').addEventListener('click', function() {
+        // Construct the URL based on parameters
+        var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
+        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id;
+        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_excel/' + url;
+
+        // Redirect to the constructed URL
+        console.log(redirectUrl);
+        window.location.href = redirectUrl;
+    });
+
+
+
+    
+
 };
+
+
+
+
 
 
 
@@ -493,9 +510,19 @@ window.addEventListener("load", async () => {
 });
 
 
-
 $(document).ready(function() {
         // Attach click event listener to links
+    /*$('#generar_excel').on('click', function() {
+        //e.preventDefault();
+        var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
+        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id;
+        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_excel/' + url;
+  
+        // Redirect to the constructed URL
+        console.log(redirectUrl);
+        window.location.href = redirectUrl;
+    });*/
+
     $('.page-link').on('click', function(e) {
         e.preventDefault(); // Prevent the default behavior of the link
 
@@ -535,5 +562,6 @@ $(document).ready(function() {
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
         
     });
+
 });
 
