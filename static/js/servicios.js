@@ -75,7 +75,6 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
     try{
         const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id);
         const data =await response.json();
-        console.log(data)
 
         if(data.message=="Success"){
             let opciones=`<thead>
@@ -90,8 +89,22 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                                 </tr>
                             </thead>
                             <tbody>`;
-            
-            const range = data.avaluos.slice((pag - 1) * 40, pag * 40);
+
+            if (pag === "Primera") {
+                range = data.avaluos.slice(0, 40);
+            }else if (pag === "Ultima") {
+                const ver_pag = data.num_pags;
+                range = data.avaluos.slice((ver_pag - 1) * 40, ver_pag * 40);
+            }else if (data.num_pags<=pag) {
+                const ver_pag = data.num_pags;
+                console.log(data.num_pags);
+                console.log(pag);
+                range = data.avaluos.slice((ver_pag - 1) * 40, ver_pag * 40);
+            }else if (pag<=0) {
+                range = data.avaluos.slice(0,40);
+            }else {
+                var range = data.avaluos.slice((pag - 1) * 40, pag * 40);
+            }
             range.forEach((avaluo)=>{
                 let dtsol = `${avaluo.dtsolicitud}`;
                 let folio = `${avaluo.tipo}-${avaluo.cliente} / ` + dtsol.slice(5,7) + `-` + dtsol.slice(2,4) + `<br> / ${avaluo.valuador}`;
@@ -114,28 +127,34 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 
                 $('.PagGeneral').hide();
                 //$('#cboTabla').hide();
-                console.log(given);
                 let alternativa = ``;
                 cboTabla.innerHTML = alternativa;
             }else{
-            console.log(data.num_pags);
             
             $('.PagGeneral').show();
             //$('#cboTabla').show();
             cboTabla.innerHTML = opciones;
-            console.log(pag);
-            console.log(data.num_pags);
+
             let limit = data.num_pags;
-            if(pag === 1){
-                $('#Primera').removeClass().addClass('page-link disabled');
-                $('#Anterior').removeClass().addClass('page-link disabled');
-            }else if (pag === limit){
-                $('#Ultima, #Siguiente').removeClass().addClass('page-link disabled');
-                $('#Primera, #Anterior').removeClass().addClass('page-link');
+            if((pag <= 1) || (pag === "Primera")){
+                $('#cboPags'+String(limit)).removeClass().addClass('page-link');
+                $('#cboPags1').removeClass().addClass('page-link disabled');
+                $('#cboPagsPrimera').removeClass().addClass('page-link disabled');
+                $('#cboPagsAnterior').removeClass().addClass('page-link disabled');
+                $('#cboPagsUltima, #cboPagsSiguiente').removeClass().addClass('page-link');
+
+            }else if ((limit<=pag) || (pag === "Ultima")){
+                $('#cboPags'+String(limit)).removeClass().addClass('page-link disabled');
+                $('#cboPags1').removeClass().addClass('page-link');
+
+                $('#cboPagsUltima, #cboPagsSiguiente').removeClass().addClass('page-link disabled');
+                $('#cboPagsPrimera, #cboPagsAnterior').removeClass().addClass('page-link');
 
             }else {
-                $('#Primera, #Anterior').removeClass().addClass('page-link');
-                $('#Ultima, #Siguiente').removeClass().addClass('page-link');
+                $('#cboPags1').removeClass().addClass('page-link');
+                $('#cboPags'+String(limit)).removeClass().addClass('page-link');
+                $('#cboPagsPrimera, #cboPagsAnterior').removeClass().addClass('page-link');
+                $('#cboPagsUltima, #cboPagsSiguiente').removeClass().addClass('page-link');
             }
             for (let i = 1; i <= data.num_pags_tot+1; i++) {
                 ind = String(i);
@@ -526,7 +545,9 @@ $(document).ready(function() {
         console.log(redirectUrl);
         window.location.href = redirectUrl;
     });*/
-
+    var nextpag = 2;
+    var prevpag = 1;
+    var nextElementId = 1;
     $('.page-link').on('click', function(e) {
         e.preventDefault(); // Prevent the default behavior of the link
 
@@ -534,17 +555,57 @@ $(document).ready(function() {
         var clickedLinkId = $(this).attr('id');
         
         // Find the next element with the same class
-        var nextElementId = $(this).parent().next('.page-item').find('.page-link').attr('id');
+        var prevElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
+
+        
 
         // Output the results to the console (you can modify this part based on your needs)
-        pag = clickedLinkId;
-        nextpag = nextElementId;
-        pag = pag.slice(7);
-        pag = parseInt(pag);
-        nextpag = nextpag.slice(7);
-        nextpag = parseInt(nextpag);
+        clickedLinkId = clickedLinkId.slice(7);
+        /*if ((clickedLinkId != "Ultima")){
+        nextElementId = nextElementId.slice(7);
+            } 
+        if ((clickedLinkId != "Primera")){
+            prevElementId = prevElementId.slice(7);
+                } */
+        
 
-        if (pag == "Primera") {
+    
+        if (Number.isInteger(parseInt(clickedLinkId))){
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parseInt(clickedLinkId));
+        pag = parseInt(clickedLinkId);
+        nextpag = parseInt(clickedLinkId) + 1;
+        prevpag = parseInt(clickedLinkId) - 1;
+            }else if (clickedLinkId == "Siguiente") {
+        nextpag += 1;
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,nextpag);
+
+            }else if (clickedLinkId == "Anterior") {
+                prevpag = prevpag - 1;
+                console.log(prevpag);
+                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,prevpag);
+        
+            }else if (clickedLinkId == "Ultima") {
+                prevElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
+                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,"Ultima");
+        
+                }else if (clickedLinkId == "Primera") {
+                    nextElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
+                    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,"Primera");
+            
+            }
+    
+        
+            
+        /*else if (pag === "Siguiente"){
+                nextpag = parseInt(nextpag);
+                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,nextpag);
+        }        
+        else if (pag === "Anterior"){
+                prevpag = parseInt(prevpag);
+                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,prevpag);
+                }*/
+
+       /* if (pag == "Primera") {
             mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
         } else if (pag == "Ultima") {
             mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
@@ -556,14 +617,15 @@ $(document).ready(function() {
             mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
         } else if (pag == "Siguiente") {
             mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,nextpag);
-        } 
+        }  */
         
         
         console.log('Clicked Link ID:', pag);
 
         console.log('Next Element ID:', nextElementId);
         
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        
+        
         
     });
 
