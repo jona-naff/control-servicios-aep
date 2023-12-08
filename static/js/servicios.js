@@ -10,7 +10,9 @@ const cantidadPaginas = async (cliente_id, tipo_id, valuador_id, estatus_id, est
             if (given.every(element => element === 0)){
                 return 0;
             }else{
-                return data.num_pags;
+                const numero_paginas = data.num_pags;
+                console.log(data.num_pags);
+                $('#prueba-pag').val(numero_paginas);
             }
         }else{
             return 0;
@@ -20,6 +22,8 @@ const cantidadPaginas = async (cliente_id, tipo_id, valuador_id, estatus_id, est
     }   
      
 };
+
+
 
 const hideLiElements = (num_pags) => {
     // Get elements by class name
@@ -75,7 +79,7 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
     try{
         const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id);
         const data =await response.json();
-
+        
         if(data.message=="Success"){
             let opciones=`<thead>
                                 <tr>
@@ -161,6 +165,15 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
 
                 $('#cboPagsUltima, #cboPagsSiguiente').removeClass().addClass('page-link disabled');
                 $('#cboPagsPrimera, #cboPagsAnterior').removeClass().addClass('page-link');
+
+            }else if (pag === "Penultima") {
+                for (let i = 1; i <= data.num_pags+1; i++) {
+                    let loc_pag = String(i);
+                    $('#numpag'+loc_pag).removeClass().addClass('page-item');
+                    } 
+                var penult = limit -1; 
+                penult = String(penult);
+                $('#numpag'+ penult).removeClass().addClass('page-item active');
 
             }else {
                 let current_pag = String(pag);
@@ -416,7 +429,6 @@ const listarMunicipios = async (estado_id) =>{
     try{
         const response=await fetch("./municipios/"+estado_id);
         const data =await response.json();
-        console.log(data);
         if(data.message=="Success"){
             let opciones=``;
             data.municipios.forEach((municipio)=>{
@@ -487,7 +499,6 @@ const cargaInicial=async()=>{
     });
 
     cboEstado.addEventListener("change",(event)=>{
-        console.log(event.target.value);
         parametros.estado_id = parseInt(event.target.value);
         let num_pags = cantidadPaginas(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
         console.log(num_pags);
@@ -550,6 +561,10 @@ window.addEventListener("load", async () => {
     await cargaInicial();
 });
 
+function callback(orders) {
+    //Lo que sea que quieras hacer con la variable orders
+     console.log(orders);
+ }
 
 $(document).ready(function() {
         // Attach click event listener to links
@@ -604,13 +619,21 @@ $(document).ready(function() {
                 //
                 //console.log(prevpag);
                 if(indicador === 1){
+                    //console.log(indicador);
                     indicador = 0;
                     mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,"Penultima");
+                    
 
-                }
+                    //let prueba = prevpag.then(callback);
+                   // console.log("El num : " + $('#prueba-pag').val());
+                    prevpag = parseInt($('#prueba-pag').val());
+                    prevpag = prevpag-2;
+
+                }else{
                 mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,prevpag);
-                nextpag = prevpag+1;
+                nextpag = prevpag + 1;
                 prevpag = prevpag - 1;
+                }
         
             }else if (clickedLinkId == "Ultima") {
                 indicador = 1;
@@ -650,9 +673,9 @@ $(document).ready(function() {
         }  */
         
         
-        console.log('Clicked Link ID:', pag);
+        //console.log('Clicked Link ID:', pag);
 
-        console.log('Next Element ID:', nextElementId);
+        //console.log('Next Element ID:', nextElementId);
         
         
         

@@ -288,6 +288,7 @@
         
       </div>
 
+      <input id="prueba-pag" type="hidden"></input>
 
 <script>
 $(".nav a").on("click", function(){
@@ -317,54 +318,45 @@ $(".nav a").on("click", function(){
 
     $('#dtsolicitud_inicial').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtsolicitud_inicial = event.format();
-    console.log(event.format());
     });
 
     $('#dtsolicitud_final').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtsolicitud_final = event.format();
     mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
 
-    console.log(event.format());
     });
 
     $('#dtvaluador_inicial').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtvaluador_inicial = event.format();
-    console.log(event.format());
     });
 
     $('#dtvaluador_final').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtvaluador_final = event.format();
     mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
-
-    console.log(event.format());
     });
 
     $('#dtcliente_inicial').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtcliente_inicial = event.format();
-    console.log(event.format());
     });
     $('#dtcliente_final').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtcliente_final = event.format();
     mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
 
-    console.log(event.format());
     });
 
     $('#dtcobro_inicial').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtcobro_inicial = event.format();
-    console.log(event.format());
     });
     $('#dtcobro_final').datepicker().on('changeDate', function (event) {
     parametros_fechas.dtcobro_final = event.format();
     mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
 
-    console.log(event.format());
     });
     $('#generar_fichas').on('click', function () {
-      alert("PDF generado exitosamente")
+      alert("Archivo generado exitosamente")
     });
     $('#generar_excel').on('click', function () {
-      alert("PDF generado exitosamente")
+      alert("Archivo generado exitosamente")
     });
     
     
