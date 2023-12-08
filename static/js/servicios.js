@@ -102,12 +102,15 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 range = data.avaluos.slice((ver_pag - 1) * 40, ver_pag * 40);
             }else if (pag<=0) {
                 range = data.avaluos.slice(0,40);
+            }else if (pag === "Penultima"){
+                const ver_pag = data.num_pags - 1
+                range = data.avaluos.slice((ver_pag - 1) * 40, ver_pag * 40);
             }else {
                 var range = data.avaluos.slice((pag - 1) * 40, pag * 40);
             }
             range.forEach((avaluo)=>{
-                let dtsol = `${avaluo.dtsolicitud}`;
-                let folio = `${avaluo.tipo}-${avaluo.cliente} / ` + dtsol.slice(5,7) + `-` + dtsol.slice(2,4) + `<br> / ${avaluo.valuador}`;
+                let dtcrt = `${avaluo.dtcreate}`;
+                let folio = `${avaluo.tipo}-${avaluo.cliente} / ` + dtcrt.slice(5,7) + `-` + dtcrt.slice(2,4) + `<br> / ${avaluo.consecutivo} - ${avaluo.valuador}`;
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td> ${avaluo.estado}, <br> ${avaluo.municipio}, <br> ${avaluo.ubicacion}</td>`;
@@ -136,7 +139,12 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
             cboTabla.innerHTML = opciones;
 
             let limit = data.num_pags;
+
             if((pag <= 1) || (pag === "Primera")){
+                for (let i = 1; i <= data.num_pags+1; i++) {
+                    let loc_pag = String(i);
+                    $('#numpag'+loc_pag).removeClass().addClass('page-item');
+                    } 
                 $('#cboPags'+String(limit)).removeClass().addClass('page-link');
                 $('#cboPags1').removeClass().addClass('page-link disabled');
                 $('#cboPagsPrimera').removeClass().addClass('page-link disabled');
@@ -144,6 +152,10 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 $('#cboPagsUltima, #cboPagsSiguiente').removeClass().addClass('page-link');
 
             }else if ((limit<=pag) || (pag === "Ultima")){
+                for (let i = 1; i <= data.num_pags+1; i++) {
+                    let loc_pag = String(i);
+                    $('#numpag'+loc_pag).removeClass().addClass('page-item');
+                    } 
                 $('#cboPags'+String(limit)).removeClass().addClass('page-link disabled');
                 $('#cboPags1').removeClass().addClass('page-link');
 
@@ -151,6 +163,12 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 $('#cboPagsPrimera, #cboPagsAnterior').removeClass().addClass('page-link');
 
             }else {
+                let current_pag = String(pag);
+                for (let i = 1; i <= data.num_pags+1; i++) {
+                    let loc_pag = String(i);
+                    $('#numpag'+loc_pag).removeClass().addClass('page-item');
+                    } 
+                $('#numpag'+current_pag).removeClass().addClass('page-item active');
                 $('#cboPags1').removeClass().addClass('page-link');
                 $('#cboPags'+String(limit)).removeClass().addClass('page-link');
                 $('#cboPagsPrimera, #cboPagsAnterior').removeClass().addClass('page-link');
@@ -548,6 +566,7 @@ $(document).ready(function() {
     var nextpag = 2;
     var prevpag = 1;
     var nextElementId = 1;
+    var indicador = 0;
     $('.page-link').on('click', function(e) {
         e.preventDefault(); // Prevent the default behavior of the link
 
@@ -568,7 +587,7 @@ $(document).ready(function() {
             prevElementId = prevElementId.slice(7);
                 } */
         
-
+        
     
         if (Number.isInteger(parseInt(clickedLinkId))){
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parseInt(clickedLinkId));
@@ -576,21 +595,32 @@ $(document).ready(function() {
         nextpag = parseInt(clickedLinkId) + 1;
         prevpag = parseInt(clickedLinkId) - 1;
             }else if (clickedLinkId == "Siguiente") {
-        nextpag += 1;
+        //nextpag += 1;
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,nextpag);
+        prevpag = nextpag-1;
+        nextpag += 1;
 
             }else if (clickedLinkId == "Anterior") {
-                prevpag = prevpag - 1;
-                console.log(prevpag);
+                //
+                //console.log(prevpag);
+                if(indicador === 1){
+                    indicador = 0;
+                    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,"Penultima");
+
+                }
                 mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,prevpag);
+                nextpag = prevpag+1;
+                prevpag = prevpag - 1;
         
             }else if (clickedLinkId == "Ultima") {
-                prevElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
+                indicador = 1;
+                //prevElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
                 mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,"Ultima");
         
                 }else if (clickedLinkId == "Primera") {
-                    nextElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
-                    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,"Primera");
+                    nextpag=2;
+                    //nextElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
+                    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
             
             }
     

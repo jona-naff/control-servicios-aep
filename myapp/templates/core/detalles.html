@@ -1,51 +1,100 @@
-{% for i in avaluo %}
-<div align="center">
-<table>
-    <tr>
-        <td>Servicio:</td><td>{{ i.avaluoid }}</td> 
-    </tr>
-    <tr>
-        <td>Tipo servicio:</td><td>{{ i.tip }}</td>
-    </tr>
-    <tr>
-        <td>M2 Construcción:</td><td>{{ i.m2c }}</td>
-    </tr>
-    <tr>
-        <td>M2 terreno:</td><td>{{ i.m2t }}</td>
-    </tr>
-    <tr>
-        <td>No. Factura:</td><td>{{ i.nofactura }}</td>
-    </tr>
-    <tr>
-        <td>Tipo Inmueble:</td><td>{{ i.tipoinm }}</td>
-    </tr>
-    <tr>
-        <td>Valor inmueble:</td><td>{{ i.valor }}</td>
-    </tr>
-    <tr>
-        <td>Estado:</td><td>{{ i.estado }}</td>
-    </tr>
-    <tr>
-        <td>Municipio:</td><td>{{ i.municipio }}</td>
-    </tr>
-    <tr>
-        <td>Colonia:</td><td>{{ i.colo }}</td>
-    </tr>
-    <tr>
-        <td>Calle:</td><td>{{ i.calle }}</td>
-    </tr>
-    <tr>
-        <td>Num. Ext.:</td><td>{{ i.numero }}</td>
-    </tr>
-    <tr>
-        <td>Num. Int.:</td><td>{{ i.numeroint }}</td>
-    </tr>
-    <tr>
-        <td>Manzana:</td><td>{{ i.manzana }}</td>
-    </tr>
-    <tr>
-        <td>Lote:</td><td>{{ i.lote }}</td>
-    </tr>
-</table>
-</div>
-{% endfor %}
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+    {% load static %}
+
+    
+    {% for i in avaluo %}
+    <div id="contenedor" align="center">
+        <table>
+            <tr>
+                <td style="display: table-cell; vertical-align: top;">
+                    <div id="avaluo_info">
+                        <table class="table">
+                            <tr>
+                                <td><a href="javascript:history.go(-1)">regresar...</a></td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Servicio:</td><td>{{ i.avaluoid }}</td> 
+                            </tr>
+                            <tr>
+                                <th scope="col">Tipo servicio:</td><td>{{ i.tip }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">M2 Construcción:</td><td>{{ i.m2c }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">M2 terreno:</td><td>{{ i.m2t }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">No. Factura:</td><td>{{ i.nofactura }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Tipo Inmueble:</td><td>{{ i.tipoimb }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Valor inmueble:</td><td>{{ i.valor }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Estado:</td><td>{{ i.estado }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Municipio:</td><td>{{ i.municipio }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Colonia:</td><td>{{ i.colo }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Calle:</td><td>{{ i.calle }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Num. Ext.:</td><td>{{ i.numero }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Num. Int.:</td><td>{{ i.numeroint }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Manzana:</td><td>{{ i.manzana }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Lote:</td><td>{{ i.lote }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td style="display: table-cell; vertical-align: top;">
+                    <div id="comentarios_info" >
+                        <table class="table">
+                            <tr><th colspan="2" align="center">Comentarios</th></tr>
+                            <tr><th>Fecha</th><th>Comentario</th></tr>
+                            {% for j in comentarios %}
+                            <tr>
+                                <td>{{ j.fecha }}</td>
+                                <td>{{ j.comentario }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    
+                </td>
+                <td style="display: table-cell; vertical-align: top;">
+                    <div id="comentarios_info" >
+                        <table class="table">
+                            <tr><th colspan="2" align="center">Honorarios</th></tr>
+                            <tr><th>Razón Social</th><th>Importe Facturado</th></tr>
+                            {% for k in honorarios %}
+                            <tr>
+                                <td>{{ k.razon }}</td>
+                                <td>{{ k.monto }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% endfor %}
+{% endblock %}

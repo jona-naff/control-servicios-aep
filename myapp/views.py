@@ -2,7 +2,7 @@ from django.http import JsonResponse, FileResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
-from .models import  Avaluos, Clientes, Estados, Municipios, Colonias, Tipos, Valuadores, Estatus
+from .models import  Avaluos, Clientes, Estados, Municipios, Colonias, Tipos, Valuadores, Estatus, Comentarios, Honorarios
 from openpyxl import Workbook
 import openpyxl
 from openpyxl.styles import *
@@ -258,8 +258,14 @@ def operator_or(val1,val2):
 
 def get_avaluo(request, avaluoid):
     avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est, tp.nombre as tipoimb FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id INNER JOIN tiposimb AS tp on tp.tipoimbid = a.tipoimbid INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluoid])
+    comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
+
+    honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
+
     return render(request,'core/detalles.html',{
-         'avaluo': avaluo
+         'avaluo': avaluo,
+         'comentarios': comentarios,
+         'honorarios': honorarios
     })
 
 
@@ -319,6 +325,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
         estado = Estados.objects.filter(estado_id=estadoid)
         estado_nombre=estado[0].nombre
         ubicacion = str(avaluo.calle) 
+        dtcreate = str(avaluo.dtcreate)
         dtsolicitud = str(avaluo.dtsolicitud)
         dtvaluador = str(avaluo.dtvaluador)
         dtcliente = str(avaluo.dtcliente)
@@ -327,10 +334,12 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
         valuador = str(avaluo.valuador)
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
+        consecutivo = str(avaluo.consecutivo)
         avaluos_dic.append({'id': id, 
                             'estado': estado_nombre,
                             'municipio': municipio_nombre,
                             'ubicacion': ubicacion, 
+                            'dtcreate': dtcreate,
                             'dtsolicitud' : dtsolicitud,
                             'dtvaluador' : dtvaluador,
                             'dtcliente' : dtcliente,
@@ -340,6 +349,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
                             'valuador':valuador,
                             'estatus': estatus,
                             'tipo': tipo,
+                            'consecutivo':consecutivo,
                             })
     
     if (len(avaluos_dic)>0):

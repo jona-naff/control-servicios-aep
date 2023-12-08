@@ -109,6 +109,7 @@ class Avaluos(models.Model):
     calle = models.CharField(max_length=100)
     numero = models.IntegerField()
     edad = models.IntegerField()
+    dtcreate = models.DateField()
     dtsolicitud = models.DateField()
     dtvaluador = models.DateField()
     dtcliente = models.DateField()
@@ -116,6 +117,7 @@ class Avaluos(models.Model):
     dtpago = models.DateField()
     manzana = models.CharField(max_length=50)
     lote = models.CharField(max_length=50)
+    consecutivo = models.IntegerField()
 
     def __str__(self):
         return f"Servicio {self.avaluoid}"    
@@ -123,3 +125,25 @@ class Avaluos(models.Model):
     class Meta:
         managed = True
         db_table = "avaluos"
+
+
+
+class Comentarios(models.Model):
+    comentario_id = models.IntegerField(primary_key=True)
+    avaluo_id = models.IntegerField()
+    fecha = models.DateField()
+    comentario = models.CharField(max_length=1000)
+
+    class Meta:
+        managed = False
+        db_table = "comentarios"
+
+class Honorarios(models.Model):
+    honorario_id = models.IntegerField(primary_key=True)
+    avaluo_id = models.IntegerField()
+    razon = models.CharField(max_length=250)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = "honorarios"
