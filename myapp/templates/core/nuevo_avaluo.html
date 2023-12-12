@@ -25,88 +25,218 @@
 <h1>Editar Avalúo</h1>
 
 {{error}}
+<br>
+<br>
 
 <form action="nuevo_avaluo" method="POST">
 
     {% csrf_token %}
     <br>
     <div>
-    <h4>Servicio</h4>
-       <!--<p> M2 Construcción {{ AvaluoForm.m2c }}</p> 
-        <p>M2 Terreno {{ AvaluoForm.m2t }}</p>
-        <p>Valor del  Servicio {{ AvaluoForm.valor }}</p>
-        <p>Número de factura {{ AvaluoForm.nofactura }}</p>
-        <p>Importe facturado {{ AvaluoForm.monto }}</p>
-        <p>Edad {{ AvaluoForm.edad }}</p>-->
-        <p>Tipo de servicio {{ AvaluoForm.tipo }}</p>
-        <p>Cliente del servicio {{ AvaluoForm.cliente }}</p>
-        <p>Valuador a cargo {{ AvaluoForm.valuador }}</p>
-        <p>Estatus {{ AvaluoForm.estatus }}</p>
-        <p>Tipo de Inmueble {{ AvaluoForm.tipoimbid }}</p>
-    </div>
-    <div>
-    <h4>Fechas</h4>
-        
+    <table>
+        <tr>
+            <th>
+               <h4>Servicio</h4> 
+            </th>
+            <th>
 
-        <table>
-            <tr>
-              <td>
-                  Solicitud 
-              </td>
-              <td>
-                <div class="datepicker input-group date position-relative border-1 p-4">
-                  <input type="text" name="dtsolicitud" id="id_dtsolicitud" class="form-control" data-provide="datepicker">
-                  
-                 </div>
-              </td>
+            </th>
+            <th>
 
-            </tr>
-            
-            <tr>
-              <td>
-                  Valuador
-              </td>
-              <td>
-                <div class="datepicker input-group date position-relative border-1 p-4">
-                  <input type="text" name="dtvaluador" id="id_dtvaluador" class="form-control" data-provide="datepicker">
-                 </div>
-              </td>
+            </th>
+            <th>
 
-            </tr>
+            </th>
+            <th>
+                <h4>Fechas</h4>
+            </th>
+            <th>
 
-            <tr>
-              <td>
-                  Cliente
-              </td>
-              <td>
-                <div class="datepicker input-group date position-relative border-1 p-4">
-                  <input type="text" name="dtcliente" id="id_dtcliente" class="form-control" data-provide="datepicker">
-                 </div>
-              </td>
-
-
-            <tr>
-              <td>
-                  Cobro
-              </td>
-              <td>
-                <div class="datepicker input-group date position-relative border-1 p-4">
-                  <input type="text" name="dtcobro" id="id_dtcobro" class="form-control" data-provide="datepicker">
+            </th>
+        </tr>
+        <tr>
+            <td>
+                M2 Construcción
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.m2c }}
                 </div>
-              </td>
+            </td>
+            <td>
 
-            </tr>
-          </table>
+            </td>
+            <td>
+    
+            </td>
+            <td>
+                Solicitud 
+            </td>
+            <td>
+              <div class="datepicker input-group date position-relative border-1 p-4">
+                <input type="text" name="dtsolicitud" id="id_dtsolicitud" class="form-control" data-provide="datepicker">
+               </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                
+                M2 Terreno
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.m2t }}
+                </div>
+            </td>
+            <td>
+
+            </td>
+            <td>
+
+            </td>
+            
+            <td>
+                Valuador
+            </td>
+            <td>
+              <div class="datepicker input-group date position-relative border-1 p-4">
+                <input type="text" name="dtvaluador" id="id_dtvaluador" class="form-control" data-provide="datepicker">
+               </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Valor del  Servicio
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.valor }}
+                </div>
+            </td>
+            <td>
+
+            </td>
+            <td>
+
+            </td>
+            <td>
+                Cliente
+            </td>
+            <td>
+              <div class="datepicker input-group date position-relative border-1 p-4">
+                <input type="text" name="dtcliente" id="id_dtcliente" class="form-control" data-provide="datepicker">
+               </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Número de factura
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.nofactura }}
+                </div>
+            </td>
+            <td>
+
+            </td>
+            <td>
+
+            </td>
+            <td>
+                Cobro
+            </td>
+            <td>
+              <div class="datepicker input-group date position-relative border-1 p-4">
+                <input type="text" name="dtcobro" id="id_dtcobro" class="form-control" data-provide="datepicker">
+              </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Importe facturado
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.monto }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Edad
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.edad }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Tipo de servicio
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.tipo }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Cliente del servicio
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.cliente }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Valuador a cargo
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.valuador }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Estatus
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.estatus }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Tipo de Inmueble
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                {{ AvaluoForm.tipoimbid }}
+                </div>
+            </td>
+        </tr>
+    </table>
+    </div>
+    
+    <div>
 
        <!-- <p>Valuador {{ AvaluoForm.dtvaluador }}</p>
         <p>Entrega cliente {{ AvaluoForm.dtcliente }}</p>
         <p>Cobro Cliente {{ AvaluoForm.dtcobro }}</p>-->
     </div>
+    <br>
     <div class="col-md-4">
         <h4>Ubicación</h4>
         <p>Estado: <select name="" id="cboEstado"></select></p>
         <p>Municipio: <select name="" id="cboMunicipio"><option value="indef">Indefinido</option></select></p>
-        <p>Colonia: {{ AvaluoForm.colonia }}<!--<select name="colonia" required id="id_colonia"><option value="indef">Indefinido</option></select>--></p>
+        <p>Colonia: <select name="colonia" required id="id_colonia"><option value="indef">Indefinido</option></select></p>
     </div>
    
       
