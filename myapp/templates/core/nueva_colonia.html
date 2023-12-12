@@ -2,10 +2,24 @@
 
 {% block content %}
 
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de servicios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="{% static 'js/nueva_colonia.js' %}"></script>
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'styles/bootstrap-combined.min.css' %}"></script>
+
+</head>
+
 <br>
 <br>
 <div align="center">
-<h1>Agregar Colonia</h1>
+<h4>Agregar Colonia</h4>
 
 {{error}}
 
@@ -13,11 +27,59 @@
 
     {% csrf_token %}
     <br>
+    <table>
+        <tr>
+            <th>
+                Ubicación
+            </th>
+            <th>
 
-        {{ ColoniaForm.as_p }}
+            </th>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Estado:
+            </td>
+            <td>
+                <select name="" id="cboEstado"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Municipio:
+            </td>
+            <td>
+                <select name="municipio" required id="id_municipio"><option value="indef">Indefinido</option></select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Nombre:
+            </td>
+            <td>
+                {{ ColoniaForm.nombre }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Código postal:
+            </td>
+            <td>
+                {{ ColoniaForm.cp }}
+            </td>
+        </tr>
+    </table>
     
+    <br>    
+        
     <button>
-        Save
+        Guardar
     </button>
     <br>
     <br>

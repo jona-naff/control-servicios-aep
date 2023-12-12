@@ -22,7 +22,7 @@
 <br>
 <br>
 <div align="center">
-<h1>Editar Avalúo</h1>
+<h2>Editar Avalúo</h2>
 
 {{error}}
 <br>
@@ -232,24 +232,86 @@
         <p>Cobro Cliente {{ AvaluoForm.dtcobro }}</p>-->
     </div>
     <br>
-    <div class="col-md-4">
+
+    <table>
+        <tr>
+            <th>
+                <h4>Ubicación</h4>
+            </th>
+            <th>
+
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <hr>
+            </td>
+            <td>
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Estado:
+            </td>
+            <td>
+                <select name="" id="cboEstado"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Municipio:
+            </td>
+            <td>
+                <select name="" id="cboMunicipio"><option value="indef">Indefinido</option></select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Colonia:
+            </td>
+            <td>
+                <select name="colonia" required id="id_colonia"><option value="indef">Indefinido</option></select>
+            </td>
+        </tr>
+    </table>
+
+
+    <!--<div class="col-md-4">
         <h4>Ubicación</h4>
         <p>Estado: <select name="" id="cboEstado"></select></p>
-        <p>Municipio: <select name="" id="cboMunicipio"><option value="indef">Indefinido</option></select></p>
-        <p>Colonia: <select name="colonia" required id="id_colonia"><option value="indef">Indefinido</option></select></p>
-    </div>
+        <p>Municipio: </p>
+        <p>Colonia: </p>
+    </div>-->
    
+      <br>
+    <div>
+      <p>¿Quiere ingresar una colonia que no está registrada? <a href="{% url 'nueva_colonia' %}">Agregar colonia</a></p>
       
-    
+    <br>
+    </div>
+
     <button>
         Guardar
     </button>
-    <br>
-    <br>
+
 
     </form>
 
-  
+  <br>
+  <br>
 
     </div>
 {% endblock %}
