@@ -533,6 +533,7 @@ const cargaInicial=async()=>{
         window.location.href = redirectUrl;
     });
 
+    
     document.getElementById('generar_excel').addEventListener('click', function() {
         // Construct the URL based on parameters
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
@@ -543,16 +544,9 @@ const cargaInicial=async()=>{
         console.log(redirectUrl);
         window.location.href = redirectUrl;
     });
-
-
-
-    
+   
 
 };
-
-
-
-
 
 
 

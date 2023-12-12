@@ -2,6 +2,23 @@
 
 {% block content %}
 
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de servicios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'styles/bootstrap-datepicker.min.css' %}">
+    <script src="{% static 'js/nuevo_servicio.js' %}"></script>
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'styles/bootstrap-combined.min.css' %}"></script>
+
+</head>
+
 <br>
 <br>
 <div align="center">
@@ -13,15 +30,45 @@
 
     {% csrf_token %}
     <br>
-
-        {{ AvaluoForm.as_p }}
+    <div>
+    <h4>Servicio</h4>
+       <!--<p> M2 Construcción {{ AvaluoForm.m2c }}</p> 
+        <p>M2 Terreno {{ AvaluoForm.m2t }}</p>
+        <p>Valor del  Servicio {{ AvaluoForm.valor }}</p>
+        <p>Número de factura {{ AvaluoForm.nofactura }}</p>
+        <p>Importe facturado {{ AvaluoForm.monto }}</p>
+        <p>Edad {{ AvaluoForm.edad }}</p>-->
+        <p>Tipo de servicio {{ AvaluoForm.tipo }}</p>
+        <p>Cliente del servicio {{ AvaluoForm.cliente }}</p>
+        <p>Valuador a cargo {{ AvaluoForm.valuador }}</p>
+        <p>Estatus {{ AvaluoForm.estatus }}</p>
+        <p>Tipo de Inmueble {{ AvaluoForm.tipoimbid }}</p>
+    </div>
+    <div>
+    <h4>Fechas</h4>
+        <p>Solicitud {{ AvaluoForm.dtsolicitud }}</p>
+        <p>Valuador {{ AvaluoForm.dtvaluador }}</p>
+        <p>Entrega cliente {{ AvaluoForm.dtcliente }}</p>
+        <p>Cobro Cliente {{ AvaluoForm.dtcobro }}</p>
+    </div>
+    <div class="col-md-4">
+        <h4>Ubicación</h4>
+        <p>Estado: <select name="" id="cboEstado"></select></p>
+        <p>Municipio: <select name="" id="cboMunicipio"><option value="indef">Indefinido</option></select></p>
+        <p>Colonia: {{ AvaluoForm.colonia }}<!--<select name="colonia" required id="id_colonia"><option value="indef">Indefinido</option></select>--></p>
+    </div>
+   
+      
     
     <button>
-        Save
+        Guardar
     </button>
     <br>
     <br>
 
     </form>
+
+  
+
     </div>
 {% endblock %}
