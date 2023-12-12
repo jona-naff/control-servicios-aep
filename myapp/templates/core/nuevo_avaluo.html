@@ -46,10 +46,61 @@
     </div>
     <div>
     <h4>Fechas</h4>
-        <p>Solicitud {{ AvaluoForm.dtsolicitud }}</p>
-        <p>Valuador {{ AvaluoForm.dtvaluador }}</p>
+        
+
+        <table>
+            <tr>
+              <td>
+                  Solicitud 
+              </td>
+              <td>
+                <div class="datepicker input-group date position-relative border-1 p-4">
+                  <input type="text" name="dtsolicitud" id="id_dtsolicitud" class="form-control" data-provide="datepicker">
+                  
+                 </div>
+              </td>
+
+            </tr>
+            
+            <tr>
+              <td>
+                  Valuador
+              </td>
+              <td>
+                <div class="datepicker input-group date position-relative border-1 p-4">
+                  <input type="text" name="dtvaluador" id="id_dtvaluador" class="form-control" data-provide="datepicker">
+                 </div>
+              </td>
+
+            </tr>
+
+            <tr>
+              <td>
+                  Cliente
+              </td>
+              <td>
+                <div class="datepicker input-group date position-relative border-1 p-4">
+                  <input type="text" name="dtcliente" id="id_dtcliente" class="form-control" data-provide="datepicker">
+                 </div>
+              </td>
+
+
+            <tr>
+              <td>
+                  Cobro
+              </td>
+              <td>
+                <div class="datepicker input-group date position-relative border-1 p-4">
+                  <input type="text" name="dtcobro" id="id_dtcobro" class="form-control" data-provide="datepicker">
+                </div>
+              </td>
+
+            </tr>
+          </table>
+
+       <!-- <p>Valuador {{ AvaluoForm.dtvaluador }}</p>
         <p>Entrega cliente {{ AvaluoForm.dtcliente }}</p>
-        <p>Cobro Cliente {{ AvaluoForm.dtcobro }}</p>
+        <p>Cobro Cliente {{ AvaluoForm.dtcobro }}</p>-->
     </div>
     <div class="col-md-4">
         <h4>Ubicación</h4>
@@ -72,3 +123,15 @@
 
     </div>
 {% endblock %}
+
+
+<script>
+    $.fn.datepicker.defaults.format = "yyyy-mm-dd";
+    $('#datepicker').datepicker({
+        autoclose:true,
+        clearBtn:true,
+        container:'.datepicker',
+        //format:'yyyy-mm-dd',
+        todayHighlight:true,
+    });
+</script>
