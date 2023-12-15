@@ -311,7 +311,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
             else:
                 pass
 
-        avaluos = Avaluos.objects.filter(reduce(operator_and,ids) & reduce(operator_or,ids_or)).order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
+        avaluos = Avaluos.objects.filter(reduce(operator_and,ids) & reduce(operator_or,ids_or)).order_by('-avaluoid').select_related('cliente','tipo','valuador','estatus')
     
 
     avaluos_tot = Avaluos.objects.values()
@@ -342,6 +342,8 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
         consecutivo = str(avaluo.consecutivo)
+        tipoimbid = str(avaluo.tipoimbid)
+        valor = str(avaluo.valor)
         avaluos_dic.append({'id': id, 
                             'estado': estado_nombre,
                             'municipio': municipio_nombre,
@@ -357,6 +359,8 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
                             'estatus': estatus,
                             'tipo': tipo,
                             'consecutivo':consecutivo,
+                            'tipoimbid':tipoimbid,
+                            'valor': valor
                             })
     
     if (len(avaluos_dic)>0):
@@ -485,19 +489,19 @@ class GeneratePDFView(View):
         response = HttpResponse(content_type='application/pdf')
 
         # Set the Content-Disposition header to force download
-        response['Content-Disposition'] = 'inline; filename="hello_world_with_image.pdf"'
+        response['Content-Disposition'] = 'inline; filename="listado.pdf"'
 
         # Create the PDF using the ReportLab canvas
         p = canvas.Canvas(response, pagesize=letter)
 
         # Add an image at the beginning of the page
         image_path = os.path.join(settings.STATIC_ROOT, 'imagenes/logo.jpg')
-        p.drawImage(image_path, inch - 20, letter[1] - inch - 20, width=90, height=70)
+        p.drawImage(image_path, inch - 20, letter[1] -inch -20, width=100, height=70)
 
         p.setFont("Helvetica-Bold", 12)
 
         # Add the text "Hello World" below the image
-        p.drawString(inch + 80, letter[1] - inch + 35 , "Avalúos, Proyectos y Servicios")
+        #p.drawString(inch + 80, letter[1] - inch + 35, "Avalúos, Proyectos y Servicios")
 
         p.setFont("Helvetica", 12)
 
@@ -525,7 +529,7 @@ class GeneratePDFView(View):
         p.setFillColor("black")
 
         # Add text within the colored cell
-        p.drawString(cell_x + 225, cell_y + 8, "Avalúos")
+        p.drawString(cell_x + 225, cell_y + 8, "Servicios")
 
         # Move to a new line before adding the table
         p.translate(inch, -2 * inch)
@@ -570,65 +574,15 @@ class GeneratePDFView(View):
         # Draw the table on the canvas
         table1.wrapOn(p, 400,400)
         table1.drawOn(p, inch-75, 635)
-
         
-        #data3 = self.get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
-        avaluos = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
-        avaluos = json.loads(avaluos.content)
-        avaluos = avaluos['avaluos']
-        
-        data3 = [['Id','Dirección', 'Fechas','Cliente','Folio','Tipo Inmueble','Valor']]
-
-        for avaluo in avaluos:
-            ubicacion = Paragraph(avaluo['ubicacion'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
-            cliente = Paragraph(avaluo['cliente'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
-            data3.append([avaluo['id'],ubicacion,avaluo['dtsolicitud'],cliente,'',avaluo['tipo'],avaluo['tipo']])
-
-
-        col_widths3 = [70, 70]
-        table3 = Table(data3,colWidths=col_widths3)
-        flow_obj = []
-        style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
-                            ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
-                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                            ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
-                            ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
-                            ('GRID',(0,0),(-1,-1),0.5,colors.black),
-                            ('SPAN', (1, 0), (1, 0))]
-        # Add styles for alternating grey colors and border texture
-        for i in range(1, len(data3)):
-            if i % 2 == 1:  # Alternating rows
-                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
-                               ('BOX', (0, i), (-1, i), 0.25, 'black'),
-                               ('BOTTOMPADDING', (0, i), (-1, i), 5)])
-            if i % 2 == 0:  # Alternating rows
-                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.8, 0.8, 0.8)),
-                            ('BOX', (0, i), (-1, i), 0.25, 'black'),
-                            ('BOTTOMPADDING', (0, i), (-1, i), 5)])
-            if (i%40 == 0):
-                flow_obj.append(PageBreak())
-      
-        table3.setStyle(style)
-
-        # Adjust the y coordinate so that the first row of the table appears at a fixed position
-
-        # Draw the body table on the canvas
-        # Draw the table on the canvas
-
-        w, h = table3.wrap(0, 0)
-
-        table3.wrapOn(p, 800,800)
-        table3.drawOn(p, inch-80, 610 - h)
-
-
         data2 = [['Fechas','',''],
-                ['Fecha','Inicio','Fin'],
-                ['Solicitud', '',''],
-                ['Alta', '',''],
-                ['Entrega cliente', '',''],
-                ['Entrega valuador', '',''],
-                ['Cobro', '',''],
-                ['Pago', '','']]
+        ['Fecha','Inicio','Fin'],
+        ['Solicitud', '',''],
+        ['Alta', '',''],
+        ['Entrega cliente', '',''],
+        ['Entrega valuador', '',''],
+        ['Cobro', '',''],
+        ['Pago', '','']]
 
         col_widths2 = [80, 80]
         table2 = Table(data2,colWidths=col_widths2)
@@ -639,7 +593,7 @@ class GeneratePDFView(View):
                             ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
                             ('GRID',(0,0),(-1,-1),0.5,colors.black),
                             ('SPAN', (0, 0), (-1, 0))]
-        
+        flow_obj = []
         for i in range(2, len(data)):
             if i % 2 == 1:  # Alternating rows
                 style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
@@ -658,13 +612,90 @@ class GeneratePDFView(View):
         table2.drawOn(p, inch+165, 637)
 
 
+        #data3 = self.get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
+        avaluos = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
+        avaluos = json.loads(avaluos.content)
+        avaluos = avaluos['avaluos']
+        
+        data3 = [['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]
 
+        for avaluo in avaluos:
+            folio = avaluo['tipo']  + '-' + avaluo['cliente'] + '/' + avaluo['dtcreate'][5:7] + '-' + avaluo['dtcreate'][2:4] + '/' + avaluo['consecutivo'] + '-' + avaluo['valuador']
+            folio = Paragraph(folio.replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
+            ubicacion = Paragraph(avaluo['ubicacion'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
+            cliente = Paragraph(avaluo['cliente'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
+            estatus = Paragraph(avaluo['estatus'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
+            data3.append([avaluo['id'],ubicacion,avaluo['dtsolicitud'],cliente,estatus,folio,avaluo['tipoimbid'],avaluo['valor']])
+
+
+        col_widths3 = [65, 65]
+        
+
+        style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
+                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('GRID',(0,0),(-1,-1),0.5,colors.black),
+                            ('SPAN', (1, 0), (1, 0))]
+        # Add styles for alternating grey colors and border texture
+        page_size = letter[1]
+        count = 0
+        count_sec = [0]
+        num_pages = 1
+        current_page_height = 0
+        data_global = []
+        style_list = []
+        for i in range(1, len(data3)):
+            if i % 2 == 1:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
+                               ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                               ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+            if i % 2 == 0:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.8, 0.8, 0.8)),
+                            ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                            ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+            #new_data = data3[count:i]
+
+        new_data = data3[count:i]
+        table3 = Table(data3, colWidths=col_widths3)
+        table3.setStyle(style)
+
+
+        table3.setStyle(style)
+
+        # Adjust the y coordinate so that the first row of the table appears at a fixed position
+
+        # Draw the body table on the canvas
+        # Draw the table on the canvas
+
+        w, h = table3.wrap(0, 0)
+
+        table3.wrapOn(p, 800,800)
+        table3.drawOn(p, inch-95, 610 - h)
+
+    # Save the PDF
+   
+        #table3 = Table(data3,colWidths=col_widths3)
+        #table3.setStyle(style)
+        #w, h = table3.wrap(0, 0)
+        #table3.wrapOn(p, 800,800)
+        #table3.drawOn(p, inch-80, 610 - h)
+        #p.showPage()
+        
+
+        # Adjust the y coordinate so that the first row of the table appears at a fixed position
+
+        # Draw the body table on the canvas
+        # Draw the table on the canvas
 
         # Show the page and save the PDF
-        p.showPage()
+        
         p.save()
 
         return response
+
+
 
 
 
