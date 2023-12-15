@@ -22,7 +22,7 @@
 <br>
 <br>
 <div align="center">
-<h2>Editar Avalúo</h2>
+<h2>Editar Servicio</h2>
 
 {{error}}
 <br>
@@ -241,8 +241,20 @@
             <th>
 
             </th>
+            <th>
+
+            </th>
+            <th>
+
+            </th>
         </tr>
         <tr>
+            <td>
+                <hr>
+            </td>
+            <td>
+                <hr>
+            </td>
             <td>
                 <hr>
             </td>
@@ -257,11 +269,23 @@
             <td>
                 <select name="" id="cboEstado"></select>
             </td>
+            <td>
+
+            </td>
+            <td>
+
+            </td>
         </tr>
         <tr>
             <td>
             </td>
             <td>
+            </td>
+            <td>
+
+            </td>
+            <td>
+                
             </td>
         </tr>
         <tr>
@@ -271,11 +295,23 @@
             <td>
                 <select name="" id="cboMunicipio"><option value="indef">Indefinido</option></select>
             </td>
+            <td>
+
+            </td>
+            <td>
+                
+            </td>
         </tr>
         <tr>
             <td>
             </td>
             <td>
+            </td>
+            <td>
+
+            </td>
+            <td>
+                
             </td>
         </tr>
         <tr>
@@ -284,8 +320,101 @@
             </td>
             <td>
                 <select name="colonia" required id="id_colonia"><option value="indef">Indefinido</option></select>
+                <br>
+            </td>
+            <td>
+
+            </td>
+            <td>
+                
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <hr>
+            </td>
+            <td>
+                <hr>
+            </td>
+            <td>
+                <hr>
+            </td>
+            <td>
+                <hr>
             </td>
         </tr>
+        <tr>
+            <td>
+                Calle:
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                    {{ AvaluoForm.calle }}
+                </div>
+            </td>
+            <td>
+                Número exterior: 
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                    {{ AvaluoForm.numero }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Entre Calle (1):
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                    {{ AvaluoForm.entrecalle1 }}
+                </div>
+            </td>
+            <td>
+                Número interior: 
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                    {{ AvaluoForm.numeroint }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Entre Calle (2):
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                    {{ AvaluoForm.entrecalle2 }}
+                </div>
+            </td>
+            <td>
+                Manzana: 
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                    {{ AvaluoForm.manzana }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                Lote: 
+            </td>
+            <td>
+                <div class="border-1 p-4">
+                    {{ AvaluoForm.lote }}
+                </div>
+            </td>
+        </tr>
+
+
     </table>
 
 

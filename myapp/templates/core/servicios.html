@@ -200,7 +200,7 @@
 
           <div class="tab-pane fade" id="fichas">
             
-            <a class="" id="generar_fichas" href="">Generar PDF</a>
+            <a class="" id="GeneratePDFView" href="">Generar PDF</a>
             <br>
             <a class="" id="generar_excel" href="">Generar Excel</a>
             <br>
@@ -352,7 +352,7 @@ $(".nav a").on("click", function(){
     mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
 
     });
-    $('#generar_fichas').on('click', function () {
+    $('#GeneratePDFView').on('click', function () {
       alert("Archivo generado exitosamente")
     });
     $('#generar_excel').on('click', function () {

@@ -17,7 +17,7 @@ from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import pagesizes
 from django.core.serializers import serialize
-
+from reportlab.platypus import PageBreak
 import json
 
 from .forms import AvaluoForm, ColoniaForm
@@ -27,13 +27,20 @@ from django.core.paginator import Paginator
 import io
 from django.http import HttpResponse
 from django.views.generic import View
-import io
+import os
 
 from django.http.response import HttpResponse
 
 from xlsxwriter.workbook import Workbook
 
 
+from django.views import View
+from django.conf import settings
+from reportlab.lib.utils import ImageReader
+from reportlab.lib.colors import Color
+from reportlab.lib import colors
+from reportlab.platypus import Table, TableStyle, KeepTogether, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
 
 # Create your views here.
 
@@ -470,6 +477,196 @@ def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
 
     #Return stuff
     return FileResponse(buf, as_attachment=True, filename='servicios.pdf')
+
+
+class GeneratePDFView(View):
+    def get(self, request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,*args, **kwargs):
+        # Create a response object with PDF content type
+        response = HttpResponse(content_type='application/pdf')
+
+        # Set the Content-Disposition header to force download
+        response['Content-Disposition'] = 'inline; filename="hello_world_with_image.pdf"'
+
+        # Create the PDF using the ReportLab canvas
+        p = canvas.Canvas(response, pagesize=letter)
+
+        # Add an image at the beginning of the page
+        image_path = os.path.join(settings.STATIC_ROOT, 'imagenes/logo.jpg')
+        p.drawImage(image_path, inch - 20, letter[1] - inch - 20, width=90, height=70)
+
+        p.setFont("Helvetica-Bold", 12)
+
+        # Add the text "Hello World" below the image
+        p.drawString(inch + 80, letter[1] - inch + 35 , "Avalúos, Proyectos y Servicios")
+
+        p.setFont("Helvetica", 12)
+
+        p.drawString(inch + 80, letter[1] - inch + 15 , "www.aep.com.mx")
+
+        line_start = inch - 20
+        line_end = line_start + 510 # Adjust based on text width
+        line_y = letter[1] - inch - 20  # Adjust based on the position of the text
+        p.line(line_start, line_y, line_end, line_y)
+
+        fill_color_rgb = (207/238, 197/238, 238/238)
+        fill_color = Color(*fill_color_rgb)
+        p.setFillColor(fill_color)
+
+        # Define the coordinates for the cell
+        cell_x = inch -15
+        cell_y = letter[1] - inch - 55
+        cell_width = 500  # Adjust based on text width
+        cell_height = 25  # Adjust based on the desired height
+
+        # Draw a colored cell
+        p.rect(cell_x, cell_y, cell_width, cell_height, fill=1,  stroke=0)
+
+        # Set the fill color back to black for the text
+        p.setFillColor("black")
+
+        # Add text within the colored cell
+        p.drawString(cell_x + 225, cell_y + 8, "Avalúos")
+
+        # Move to a new line before adding the table
+        p.translate(inch, -2 * inch)
+
+        # Define data for the table
+        data = [['Parámetros',''],
+                ['Estado', '0'],
+                ['Municipio', '0'],
+                ['Colonia', '0'],
+                ['Tipo de servicio', '0'],
+                ['Cliente', '0'],
+                ['Valuador', '0'],
+                ['Estatus', '0']]
+
+        col_widths = [110, 110]
+
+        # Create the table and set style
+        table1 = Table(data,colWidths=col_widths)
+        style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
+                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('GRID',(0,0),(-1,-1),0.5,colors.black),
+                            ('SPAN', (0, 0), (-1, 0))]
+        # Add styles for alternating grey colors and border texture
+        for i in range(1, len(data)):
+            if i % 2 == 1:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
+                               ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                               ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+            if i % 2 == 0:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.8, 0.8, 0.8)),
+                            ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                            ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+        
+
+        style = TableStyle(style)
+
+        table1.setStyle(style)
+
+        # Draw the table on the canvas
+        table1.wrapOn(p, 400,400)
+        table1.drawOn(p, inch-75, 635)
+
+        
+        #data3 = self.get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
+        avaluos = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
+        avaluos = json.loads(avaluos.content)
+        avaluos = avaluos['avaluos']
+        
+        data3 = [['Id','Dirección', 'Fechas','Cliente','Folio','Tipo Inmueble','Valor']]
+
+        for avaluo in avaluos:
+            ubicacion = Paragraph(avaluo['ubicacion'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
+            cliente = Paragraph(avaluo['cliente'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
+            data3.append([avaluo['id'],ubicacion,avaluo['dtsolicitud'],cliente,'',avaluo['tipo'],avaluo['tipo']])
+
+
+        col_widths3 = [70, 70]
+        table3 = Table(data3,colWidths=col_widths3)
+        flow_obj = []
+        style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
+                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('GRID',(0,0),(-1,-1),0.5,colors.black),
+                            ('SPAN', (1, 0), (1, 0))]
+        # Add styles for alternating grey colors and border texture
+        for i in range(1, len(data3)):
+            if i % 2 == 1:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
+                               ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                               ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+            if i % 2 == 0:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.8, 0.8, 0.8)),
+                            ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                            ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+            if (i%40 == 0):
+                flow_obj.append(PageBreak())
+      
+        table3.setStyle(style)
+
+        # Adjust the y coordinate so that the first row of the table appears at a fixed position
+
+        # Draw the body table on the canvas
+        # Draw the table on the canvas
+
+        w, h = table3.wrap(0, 0)
+
+        table3.wrapOn(p, 800,800)
+        table3.drawOn(p, inch-80, 610 - h)
+
+
+        data2 = [['Fechas','',''],
+                ['Fecha','Inicio','Fin'],
+                ['Solicitud', '',''],
+                ['Alta', '',''],
+                ['Entrega cliente', '',''],
+                ['Entrega valuador', '',''],
+                ['Cobro', '',''],
+                ['Pago', '','']]
+
+        col_widths2 = [80, 80]
+        table2 = Table(data2,colWidths=col_widths2)
+        style = [('BACKGROUND', (0, 0), (-1, 1), fill_color),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
+                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('GRID',(0,0),(-1,-1),0.5,colors.black),
+                            ('SPAN', (0, 0), (-1, 0))]
+        
+        for i in range(2, len(data)):
+            if i % 2 == 1:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
+                               ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                               ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+            if i % 2 == 0:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.8, 0.8, 0.8)),
+                            ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                            ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+            
+        style = TableStyle(style)
+        table2.setStyle(style)
+
+        # Draw the table on the canvas
+        table2.wrapOn(p, 400,400)
+        table2.drawOn(p, inch+165, 637)
+
+
+
+
+        # Show the page and save the PDF
+        p.showPage()
+        p.save()
+
+        return response
+
+
 
 
 def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id):

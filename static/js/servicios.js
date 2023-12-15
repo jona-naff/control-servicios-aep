@@ -522,7 +522,7 @@ const cargaInicial=async()=>{
 
 
 
-    document.getElementById('generar_fichas').addEventListener('click', function() {
+    document.getElementById('GeneratePDFView').addEventListener('click', function() {
         // Construct the URL based on parameters
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
         url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id;
