@@ -642,54 +642,73 @@ class GeneratePDFView(View):
         page_size = letter[1]
         count = 0
         count_sec = [0]
-        num_pages = 1
+        num_pages = 0
         current_page_height = 0
         data_global = []
         style_list = []
         for i in range(1, len(data3)):
+            style_index = i - count
             if i % 2 == 1:  # Alternating rows
-                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
-                               ('BOX', (0, i), (-1, i), 0.25, 'black'),
-                               ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+                style += ([('BACKGROUND', (0, style_index), (-1, style_index), Color(0.9, 0.9, 0.9)),
+                               ('BOX', (0, style_index), (-1, style_index), 0.25, 'black'),
+                               ('BOTTOMPADDING', (0, style_index), (-1, style_index), 5)])
             if i % 2 == 0:  # Alternating rows
-                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.8, 0.8, 0.8)),
-                            ('BOX', (0, i), (-1, i), 0.25, 'black'),
-                            ('BOTTOMPADDING', (0, i), (-1, i), 5)])
-            #new_data = data3[count:i]
+                style += ([('BACKGROUND', (0, style_index), (-1, style_index), Color(0.8, 0.8, 0.8)),
+                            ('BOX', (0, style_index), (-1, style_index), 0.25, 'black'),
+                            ('BOTTOMPADDING', (0, style_index), (-1, style_index), 5)])
+            new_data = [['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]+data3[count:i]
+            table3 = Table(new_data, colWidths=col_widths3)
+            table3.setStyle(style)
+            w, h = table3.wrap(0, 0)
 
-        new_data = data3[count:i]
-        table3 = Table(data3, colWidths=col_widths3)
-        table3.setStyle(style)
+            # Check if adding the table to the current page exceeds the available space
+            if h > (page_size - 450):
+                # Start a new page
+                #p.showPage()
+                num_pages += 1
+                current_page_height = 0  # Reset the current page height
+                count = i
+                count_sec.append(i)
+                style_list.append(style)
+                data_global.append(new_data)
+                style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
+                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
+                            ('GRID',(0,0),(-1,-1),0.5,colors.black),
+                            ('SPAN', (1, 0), (1, 0))]
+                
+            #else:
+            #    current_page_height = h  # Update the current page height
+        if num_pages < 1:
+            #print(len(data3))
+            #print(len(style))
+            data_global.append(data3)
+            style_list.append(style)
+            table3 = Table(data_global[0], colWidths=col_widths3)
+            table3.setStyle(style_list[0]) #[count_sec[0]:3*(count_sec[1]+1)])
+            w, h = table3.wrap(0, 0)
 
+            table3.wrapOn(p, 800,800)
+            table3.drawOn(p, inch-95, 610 - h)
 
-        table3.setStyle(style)
+            p.showPage()
 
-        # Adjust the y coordinate so that the first row of the table appears at a fixed position
+        else:
+            for i in range(num_pages):
+                #print(len(data_global[i]))
+                #print(len(style_list[i]))
+                #print(num_pages)
+                table3 = Table(data_global[i], colWidths=col_widths3)
+                table3.setStyle(style_list[i]) 
+                w, h = table3.wrap(0, 0)
+            
+                table3.wrapOn(p, 800,800)
+                table3.drawOn(p, inch-95, 610 - h)
 
-        # Draw the body table on the canvas
-        # Draw the table on the canvas
+                p.showPage()
 
-        w, h = table3.wrap(0, 0)
-
-        table3.wrapOn(p, 800,800)
-        table3.drawOn(p, inch-95, 610 - h)
-
-    # Save the PDF
-   
-        #table3 = Table(data3,colWidths=col_widths3)
-        #table3.setStyle(style)
-        #w, h = table3.wrap(0, 0)
-        #table3.wrapOn(p, 800,800)
-        #table3.drawOn(p, inch-80, 610 - h)
-        #p.showPage()
-        
-
-        # Adjust the y coordinate so that the first row of the table appears at a fixed position
-
-        # Draw the body table on the canvas
-        # Draw the table on the canvas
-
-        # Show the page and save the PDF
         
         p.save()
 
