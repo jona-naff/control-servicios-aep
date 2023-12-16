@@ -662,7 +662,7 @@ class GeneratePDFView(View):
             w, h = table3.wrap(0, 0)
 
             # Check if adding the table to the current page exceeds the available space
-            if h > (page_size - 450):
+            if h > (page_size - 400):
                 # Start a new page
                 #p.showPage()
                 num_pages += 1
@@ -697,15 +697,49 @@ class GeneratePDFView(View):
 
         else:
             for i in range(num_pages):
-                #print(len(data_global[i]))
-                #print(len(style_list[i]))
-                #print(num_pages)
+
                 table3 = Table(data_global[i], colWidths=col_widths3)
                 table3.setStyle(style_list[i]) 
                 w, h = table3.wrap(0, 0)
             
                 table3.wrapOn(p, 800,800)
-                table3.drawOn(p, inch-95, 610 - h)
+                
+                if i==0:
+                    x_coord = inch-98
+                    y_coord = 610 - h
+                else:
+
+                    p.drawImage(image_path, inch - 20, letter[1] -inch -20, width=100, height=70)
+
+                    p.setFont("Helvetica-Bold", 12)
+
+                    # Add the text "Hello World" below the image
+                    #p.drawString(inch + 80, letter[1] - inch + 35, "Avalúos, Proyectos y Servicios")
+
+                    p.setFont("Helvetica", 12)
+
+                    p.drawString(inch + 80, letter[1] - inch + 15 , "www.aep.com.mx")
+
+                    line_start = inch - 20
+                    line_end = line_start + 510 # Adjust based on text width
+                    line_y = letter[1] - inch - 20  # Adjust based on the position of the text
+                    p.line(line_start, line_y, line_end, line_y)
+
+                    fill_color_rgb = (207/238, 197/238, 238/238)
+                    fill_color = Color(*fill_color_rgb)
+                    p.setFillColor(fill_color)
+
+                    
+
+                    # Move to a new line before adding the table
+                    p.translate(inch, -2 * inch)
+                    
+                    x_coord = inch-95
+                    y_coord = 820 - h
+
+                print(x_coord)
+
+                table3.drawOn(p, x_coord, y_coord)
 
                 p.showPage()
 
