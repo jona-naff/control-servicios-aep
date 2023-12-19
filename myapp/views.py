@@ -40,7 +40,10 @@ from reportlab.lib.utils import ImageReader
 from reportlab.lib.colors import Color
 from reportlab.lib import colors
 from reportlab.platypus import Table, TableStyle, KeepTogether, Paragraph
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
+
+from datetime import date
 
 # Create your views here.
 
@@ -331,6 +334,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
         estadoid = municipio[0].estado.estado_id
         estado = Estados.objects.filter(estado_id=estadoid)
         estado_nombre=estado[0].nombre
+        colonia = avaluo.colonia.nombre
         ubicacion = str(avaluo.calle) 
         dtcreate = str(avaluo.dtcreate)
         dtsolicitud = str(avaluo.dtsolicitud)
@@ -347,6 +351,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
         avaluos_dic.append({'id': id, 
                             'estado': estado_nombre,
                             'municipio': municipio_nombre,
+                            'colonia': colonia,
                             'ubicacion': ubicacion, 
                             'dtcreate': dtcreate,
                             'dtsolicitud' : dtsolicitud,
@@ -482,8 +487,56 @@ def generar_pdf(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
     #Return stuff
     return FileResponse(buf, as_attachment=True, filename='servicios.pdf')
 
+def max_words_per_line(cell_width, font_size, text):
+    """
+    Calculate the maximum number of words that can fit in one line of a table cell.
+
+    Parameters:
+    - cell_width: Width of the table cell.
+    - font_size: Font size of the text.
+    - text: The text for which to calculate the maximum words.
+
+    Returns:
+    - The maximum number of words that can fit in one line.
+    """
+    words = text.split()
+    word_widths = [len(word) * font_size * 0.4 for word in words]  # 0.6 is an estimation factor
+
+    current_width = 0
+    max_words = 0
+    max_words_list = []
+    amount_words = 0
+
+    for i, word_width in enumerate(word_widths):
+        if i == 0:
+            max_words_list += [words[i]]
+            amount_words += 1   
+            #current_width += word_width
+        else:
+            current_width += word_width
+            if current_width <= cell_width:
+                max_words += 1
+                amount_words += 1 
+                if i==len(words)-1:#words[0: amount_words] == words:
+                    max_words_list += ['^^'] + words[amount_words-max_words: amount_words+1]
+
+            else:
+                #amount_words += 1   
+                if max_words > 0:
+                    max_words_list += ['^^'] + words[amount_words-max_words: amount_words+1]
+                #else:
+                #    max_words_list += ['^^'] + [words[i]]
+                current_width = 0
+                max_words = 0
+                
+
+
+    return max_words_list
+
 
 class GeneratePDFView(View):
+
+    
     def get(self, request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,*args, **kwargs):
         # Create a response object with PDF content type
         response = HttpResponse(content_type='application/pdf')
@@ -492,13 +545,13 @@ class GeneratePDFView(View):
         response['Content-Disposition'] = 'inline; filename="listado.pdf"'
 
         # Create the PDF using the ReportLab canvas
-        p = canvas.Canvas(response, pagesize=letter)
+        p = canvas.Canvas(response, pagesize=letter+(2000,0))
 
         # Add an image at the beginning of the page
         image_path = os.path.join(settings.STATIC_ROOT, 'imagenes/logo.jpg')
         p.drawImage(image_path, inch - 20, letter[1] -inch -20, width=100, height=70)
 
-        p.setFont("Helvetica-Bold", 12)
+        #p.setFont("Helvetica-Bold", 12)
 
         # Add the text "Hello World" below the image
         #p.drawString(inch + 80, letter[1] - inch + 35, "Avalúos, Proyectos y Servicios")
@@ -551,6 +604,7 @@ class GeneratePDFView(View):
         style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
                             ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
                             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                             ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
                             ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
                             ('GRID',(0,0),(-1,-1),0.5,colors.black),
@@ -589,11 +643,11 @@ class GeneratePDFView(View):
         style = [('BACKGROUND', (0, 0), (-1, 1), fill_color),
                             ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
                             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                             ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
                             ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
                             ('GRID',(0,0),(-1,-1),0.5,colors.black),
                             ('SPAN', (0, 0), (-1, 0))]
-        flow_obj = []
         for i in range(2, len(data)):
             if i % 2 == 1:  # Alternating rows
                 style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
@@ -617,23 +671,54 @@ class GeneratePDFView(View):
         avaluos = json.loads(avaluos.content)
         avaluos = avaluos['avaluos']
         
-        data3 = [['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]
+        data3 = []#[['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]
+
+        col_widths3 = [35,95,70,65,62,75,67,63]
 
         for avaluo in avaluos:
-            folio = avaluo['tipo']  + '-' + avaluo['cliente'] + '/' + avaluo['dtcreate'][5:7] + '-' + avaluo['dtcreate'][2:4] + '/' + avaluo['consecutivo'] + '-' + avaluo['valuador']
-            folio = Paragraph(folio.replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
-            ubicacion = Paragraph(avaluo['ubicacion'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
-            cliente = Paragraph(avaluo['cliente'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
-            estatus = Paragraph(avaluo['estatus'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
-            data3.append([avaluo['id'],ubicacion,avaluo['dtsolicitud'],cliente,estatus,folio,avaluo['tipoimbid'],avaluo['valor']])
+            small_style = getSampleStyleSheet()
+            custom_style = ParagraphStyle(
+                'custom_style',
+                parent=small_style['BodyText'],
+                alignment=1,
+                fontSize=8,  # Adjust the font size as needed
+            )
+            folio = avaluo['tipo']  + '-' + avaluo['cliente'] + '/' + '^^' + avaluo['dtcreate'][5:7] + '-' + avaluo['dtcreate'][2:4] + '/' + '^^' +avaluo['consecutivo'] + '-' + avaluo['valuador']
+            folio = Paragraph(folio.replace('^^', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'])
+            #ubicacion = Paragraph(avaluo['ubicacion'].replace(' ', '<br />'), getSampleStyleSheet()['BodyText'])
+            estado = max_words_per_line(col_widths3[1], 12, avaluo['estado'])
+            #print(estado)
+            estado = ' '.join([str(item) for item in estado])
 
+            municipio = max_words_per_line(col_widths3[1], 12, avaluo['municipio'])
+            municipio = ' '.join([str(item) for item in municipio])
 
-        col_widths3 = [65, 65]
+            colonia = max_words_per_line(col_widths3[1], 12, avaluo['colonia'])
+            colonia = ' '.join([str(item) for item in colonia])
+            
+            calle = max_words_per_line(col_widths3[1], 12, avaluo['ubicacion'])
+            calle = ' '.join([str(item) for item in calle])
+            
+            ubicacion =  estado + ',' + '^^' + municipio + ',' + '^^' + colonia + ',' + '^^' + calle #avaluo['estado'] + ',' + '^^' + avaluo['municipio'] + ',' + '^^'  + avaluo['colonia']
+            #estado = Paragraph(estado.replace('^^', '<br />'), getSampleStyleSheet()['BodyText'])
+            fechas = avaluo['dtsolicitud'] + '^^' + avaluo['dtvaluador'] + '^^' + avaluo['dtcliente'] + '^^' + avaluo['dtcobro']
+            fechas = Paragraph(fechas.replace('^^', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'])
+            #municipio = Paragraph(municipio.replace('^^', '<br />'), getSampleStyleSheet()['BodyText'])
+            
+        
+            ubicacion = Paragraph(ubicacion.replace('^^', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'], custom_style)
+            
+            #ubicacion.wrapOn(p,"Helvetica", 6)
+            cliente = Paragraph(avaluo['cliente'].replace(' ', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'])
+            estatus = Paragraph(avaluo['estatus'].replace(' ', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'])
+            data3.append([avaluo['id'],ubicacion,fechas,cliente,estatus,folio,avaluo['tipoimbid'],avaluo['valor']])
+
         
 
         style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
                             ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
                             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                             ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
                             ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
                             ('GRID',(0,0),(-1,-1),0.5,colors.black),
@@ -643,7 +728,6 @@ class GeneratePDFView(View):
         count = 0
         count_sec = [0]
         num_pages = 0
-        current_page_height = 0
         data_global = []
         style_list = []
         for i in range(1, len(data3)):
@@ -662,11 +746,15 @@ class GeneratePDFView(View):
             w, h = table3.wrap(0, 0)
 
             # Check if adding the table to the current page exceeds the available space
-            if h > (page_size - 400):
+            if num_pages == 0:
+                logic_condition = h > (page_size - 510)
+            else:
+                logic_condition = h > (page_size - 370)
+            if logic_condition:
                 # Start a new page
                 #p.showPage()
                 num_pages += 1
-                current_page_height = 0  # Reset the current page height
+                #current_page_height = 0 
                 count = i
                 count_sec.append(i)
                 style_list.append(style)
@@ -674,6 +762,7 @@ class GeneratePDFView(View):
                 style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
                             ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
                             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                             ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
                             ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
                             ('GRID',(0,0),(-1,-1),0.5,colors.black),
@@ -681,6 +770,28 @@ class GeneratePDFView(View):
                 
             #else:
             #    current_page_height = h  # Update the current page height
+        
+        new_data = [['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]+data3[count:]
+        data_global.append(new_data)
+        style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
+                                    ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
+                                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                                    ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
+                                    ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
+                                    ('GRID',(0,0),(-1,-1),0.5,colors.black),
+                                    ('SPAN', (1, 0), (1, 0))]
+        for i in range(1, len(data_global[-1])):
+       
+            if i % 2 == 1:  # Alternating rows
+                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
+                               ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                               ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+            if i % 2 == 0:  # Alternating rows
+                style += ([('BACKGROUND', (0,i), (-1, i), Color(0.8, 0.8, 0.8)),
+                            ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                            ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+        style_list.append(style)
         if num_pages < 1:
             #print(len(data3))
             #print(len(style))
@@ -691,12 +802,16 @@ class GeneratePDFView(View):
             w, h = table3.wrap(0, 0)
 
             table3.wrapOn(p, 800,800)
-            table3.drawOn(p, inch-95, 610 - h)
+            table3.drawOn(p, inch-130, 610 - h)
+            p.setFillColor("black")
+            p.setFont("Helvetica", 8)
+            footer = "Av. Río Mixcoac 88-201. Col. Actipan del Valle, Alcaldía Benito Juárez, Ciudad de México 03100 Teléfonos 5662-1573 "
+            p.drawString(inch - 90, letter[1]/2-200, footer)
 
             p.showPage()
 
         else:
-            for i in range(num_pages):
+            for i in range(num_pages+1):
 
                 table3 = Table(data_global[i], colWidths=col_widths3)
                 table3.setStyle(style_list[i]) 
@@ -705,13 +820,14 @@ class GeneratePDFView(View):
                 table3.wrapOn(p, 800,800)
                 
                 if i==0:
-                    x_coord = inch-98
+                    x_coord = inch-100
                     y_coord = 610 - h
+    
                 else:
 
                     p.drawImage(image_path, inch - 20, letter[1] -inch -20, width=100, height=70)
 
-                    p.setFont("Helvetica-Bold", 12)
+                    #p.setFont("Helvetica-Bold", 12)
 
                     # Add the text "Hello World" below the image
                     #p.drawString(inch + 80, letter[1] - inch + 35, "Avalúos, Proyectos y Servicios")
@@ -734,12 +850,26 @@ class GeneratePDFView(View):
                     # Move to a new line before adding the table
                     p.translate(inch, -2 * inch)
                     
-                    x_coord = inch-95
+                    x_coord = inch-100
                     y_coord = 820 - h
-
-                print(x_coord)
-
+                #p.setFont("Helvetica", 10)
                 table3.drawOn(p, x_coord, y_coord)
+                p.setFillColor("black")
+                p.setFont("Helvetica", 8)
+                footer1 = "Av. Río Mixcoac 88-201. Col. Actipan del Valle, Alcaldía Benito Juárez, Ciudad de México 03100 Teléfonos 5662-1573 "
+                p.drawString(inch - 90, letter[1]/2-210, footer1)
+                footer2 = "E-mail:info@aep.com.mx"
+                p.drawString(inch - 90, letter[1]/2-220, footer2)
+                footer3 = "5663-4892"
+                p.drawString(inch + 293, letter[1]/2-220, footer3)
+                tot_pags = num_pages + 1
+                current_page = i+1
+                current_page = 'página' + '' + str(current_page) + '/' + str(tot_pags)
+                p.drawString(inch + 400, letter[1]/2-220, current_page)
+                today = date.today()
+                # dd/mm/YY
+                d1 = today.strftime("%d/%m/%Y")
+                p.drawString(inch + 400, letter[1]/2-210, d1)
 
                 p.showPage()
 

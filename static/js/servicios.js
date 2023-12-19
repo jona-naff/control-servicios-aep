@@ -117,7 +117,7 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 let folio = `${avaluo.tipo}-${avaluo.cliente} / ` + dtcrt.slice(5,7) + `-` + dtcrt.slice(2,4) + `<br> / ${avaluo.consecutivo} - ${avaluo.valuador}`;
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
-                opciones+=`<td> ${avaluo.estado}, <br> ${avaluo.municipio}, <br> ${avaluo.ubicacion}</td>`;
+                opciones+=`<td> ${avaluo.estado}, <br> ${avaluo.municipio}, <br> ${avaluo.colonia}, <br> ${avaluo.ubicacion}</td>`;
                 opciones+=`<td>Fecha de solicitud : ${avaluo.dtsolicitud} <br> Fecha de valuador : ${avaluo.dtvaluador}</td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
