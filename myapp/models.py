@@ -92,6 +92,18 @@ class Colonias(models.Model):
     class Meta:
         managed = True
         db_table = "colonias"
+
+
+class Tiposimb(models.Model):
+    tipoimbid = models.IntegerField(primary_key=True,blank=True)
+    nombre = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f"{self.nombre}"        
+    
+    class Meta:
+        managed = True
+        db_table = "tiposimb"
   
 
 class Avaluos(models.Model):
@@ -136,7 +148,7 @@ class Avaluos(models.Model):
     monto = models.FloatField(blank=True)
     nofolio = models.ImageField(max_length=50,blank=True)
 
-    tipoimbid = models.IntegerField(blank=True)
+    tipoimb = models.ForeignKey(Tiposimb, to_field='tipoimbid', default='80', on_delete=models.CASCADE)
 
     numero_dictamen = models.CharField(max_length=100,blank=True)
     nombre_proyecto = models.CharField(max_length=200,blank=True)

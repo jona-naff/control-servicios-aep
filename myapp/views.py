@@ -324,6 +324,8 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
     
     
     avaluos_dic = []
+    #avaluos_tiposimb = Avaluos.objects.filter(reduce(operator_and,ids) & reduce(operator_or,ids_or)).raw("SELECT control_servicios.avaluos.avaluoid, control_servicios.avaluos.tipoimbid, control_servicios.tiposimb.nombre FROM control_servicios.avaluos LEFT JOIN control_servicios.tiposimb ON control_servicios.avaluos.tipoimbid = control_servicios.tiposimb.tipoimbid ORDER BY control_servicios.avaluos.avaluoid;")
+    
     for avaluo in avaluos:
         id = str(avaluo.avaluoid)
         cliente = str(avaluo.cliente)
@@ -346,7 +348,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
         estatus = str(avaluo.estatus)
         tipo = str(avaluo.tipo)
         consecutivo = str(avaluo.consecutivo)
-        tipoimbid = str(avaluo.tipoimbid)
+        tipoimbid = str(avaluo.tipoimb.nombre)
         valor = str(avaluo.valor)
         avaluos_dic.append({'id': id, 
                             'estado': estado_nombre,
@@ -586,16 +588,41 @@ class GeneratePDFView(View):
 
         # Move to a new line before adding the table
         p.translate(inch, -2 * inch)
+        custom_style = ParagraphStyle(
+            'custom_style',
+            parent=getSampleStyleSheet()['BodyText'],
+            alignment=1,
+            fontSize=8,  # Adjust the font size as needed
+        )
+        estado = Estados.objects.get(estado_id = estado_id)
+        estado = Paragraph(estado.nombre, custom_style)
 
+        municipio = Municipios.objects.get(municipio_id = municipio_id)
+        municipio = Paragraph(municipio.nombre, custom_style)
+
+        colonia = Colonias.objects.get(colonia_id = colonia_id)
+        colonia = Paragraph(colonia.nombre, custom_style)
+
+        tipo = Tipos.objects.get(tipoid = tipo_id)
+        tipo = Paragraph(tipo.display, custom_style)
+
+        cliente = Clientes.objects.get(clienteid = cliente_id)
+        cliente = Paragraph(cliente.nombre, custom_style)
+
+        valuador = Valuadores.objects.get(valuadorid = valuador_id)
+        valuador = Paragraph(valuador.display, custom_style)
+
+        estatus = Estatus.objects.get(estatusid = estatus_id)
+        estatus = Paragraph(estatus.nombre, custom_style)
         # Define data for the table
         data = [['Parámetros',''],
-                ['Estado', '0'],
-                ['Municipio', '0'],
-                ['Colonia', '0'],
-                ['Tipo de servicio', '0'],
-                ['Cliente', '0'],
-                ['Valuador', '0'],
-                ['Estatus', '0']]
+                ['Estado', estado],
+                ['Municipio', municipio],
+                ['Colonia', colonia],
+                ['Tipo de servicio', tipo],
+                ['Cliente', cliente],
+                ['Valuador', valuador],
+                ['Estatus', estatus]]
 
         col_widths = [110, 110]
 
@@ -624,10 +651,14 @@ class GeneratePDFView(View):
         style = TableStyle(style)
 
         table1.setStyle(style)
-
+        w, h = table1.wrap(0, 0)
         # Draw the table on the canvas
         table1.wrapOn(p, 400,400)
-        table1.drawOn(p, inch-75, 635)
+        table1.drawOn(p, inch-75, 800 - h)
+        
+
+        #table3.wrapOn(p, 800,800)
+        #table3.drawOn(p, inch-130, 610 - h)
         
         data2 = [['Fechas','',''],
         ['Fecha','Inicio','Fin'],
@@ -660,10 +691,11 @@ class GeneratePDFView(View):
             
         style = TableStyle(style)
         table2.setStyle(style)
-
+        w, h = table2.wrap(0, 0)
         # Draw the table on the canvas
         table2.wrapOn(p, 400,400)
         table2.drawOn(p, inch+165, 637)
+        
 
 
         #data3 = self.get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
@@ -905,7 +937,24 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
         data["Estatus"].append(avaluo["estatus"])
 
 
+    estado = Estados.objects.get(estado_id = estado_id)
 
+    municipio = Municipios.objects.get(municipio_id = municipio_id)
+
+    colonia = Colonias.objects.get(colonia_id = colonia_id)
+
+    tipo = Tipos.objects.get(tipoid = tipo_id)
+
+    cliente = Clientes.objects.get(clienteid = cliente_id)
+
+    valuador = Valuadores.objects.get(valuadorid = valuador_id)
+
+    estatus = Estatus.objects.get(estatusid = estatus_id)
+
+    # Define data for the table
+    params1 = {'Parámetros':['Estado','Municipio','Colonia','Tipo de servicio','Cliente','Valuador','Estatus'],
+            '': [estado.nombre,municipio.nombre,colonia.nombre, tipo.display,cliente.nombre,valuador.display,estatus.nombre]}
+           
     # Create a response object with appropriate Excel headers
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename="output.xlsx"'
@@ -914,10 +963,25 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
 
+    headers_params1 = list(params1.keys())
+    for col_num, header in enumerate(headers_params1, start=1):
+        cell = worksheet.cell(row=1, column=col_num, value=header)
+        cell.font = openpyxl.styles.Font(bold=True)
+        cell.fill = openpyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
+
+    # Write data to the Excel file and apply formatting
+    num_rows = max(len(params1[field]) for field in headers_params1)
+    for row_num in range(1, num_rows + 1):
+        for col_num, field in enumerate(headers_params1, start=1):
+            cell = worksheet.cell(row=row_num + 1, column=col_num, value=params1[field][row_num - 1])
+            cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
+
+
+    current_row = num_rows + 3
     # Write headers to the Excel file and apply formatting
     headers = list(data.keys())
     for col_num, header in enumerate(headers, start=1):
-        cell = worksheet.cell(row=1, column=col_num, value=header)
+        cell = worksheet.cell(row=current_row+1, column=col_num, value=header)
         cell.font = openpyxl.styles.Font(bold=True)
         cell.fill = openpyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
 
@@ -925,7 +989,7 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     num_rows = max(len(data[field]) for field in headers)
     for row_num in range(1, num_rows + 1):
         for col_num, field in enumerate(headers, start=1):
-            cell = worksheet.cell(row=row_num + 1, column=col_num, value=data[field][row_num - 1])
+            cell = worksheet.cell(row=row_num + current_row+1, column=col_num, value=data[field][row_num - 1])
             cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
 
     # Save the workbook to the response
