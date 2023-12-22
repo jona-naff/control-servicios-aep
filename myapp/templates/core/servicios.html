@@ -316,56 +316,59 @@ $(".nav a").on("click", function(){
         todayHighlight:true,
     });
 
+    let pag = 1;
+
     $('#dtsolicitud_inicial').datepicker().on('changeDate', function (event) {
-    parametros_fechas.dtsolicitud_inicial = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
+    parametros.dtsolicitud_inicial = event.format();
+    console.log(event.format());
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
 
     });
 
     $('#dtsolicitud_final').datepicker().on('changeDate', function (event) {
-    parametros_fechas.dtsolicitud_final = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
+    parametros.dtsolicitud_final = event.format();
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
 
     });
 
     $('#dtvaluador_inicial').datepicker().on('changeDate', function (event) {
-    parametros_fechas.dtvaluador_inicial = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
+    parametros.dtvaluador_inicial = event.format();
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
 
     });
 
     $('#dtvaluador_final').datepicker().on('changeDate', function (event) {
-    parametros_fechas.dtvaluador_final = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
+    parametros.dtvaluador_final = event.format();
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
     });
 
     $('#dtcliente_inicial').datepicker().on('changeDate', function (event) {
-    parametros_fechas.dtcliente_inicial = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
+    parametros.dtcliente_inicial = event.format();
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
 
     });
     $('#dtcliente_final').datepicker().on('changeDate', function (event) {
-    parametros_fechas.dtcliente_final = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
-
+    parametros.dtcliente_final = event.format();
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
     });
 
     $('#dtcobro_inicial').datepicker().on('changeDate', function (event) {
-    parametros_fechas.dtcobro_inicial = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
+    parametros.dtcobro_inicial = event.format();
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
 
     });
     $('#dtcobro_final').datepicker().on('changeDate', function (event) {
-    parametros_fechas.dtcobro_final = event.format();
-    mostrarTabla_porfechas(parametros_fechas.dtsolicitud_inicial,parametros_fechas.dtsolicitud_final,parametros_fechas.dtcliente_inicial,parametros_fechas.dtcliente_final,parametros_fechas.dtvaluador_inicial,parametros_fechas.dtvaluador_final,parametros_fechas.dtcobro_inicial,parametros_fechas.dtcobro_final);
+    parametros.dtcobro_final = event.format();
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
 
     });
-    $('#GeneratePDFView').on('click', function () {
-      alert("Archivo generado exitosamente")
-    });
-    $('#generar_excel').on('click', function () {
-      alert("Archivo generado exitosamente")
-    });
+   // $('#GeneratePDFView').on('click', function () {
+   //   alert("Archivo generado exitosamente");
+   //   
+   // });
+   // $('#generar_excel').on('click', function () {
+   //   alert("Archivo generado exitosamente");
+   //});
     
     
 });

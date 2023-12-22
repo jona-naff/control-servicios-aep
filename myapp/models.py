@@ -79,7 +79,7 @@ class Municipios(models.Model):
         
         
 class Colonias(models.Model):
-    colonia_id = models.IntegerField(primary_key=True,blank=True)
+    colonia_id = models.AutoField(primary_key=True)
     #municipioid = models.IntegerField()
     municipio = models.ForeignKey(Municipios, to_field='municipio_id', on_delete=models.CASCADE)
     cp = models.IntegerField()
@@ -148,7 +148,7 @@ class Avaluos(models.Model):
     monto = models.FloatField(blank=True)
     nofolio = models.ImageField(max_length=50,blank=True)
 
-    tipoimb = models.ForeignKey(Tiposimb, to_field='tipoimbid', default='80', on_delete=models.CASCADE)
+    tipoimb = models.ForeignKey(Tiposimb, to_field='tipoimbid', blank = True, default='80', on_delete=models.CASCADE)
 
     numero_dictamen = models.CharField(max_length=100,blank=True)
     nombre_proyecto = models.CharField(max_length=200,blank=True)

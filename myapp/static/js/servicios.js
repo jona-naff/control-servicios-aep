@@ -1,11 +1,11 @@
-const cantidadPaginas = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,pag) => {
+const cantidadPaginas = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtsolicitud_inicial, dtsolicitud_final, dtcliente_inicial, dtcliente_final, dtvaluador_inicial, dtvaluador_final, dtcobro_inicial, dtcobro_final) => {
     try{
-        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id);
+        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id + '/' + dtsolicitud_inicial + '/' + dtsolicitud_final + '/' + dtcliente_inicial + '/' + dtcliente_final + '/' + dtvaluador_inicial + '/' + dtvaluador_final + '/' + dtcobro_inicial + '/' + dtcobro_final);
         const data =await response.json();
 
         if(data.message=="Success"){
             
-            const given = [cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id];
+            const given = [cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtsolicitud_inicial, dtsolicitud_final, dtcliente_inicial, dtcliente_final, dtvaluador_inicial, dtvaluador_final, dtcobro_inicial, dtcobro_final];
 
             if (given.every(element => element === 0)){
                 return 0;
@@ -75,12 +75,13 @@ const hideLiElements = (num_pags) => {
 };*/
 
 
-const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,pag) => {
+const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtsolicitud_inicial, dtsolicitud_final, dtcliente_inicial, dtcliente_final, dtvaluador_inicial, dtvaluador_final, dtcobro_inicial, dtcobro_final,pag) => {
     try{
-        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id);
+        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id + '/' + dtsolicitud_inicial + '/' + dtsolicitud_final + '/' + dtcliente_inicial + '/' + dtcliente_final + '/' + dtvaluador_inicial + '/' + dtvaluador_final + '/' + dtcobro_inicial + '/' + dtcobro_final);
         const data =await response.json();
         
         if(data.message=="Success"){
+            console.log(data)
             let opciones=`<thead>
                                 <tr>
                                     <th>Id</th>
@@ -101,8 +102,6 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 range = data.avaluos.slice((ver_pag - 1) * 40, ver_pag * 40);
             }else if (data.num_pags<=pag) {
                 const ver_pag = data.num_pags;
-                console.log(data.num_pags);
-                console.log(pag);
                 range = data.avaluos.slice((ver_pag - 1) * 40, ver_pag * 40);
             }else if (pag<=0) {
                 range = data.avaluos.slice(0,40);
@@ -122,15 +121,16 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
-                opciones+=`<td>` + folio +  `<br> Dictamen: <br> Proyecto: </td>`;
+                opciones+=`<td>` + folio +  `<br> Dictamen: ${avaluo.dictamen} <br> Proyecto: ${avaluo.proyecto} </td>`;
                 opciones+=`<td></tr><div sytle="display: flex; align-items: center; justify-content: center;"><a class="nav-link" href="/servicios/avaluo/${avaluo.id}">Detalle</a></div></td>`;
                 opciones+=`</tbody>`;
             });
             const given = [cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id];
+            const given_date = [dtsolicitud_inicial, dtsolicitud_final, dtcliente_inicial, dtcliente_final, dtvaluador_inicial, dtvaluador_final, dtcobro_inicial, dtcobro_final];
             
             
 
-            if (given.every(element => element === 0)){
+            if (given.every(element => element === 0) && given_date.every(element => element === '0000-00-00')){
                 
                 $('.PagGeneral').hide();
                 //$('#cboTabla').hide();
@@ -465,8 +465,23 @@ const listarEstados=async()=>{
 };
 
 //let parametros_sec = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "coloniaid":0}
-let parametros = {"cliente_id":0, "tipo_id":0, "valuador_id":0, "estatus_id":0, "estado_id":0,"municipio_id":0,"colonia_id":0};
-let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtcliente_inicial":'0000-00-00', "dtcliente_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00', "dtcobro_inicial":'0000-00-00', "dtcobro_final":'0000-00-00'};
+let parametros = {"cliente_id":0, 
+                  "tipo_id":0, 
+                  "valuador_id":0, 
+                  "estatus_id":0, 
+                  "estado_id":0,
+                  "municipio_id":0,
+                  "colonia_id":0,
+                  "dtsolicitud_inicial":'0000-00-00', 
+                  "dtsolicitud_final":'0000-00-00', 
+                  "dtcliente_inicial":'0000-00-00', 
+                  "dtcliente_final":'0000-00-00', 
+                  "dtvaluador_inicial":'0000-00-00', 
+                  "dtvaluador_final":'0000-00-00', 
+                  "dtcobro_inicial":'0000-00-00', 
+                  "dtcobro_final":'0000-00-00'
+                };
+//let parametros_fechas  = {"dtsolicitud_inicial":'0000-00-00', "dtsolicitud_final":'0000-00-00', "dtcliente_inicial":'0000-00-00', "dtcliente_final":'0000-00-00', "dtvaluador_inicial":'0000-00-00', "dtvaluador_final":'0000-00-00', "dtcobro_inicial":'0000-00-00', "dtcobro_final":'0000-00-00'};
 
 let pag = 1;
 
@@ -479,45 +494,42 @@ const cargaInicial=async()=>{
 
     cboCliente.addEventListener("change",(event)=>{
         parametros.cliente_id = event.target.value
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
     });
 
     cboTipo.addEventListener("change",(event)=>{
         parametros.tipo_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
     });
 
     cboValuador.addEventListener("change",(event)=>{
         parametros.valuador_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
     });
 
     cboEstatus.addEventListener("change",(event)=>{
         parametros.estatus_id = event.target.value;
         
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
     });
 
     cboEstado.addEventListener("change",(event)=>{
         parametros.estado_id = parseInt(event.target.value);
-        let num_pags = cantidadPaginas(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
-        console.log(num_pags);
-        hideLiElements(num_pags);
         listarMunicipios(event.target.value);
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
 
     });
 
     cboMunicipio.addEventListener("change",(event)=>{
         parametros.municipio_id = event.target.value;
         listarColonias(event.target.value);
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
 
     });
 
     cboColonia.addEventListener("change",(event)=>{
         parametros.colonia_id = event.target.value;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,pag);
     });
 
 
@@ -525,7 +537,7 @@ const cargaInicial=async()=>{
     document.getElementById('GeneratePDFView').addEventListener('click', function() {
         // Construct the URL based on parameters
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
-        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id;
+        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id  + '/' + parametros.dtsolicitud_inicial + '/' + parametros.dtsolicitud_final + '/' + parametros.dtcliente_inicial + '/' + parametros.dtcliente_final + '/' + parametros.dtvaluador_inicial + '/' + parametros.dtvaluador_final + '/' + parametros.dtcobro_inicial + '/' + parametros.dtcobro_final;
         var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_pdf/' + url;
 
         // Redirect to the constructed URL
@@ -537,11 +549,10 @@ const cargaInicial=async()=>{
     document.getElementById('generar_excel').addEventListener('click', function() {
         // Construct the URL based on parameters
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
-        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id;
+        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id  + '/' + parametros.dtsolicitud_inicial + '/' + parametros.dtsolicitud_final + '/' + parametros.dtcliente_inicial + '/' + parametros.dtcliente_final + '/' + parametros.dtvaluador_inicial + '/' + parametros.dtvaluador_final + '/' + parametros.dtcobro_inicial + '/' + parametros.dtcobro_final;
         var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_excel/' + url;
 
         // Redirect to the constructed URL
-        console.log(redirectUrl);
         window.location.href = redirectUrl;
     });
    
@@ -561,17 +572,32 @@ function callback(orders) {
  }
 
 $(document).ready(function() {
-        // Attach click event listener to links
-    /*$('#generar_excel').on('click', function() {
-        //e.preventDefault();
+    $('#GeneratePDFView').on('click',function(e) {
+        // Prevent the default behavior of the link
+        e.preventDefault();
+
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
-        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id;
-        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_excel/' + url;
-  
+        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id  + '/' + parametros.dtsolicitud_inicial + '/' + parametros.dtsolicitud_final + '/' + parametros.dtcliente_inicial + '/' + parametros.dtcliente_final + '/' + parametros.dtvaluador_inicial + '/' + parametros.dtvaluador_final + '/' + parametros.dtcobro_inicial + '/' + parametros.dtcobro_final;
+        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_pdf/' + url;
+
         // Redirect to the constructed URL
         console.log(redirectUrl);
         window.location.href = redirectUrl;
-    });*/
+      });    
+
+      $('#generar_excel').on('click',function(e) {
+        // Prevent the default behavior of the link
+        e.preventDefault();
+
+        var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
+        url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id  + '/' + parametros.dtsolicitud_inicial + '/' + parametros.dtsolicitud_final + '/' + parametros.dtcliente_inicial + '/' + parametros.dtcliente_final + '/' + parametros.dtvaluador_inicial + '/' + parametros.dtvaluador_final + '/' + parametros.dtcobro_inicial + '/' + parametros.dtcobro_final;
+        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_excel/' + url;
+
+        // Redirect to the constructed URL
+        console.log(redirectUrl);
+        window.location.href = redirectUrl;
+      });    
+    
     var nextpag = 2;
     var prevpag = 1;
     var nextElementId = 1;
@@ -599,13 +625,14 @@ $(document).ready(function() {
         
     
         if (Number.isInteger(parseInt(clickedLinkId))){
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parseInt(clickedLinkId));
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parseInt(clickedLinkId));
+
         pag = parseInt(clickedLinkId);
         nextpag = parseInt(clickedLinkId) + 1;
         prevpag = parseInt(clickedLinkId) - 1;
             }else if (clickedLinkId == "Siguiente") {
         //nextpag += 1;
-        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,nextpag);
+        mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,nextpag);
         prevpag = nextpag-1;
         nextpag += 1;
 
@@ -615,7 +642,7 @@ $(document).ready(function() {
                 if(indicador === 1){
                     //console.log(indicador);
                     indicador = 0;
-                    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,"Penultima");
+                    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,"Penultima");
                     
 
                     //let prueba = prevpag.then(callback);
@@ -624,7 +651,8 @@ $(document).ready(function() {
                     prevpag = prevpag-2;
 
                 }else{
-                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,prevpag);
+                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,prevpag);
+               
                 nextpag = prevpag + 1;
                 prevpag = prevpag - 1;
                 }
@@ -632,12 +660,13 @@ $(document).ready(function() {
             }else if (clickedLinkId == "Ultima") {
                 indicador = 1;
                 //prevElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
-                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,"Ultima");
+                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,"Ultima");
+                
         
                 }else if (clickedLinkId == "Primera") {
                     nextpag=2;
                     //nextElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
-                    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
+                    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,1);
             
             }
     
