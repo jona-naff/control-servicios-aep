@@ -153,8 +153,8 @@ class Avaluos(models.Model):
     numero_dictamen = models.CharField(max_length=100,blank=True)
     nombre_proyecto = models.CharField(max_length=200,blank=True)
 
-    def __str__(self):
-        return f"Servicio {self.avaluoid}"    
+    #def __str__(self):
+    #    return f"Servicio {self.avaluoid}"    
     
     class Meta:
         managed = True
@@ -163,21 +163,22 @@ class Avaluos(models.Model):
 
 
 class Comentarios(models.Model):
-    comentario_id = models.IntegerField(primary_key=True)
-    avaluo_id = models.IntegerField()
-    fecha = models.DateField()
-    comentario = models.CharField(max_length=1000)
+    comentario_id = models.AutoField(primary_key=True)
+    avaluo_id = models.IntegerField(blank=True)
+    fecha = models.DateField(blank=True)
+    comentario = models.TextField(max_length=1000,blank=True)
+    
 
     class Meta:
-        managed = False
+        managed = True
         db_table = "comentarios"
 
 class Honorarios(models.Model):
-    honorario_id = models.IntegerField(primary_key=True)
-    avaluo_id = models.IntegerField()
-    razon = models.CharField(max_length=250)
-    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    honorario_id = models.AutoField(primary_key=True)
+    avaluo_id = models.IntegerField(blank=True)
+    razon = models.CharField(max_length=250,blank=True)
+    monto = models.DecimalField(max_digits=10, decimal_places=2,blank=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = "honorarios"

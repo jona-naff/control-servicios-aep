@@ -2,7 +2,7 @@ from django.http import JsonResponse, FileResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
-from .models import  Avaluos, Clientes, Estados, Municipios, Colonias, Tipos, Valuadores, Estatus, Comentarios, Honorarios
+from .models import  Avaluos, Clientes, Estados, Municipios, Colonias, Tipos, Valuadores, Estatus, Comentarios, Honorarios, Comentarios, Honorarios
 from openpyxl import Workbook
 import openpyxl
 from openpyxl.styles import *
@@ -20,7 +20,7 @@ from django.core.serializers import serialize
 from reportlab.platypus import PageBreak
 import json
 
-from .forms import AvaluoForm, ColoniaForm
+from .forms import AvaluoForm, ColoniaForm, ComentariosForm, HonorariosForm
 
 from django.core.paginator import Paginator 
 
@@ -168,7 +168,7 @@ def get_municipios(request, estado_id):
         municipios = list(Municipios.objects.values())[0:200]
     else:
         municipios = [list(Municipios.objects.values())[0]]
-        municipios += list(Municipios.objects.filter(estado_id=estado_id).values())
+        municipios += list(Municipios.objects.order_by('nombre').filter(estado_id=estado_id).values())
     
     if (len(municipios)>1):
             data={'message':"Success",'municipios': municipios}
@@ -183,7 +183,7 @@ def get_colonias(request, municipio_id):
         colonias = list(Colonias.objects.values())[0:200]
     else:
         colonias = [list(Colonias.objects.values())[0]]
-        colonias += list(Colonias.objects.filter(municipio_id=municipio_id).values())
+        colonias += list(Colonias.objects.order_by('nombre').filter(municipio_id=municipio_id).values())
     
     if (len(colonias)>1):
             data={'message':"Success",'colonias': colonias}
@@ -316,48 +316,66 @@ def query_by_id(cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municip
     return var
     
 
-def query_by_date(dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final):
+def query_by_date(dtcreate_inicial, dtcreate_final, dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final, dtpago_inicial, dtpago_final):
+    
+    create_range = Q()
     solicitud_range =  Q()
     valuador_range =  Q()
     cliente_range =  Q()
     cobro_range =  Q()
+    pago_range = Q()
 
-    if (dtsolicitud_final != '0000-00-00' and dtsolicitud_final != ''):
-        solicitud_range = Q(dtsolicitud__range=['1890-10-10',dtsolicitud_final])
+
+    if (dtcreate_inicial != '0000-00-00' and dtcreate_inicial != ''):
+        create_range &= Q(dtcreate__range=[dtcreate_inicial,'2100-10-10'])
+
+    if (dtcreate_final != '0000-00-00' and dtcreate_final != ''):
+        create_range &= Q(dtcreate__range=['1890-10-10',dtcreate_final])
+
 
     if (dtsolicitud_inicial != '0000-00-00' and dtsolicitud_inicial != ''):
-        solicitud_range = Q(dtsolicitud__range=[dtsolicitud_inicial,'2100-10-10'])
+        solicitud_range &= Q(dtsolicitud__range=[dtsolicitud_inicial,'2100-10-10'])
 
+    if (dtsolicitud_final != '0000-00-00' and dtsolicitud_final != ''):
+        solicitud_range &= Q(dtsolicitud__range=['1890-10-10',dtsolicitud_final])
 
+    
     if (dtvaluador_inicial != '0000-00-00' and dtvaluador_inicial != ''):
-        valuador_range = Q(dtvaluador__range=[dtvaluador_inicial,'2100-10-10'])
+        valuador_range &= Q(dtvaluador__range=[dtvaluador_inicial,'2100-10-10'])
 
     if (dtvaluador_final != '0000-00-00' and dtvaluador_final != ''):
-        valuador_range = Q(dtvaluador__range=['1890-10-10',dtvaluador_final])
+        valuador_range &= Q(dtvaluador__range=['1890-10-10',dtvaluador_final])
 
 
     if (dtcliente_inicial != '0000-00-00' and dtcliente_inicial != ''):
-        cliente_range = Q(dtcliente__range=[dtcliente_inicial,'2100-10-10'])
+        cliente_range &= Q(dtcliente__range=[dtcliente_inicial,'2100-10-10'])
 
     if (dtcliente_final != '0000-00-00' and dtcliente_final != ''):
-        cliente_range = Q(dtcliente__range=['1890-10-10',dtcliente_final])
+        cliente_range &= Q(dtcliente__range=['1890-10-10',dtcliente_final])
 
 
     if (dtcobro_inicial != '0000-00-00' and dtcobro_inicial != ''):
-        cobro_range = Q(dtcobro__range=[dtcobro_inicial,'2100-10-10'])
+        cobro_range &= Q(dtcobro__range=[dtcobro_inicial,'2100-10-10'])
 
     if (dtcobro_final != '0000-00-00' and dtcobro_final != ''):
-        cobro_range = Q(dtcobro__range=['1890-10-10',dtcobro_final])
+        cobro_range &= Q(dtcobro__range=['1890-10-10',dtcobro_final])
 
 
-    return solicitud_range & valuador_range & cliente_range & cobro_range
+    if (dtpago_inicial != '0000-00-00' and dtpago_inicial != ''):
+        pago_range = Q(dtpago__range=[dtpago_inicial,'2100-10-10'])
+
+    if (dtpago_final != '0000-00-00' and dtpago_final != ''):
+        pago_range = Q(dtpago__range=['1890-10-10',dtpago_final])
+
+
+    return create_range & solicitud_range & valuador_range & cliente_range & cobro_range & pago_range
     
 
 
-def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final):
+def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final):
 
     query_id = query_by_id(cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
-    query_date = query_by_date(dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final)
+    query_date = query_by_date(dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final)
     avaluos = Avaluos.objects.filter(query_id & query_date).order_by('-avaluoid').select_related('cliente','tipo','valuador','estatus')
 
     avaluos_tot = Avaluos.objects.values()
@@ -583,9 +601,17 @@ def max_words_per_line(cell_width, font_size, text):
     return max_words_list
 
 
+def formato_fechas(fecha):
+    fecha_form = fecha[8:10] + '/' + fecha[5:7] + '/' + fecha[0:4]
+    return fecha_form
+
+def formato_fechas_inverso(fecha):
+    fecha_form = fecha[6:10] + '-' + fecha[3:5] + '-' + fecha[0:2]
+    return fecha_form
+
 class GeneratePDFView(View):
 
-    def get(self, request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,*args, **kwargs):
+    def get(self, request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final,*args, **kwargs):
         # Create a response object with PDF content type
         response = HttpResponse(content_type='application/pdf')
 
@@ -706,6 +732,8 @@ class GeneratePDFView(View):
         #table3.wrapOn(p, 800,800)
         #table3.drawOn(p, inch-130, 610 - h)
 
+        dtcrt_inicial = dtcreate_inicial
+        dtcrt_final = dtcreate_final
         dtsol_inicial = dtsolicitud_inicial
         dtsol_final = dtsolicitud_final
         dtval_inicial = dtvaluador_inicial
@@ -713,7 +741,15 @@ class GeneratePDFView(View):
         dtclt_inicial = dtcliente_inicial
         dtclt_final = dtcliente_final
         dtcbr_inicial = dtcobro_inicial
-        dtbr_final = dtcobro_final
+        dtcbr_final = dtcobro_final
+        dtpg_inicial = dtpago_inicial
+        dtpg_final = dtpago_final
+
+        if (dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == ''):
+            dtcrt_inicial = ''
+
+        if (dtcreate_final == '0000-00-00') or (dtcreate_final == ''):
+            dtcrt_final = ''
 
         if (dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == ''):
             dtsol_inicial = ''
@@ -741,15 +777,21 @@ class GeneratePDFView(View):
         if (dtcobro_final == '0000-00-00' or dtcobro_final == ''):
             dtcbr_final = ''
 
+        if (dtpago_inicial == '0000-00-00' or dtpago_inicial == ''):
+            dtpg_inicial = ''
+
+        if (dtpago_final == '0000-00-00' or dtpago_final == ''):
+            dtpg_final = ''
+
 
         data2 = [['Parámetros','',''],
         ['Fecha','Inicio','Fin'],
+        ['Alta', dtcrt_inicial,dtcrt_final],
         ['Solicitud', dtsol_inicial,dtsol_final],
-        ['Alta', '',''],
         ['Entrega cliente', dtclt_inicial,dtclt_final],
         ['Entrega valuador', dtval_inicial,dtval_final],
         ['Cobro', dtcbr_inicial,dtcbr_final],
-        ['Pago', '','']]
+        ['Pago', dtpg_inicial,dtpg_final]]
 
         col_widths2 = [80, 80]
         table2 = Table(data2,colWidths=col_widths2)
@@ -781,13 +823,13 @@ class GeneratePDFView(View):
 
 
         #data3 = self.get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id)
-        avaluos = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final)
+        avaluos = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final)
         avaluos = json.loads(avaluos.content)
         avaluos = avaluos['avaluos']
         
         data3 = []#[['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]
 
-        col_widths3 = [35,95,70,65,62,75,67,63]
+        col_widths3 = [35,105,95,65,62,65,60,58]
 
         for avaluo in avaluos:
             small_style = getSampleStyleSheet()
@@ -815,7 +857,37 @@ class GeneratePDFView(View):
             
             ubicacion =  estado + ',' + '^^' + municipio + ',' + '^^' + colonia + ',' + '^^' + calle #avaluo['estado'] + ',' + '^^' + avaluo['municipio'] + ',' + '^^'  + avaluo['colonia']
             #estado = Paragraph(estado.replace('^^', '<br />'), getSampleStyleSheet()['BodyText'])
-            fechas = avaluo['dtsolicitud'] + '^^' + avaluo['dtvaluador'] + '^^' + avaluo['dtcliente'] + '^^' + avaluo['dtcobro']
+            if avaluo['dtcreate'] == 'None' or avaluo['dtcreate'] == "0000-00-00":
+                dtcrt = "No disponible"
+            else:
+                dtcrt = formato_fechas(avaluo['dtcreate'])
+
+
+            if avaluo['dtsolicitud'] == 'None' or avaluo['dtsolicitud'] == "0000-00-00":
+                dtsol = "No disponible"
+            else:
+                dtsol = formato_fechas(avaluo['dtsolicitud'])
+            
+
+            if avaluo['dtvaluador'] == 'None' or avaluo['dtvaluador'] == "0000-00-00":
+                dtval = "No disponible"
+            else:
+                dtval = formato_fechas(avaluo['dtvaluador'])
+
+
+            if avaluo['dtcliente'] == 'None' or avaluo['dtcliente'] == "0000-00-00":
+                dtclt = "No disponible"
+            else:
+                dtclt = formato_fechas(avaluo['dtcliente'])
+
+
+            if avaluo['dtcobro'] == 'None' or avaluo['dtcobro'] == "0000-00-00":
+                dtcbr = "No disponible"
+            else:
+                dtcbr = formato_fechas(avaluo['dtcobro'])
+              
+            
+            fechas = 'Alta:' + dtcrt + '^^' +'Cotización:' + dtsol + '^^' + 'Valuador:' +  dtval + '^^' + 'Cliente:' + dtclt + '^^' + 'Cobro:' + dtcbr
             fechas = Paragraph(fechas.replace('^^', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'])
             #municipio = Paragraph(municipio.replace('^^', '<br />'), getSampleStyleSheet()['BodyText'])
             
@@ -825,7 +897,9 @@ class GeneratePDFView(View):
             #ubicacion.wrapOn(p,"Helvetica", 6)
             cliente = Paragraph(avaluo['cliente'].replace(' ', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'])
             estatus = Paragraph(avaluo['estatus'].replace(' ', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'])
-            data3.append([avaluo['id'],ubicacion,fechas,cliente,estatus,folio,avaluo['tipoimbid'],avaluo['valor']])
+
+            tipoimb = Paragraph(avaluo['tipoimbid'].replace(' ', '<br />'), custom_style)
+            data3.append([avaluo['id'],ubicacion,fechas,cliente,estatus,folio,tipoimb,avaluo['valor']])
 
         
 
@@ -844,6 +918,12 @@ class GeneratePDFView(View):
         num_pages = 0
         data_global = []
         style_list = []
+        h_style = getSampleStyleSheet()
+        head_style = ParagraphStyle(
+            'head_style',
+            parent=h_style['BodyText'],
+            alignment=1,
+            )
         for i in range(1, len(data3)):
             style_index = i - count
             if i % 2 == 1:  # Alternating rows
@@ -854,7 +934,9 @@ class GeneratePDFView(View):
                 style += ([('BACKGROUND', (0, style_index), (-1, style_index), Color(0.8, 0.8, 0.8)),
                             ('BOX', (0, style_index), (-1, style_index), 0.25, 'black'),
                             ('BOTTOMPADDING', (0, style_index), (-1, style_index), 5)])
-            new_data = [['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]+data3[count:i]
+            
+            head_tipoimb = Paragraph('Tipo Inmueble'.replace(' ', '<br />'), head_style)
+            new_data = [['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio',head_tipoimb,'Valor']]+data3[count:i]
             table3 = Table(new_data, colWidths=col_widths3)
             table3.setStyle(style)
             w, h = table3.wrap(0, 0)
@@ -884,8 +966,8 @@ class GeneratePDFView(View):
                 
             #else:
             #    current_page_height = h  # Update the current page height
-        
-        new_data = [['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]+data3[count:]
+        head_tipoimb = Paragraph('Tipo Inmueble'.replace(' ', '<br />'), head_style)
+        new_data = [['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio',head_tipoimb,'Valor']]+data3[count:]
         data_global.append(new_data)
         style = [('BACKGROUND', (0, 0), (-1, 0), fill_color),
                                     ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
@@ -934,7 +1016,7 @@ class GeneratePDFView(View):
                 table3.wrapOn(p, 800,800)
                 
                 if i==0:
-                    x_coord = inch-100
+                    
                     y_coord = 610 - h
     
                 else:
@@ -964,9 +1046,10 @@ class GeneratePDFView(View):
                     # Move to a new line before adding the table
                     p.translate(inch, -2 * inch)
                     
-                    x_coord = inch-100
+                    #x_coord = inch-100
                     y_coord = 820 - h
                 #p.setFont("Helvetica", 10)
+                x_coord = inch-110
                 table3.drawOn(p, x_coord, y_coord)
                 p.setFillColor("black")
                 p.setFont("Helvetica", 8)
@@ -993,9 +1076,9 @@ class GeneratePDFView(View):
         return response
 
 
-def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final):
+def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final):
     # Your dictionary data
-    data = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final)
+    data = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final)
     data = json.loads(data.content)
     avaluos = data['avaluos']
     data = {
@@ -1034,6 +1117,8 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
             '': [estado.nombre,municipio.nombre,colonia.nombre, tipo.display,cliente.nombre,valuador.display,estatus.nombre]}
 
 
+    dtcrt_inicial = dtcreate_inicial
+    dtcrt_final = dtcreate_final
     dtsol_inicial = dtsolicitud_inicial
     dtsol_final = dtsolicitud_final
     dtval_inicial = dtvaluador_inicial
@@ -1041,7 +1126,15 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     dtclt_inicial = dtcliente_inicial
     dtclt_final = dtcliente_final
     dtcbr_inicial = dtcobro_inicial
-    dtbr_final = dtcobro_final
+    dtcbr_final = dtcobro_final
+    dtpg_inicial = dtpago_inicial
+    dtpg_final = dtpago_final
+
+    if (dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == ''):
+        dtcrt_inicial = ''
+
+    if (dtcreate_final == '0000-00-00') or (dtcreate_final == ''):
+        dtcrt_final = ''
 
     if (dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == ''):
         dtsol_inicial = ''
@@ -1068,6 +1161,12 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
 
     if (dtcobro_final == '0000-00-00' or dtcobro_final == ''):
         dtcbr_final = ''
+
+    if (dtpago_inicial == '0000-00-00' or dtpago_inicial == ''):
+        dtpg_inicial = ''
+
+    if (dtpago_final == '0000-00-00' or dtpago_final == ''):
+        dtpg_final = ''
 
     params2 = {'Parámetros':['Fecha','Solicitud','Alta','Entrega cliente','Entrega valuador','Cobro','Pago'],
             '1': ['Inicio',dtsol_inicial,'',dtclt_inicial, dtval_inicial,dtcbr_inicial,''],
@@ -1140,18 +1239,75 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
 def nuevo_avaluo(request):
     if request.method == 'GET':       
         return render(request, 'core/nuevo_avaluo.html',{
-            'AvaluoForm': AvaluoForm
+            'AvaluoForm': AvaluoForm,
+            'ComentariosForm': ComentariosForm,
+            'HonorariosForm': HonorariosForm
         })
     else: 
         try:
+            today = date.today()
+            request.POST = request.POST.copy()
+            request.POST["dtcreate"] = today
+       
+            if len(request.POST["dtsolicitud"]) != 0:
+                request.POST["dtsolicitud"] = formato_fechas_inverso(request.POST["dtsolicitud"])
+            if len(request.POST["dtvaluador"]) != 0:
+                request.POST["dtvaluador"] = formato_fechas_inverso(request.POST["dtvaluador"])
+            if len(request.POST["dtcliente"]) != 0:
+                request.POST["dtcliente"] = formato_fechas_inverso(request.POST["dtcliente"])
+            if len(request.POST["dtcobro"]) != 0:
+                request.POST["dtcobro"] = formato_fechas_inverso(request.POST["dtcobro"])
+            if len(request.POST["dtpago"]) != 0:
+                request.POST["dtpago"] = formato_fechas_inverso(request.POST["dtpago"])
+            #d1 = today.strftime("%Y-%m-%d")
             form = AvaluoForm(request.POST)
-            nuevo_avaluo = form.save(commit=False)
-            nuevo_avaluo.save()
-            print(nuevo_avaluo)
+            #form.dtcreate  = today
+            #print(form.dtcreate)
+           #fecha_alta = AvaluoForm()
+            
+            
+            #nuevo_avaluo = form.save(commit=False)
+            form.save()
+
+            #form = AvaluoForm()
+            #form.dtcreate = today
+            #form.save()
+
+            avaluo_id = Avaluos.objects.last().avaluoid
+           
+            var_coms = int(request.POST["control_comentarios"])
+            var_hons = int(request.POST["control_honorarios"])
+            #comentarios_request = {"comentario":[],"avaluo_id":[var]}
+            print(var_hons)
+            print(request.POST)
+
+            for i in range(0,var_coms):
+                num = str(i+1)
+                #print(request.POST["comentario_"+num])
+                #nuevo_comentario = "comentario_"+num
+                #comentarios_request["comentario"].append(request.POST["comentario_"+num])
+                coms = Comentarios(comentario=request.POST["comentario_"+num],avaluo_id=avaluo_id,fecha=today)
+                coms.save()
+
+            for i in range(0,var_hons):
+                num = str(i+1)
+
+                hons = Honorarios(razon=request.POST["razon_"+num],monto=request.POST["monto_"+num],avaluo_id=avaluo_id)
+                print(hons)
+                hons.save()
+            #print(request.POST)
+            
+            #nuevos_comentarios = form.save(commit=False)
+            #nuevos_comentarios.save()
+            #print(comentarios_request)
+            
+
             return redirect('servicios')
         except ValueError:
             return render(request, 'core/nuevo_avaluo.html',{
             'form': AvaluoForm,
+            'form1': ComentariosForm,
+            'form2': HonorariosForm,
             'error': 'Please provide valide data'
                 })
 

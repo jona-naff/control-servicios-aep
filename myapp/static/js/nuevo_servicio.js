@@ -89,9 +89,9 @@ const cargaInicial=async()=>{
 
     });
 
-    cboColonia.addEventListener("change",(event)=>{
+    /*cboColonia.addEventListener("change",(event)=>{
 
-    });
+    });*/
 
 };
 

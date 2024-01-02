@@ -3,6 +3,7 @@
 {% block content %}
 
 {% load static %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,8 +17,45 @@
     <script src="{% static 'js/navbar.js' %}"></script>
     <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
     <script src="{% static 'styles/bootstrap-combined.min.css' %}"></script>
+    <script type="text/javascript">
+        function agrega_comentario(){
+           var contador_comentario = parseInt($("#control_comentarios").val())+1;
+           var f = new Date();
+           var hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear();
+           var new_control = '<tr>';
+            new_control += '<td><input type="text" value="'+hoy+'" name = "fecha_'+contador_comentario+'" id = "fecha_'+contador_comentario+'" disabled></td>';
+            new_control += '<td><textarea name="comentario_'+contador_comentario+'" id = "comentario_'+contador_comentario+'"></textarea></td>';
+            new_control += '<td><button>Borrar</button></td>';
+            new_control += '</tr>'; 
+    
+            $("#tabla_comentarios tbody").append(new_control); 
+            $("#control_comentarios").val(contador_comentario);
+            console.log(contador_comentario)
+        };
+        function agrega_honorario(){
+            var contador_honorario = parseInt($("#control_honorarios").val())+1;
+            var new_control = '<tr>';
+                new_control += '<td><input type ="text" id="razon_'+contador_honorario+'" name="razon_'+contador_honorario+'"></td>';
+                new_control += '<td><input type ="text" id="monto_'+contador_honorario+'" name="monto_'+contador_honorario+'"></td>';
+                new_control += '<td><button>Borrar</button></td>';
+                new_control += '</tr>';
 
+                $("#tabla_honorarios tbody").append(new_control);
+                $("#control_honorarios").val(contador_honorario);
+                console.log(contador_honorario)
+        };
+
+        $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+        $('.date').datepicker({
+            autoclose:true,
+            clearBtn:true,
+            container:'.datepicker',
+            //format:'dd-mm-yyyy',
+            todayHighlight:true,
+        });
+    </script>
 </head>
+
 
 <br>
 <br>
@@ -75,6 +113,7 @@
             <td>
               <div class="datepicker input-group date position-relative border-1 p-4">
                 <input type="text" name="dtsolicitud" id="id_dtsolicitud" class="form-control" data-provide="datepicker">
+                <input type="hidden" name="dtcreate" id="id_dtcreate">
                </div>
             </td>
         </tr>
@@ -126,6 +165,8 @@
               <div class="datepicker input-group date position-relative border-1 p-4">
                 <input type="text" name="dtcobro" id="id_dtcobro" class="form-control" data-provide="datepicker">
               </div>
+            </td>
+            
             
         </tr>
         <tr>
@@ -144,14 +185,14 @@
 
             </td>
             <td>
-                Cliente
+                Pago
             </td>
             <td>
               <div class="datepicker input-group date position-relative border-1 p-4">
-                <input type="text" name="dtcliente" id="id_dtcliente" class="form-control" data-provide="datepicker">
-               </div>
+                <input type="text" name="dtpago" id="id_dtpago" class="form-control" data-provide="datepicker">
+              </div>
             </td>
-            </td>
+            
         </tr>
         <tr>
             <td>
@@ -161,6 +202,17 @@
                 <div class="border-1 p-4">
                 {{ AvaluoForm.monto }}
                 </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td>
+                Cliente
+            </td>
+            <td>
+              <div class="datepicker input-group date position-relative border-1 p-4">
+                <input type="text" name="dtcliente" id="id_dtcliente" class="form-control" data-provide="datepicker">
+               </div>
+            </td>
             </td>
         </tr>
         <tr>
@@ -219,7 +271,7 @@
             </td>
             <td>
                 <div class="border-1 p-4">
-                {{ AvaluoForm.tipoimbid }}
+                {{ AvaluoForm.tipoimb }}
                 </div>
             </td>
         </tr>
@@ -268,7 +320,7 @@
                 Estado:
             </td>
             <td>
-                <select name="" id="cboEstado"></select>
+                <select name="" id="cboEstado"><option value="indef">Indefinido</option></select>
             </td>
             <td>
 
@@ -415,22 +467,35 @@
             </td>
         </tr>
 
-
     </table>
 
-
-    <!--<div class="col-md-4">
-        <h4>Ubicación</h4>
-        <p>Estado: <select name="" id="cboEstado"></select></p>
-        <p>Municipio: </p>
-        <p>Colonia: </p>
-    </div>-->
    
       <br>
     <div>
       <p>¿Quiere ingresar una colonia que no está registrada? <a href="{% url 'nueva_colonia' %}">Agregar colonia</a></p>
       
     <br>
+    </div>
+
+    <div id="contenedor_cometarios">
+        
+        <table id="tabla_comentarios" name="tabla_comentarios">
+            <tr><th colspan="3">COMENTARIOS</th></tr>
+            <tr><th>Fecha</th><th>Comentario</th><th>Borrar</th></tr>   
+
+        </table>
+        
+        <input type="button" id="agregar_comentario" name="agregar_comentario" onclick="agrega_comentario()" value="Agregar" />
+        <input type="hidden" id="control_comentarios" name="control_comentarios" value="0">
+    </div>
+
+    <div id="contenedor_honorarios">
+        <table id="tabla_honorarios" name="tabla_honorarios">
+            <tr><th>HONORARIOS</th></tr>
+            <tr><th>Razón Social</th><th>Monto</th><th>Borrar</th></tr>
+        </table>
+        <input type="button" id="agregar_honorario" name="agregar_honorario" onclick="agrega_honorario()" value="Agregar" />
+        <input type="hidden" id="control_honorarios" name="control_honorarios" value="0">
     </div>
 
     <button>
@@ -447,13 +512,3 @@
 {% endblock %}
 
 
-<script>
-    $.fn.datepicker.defaults.format = "yyyy-mm-dd";
-    $('#datepicker').datepicker({
-        autoclose:true,
-        clearBtn:true,
-        container:'.datepicker',
-        //format:'yyyy-mm-dd',
-        todayHighlight:true,
-    });
-</script>
