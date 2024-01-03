@@ -174,7 +174,7 @@
                 </td>
                 <td>
                   <div class="datepicker input-group date position-relative border-1 p-4">
-                    <input type="text" id="dtcobro_inicial" class="form-control" data-provide="datepicker">
+                    <input type="text" id="dtpago_inicial" class="form-control" data-provide="datepicker">
                   </div>
                 </td>
                 <td>
@@ -182,7 +182,7 @@
                 </td>
                 <td>
                   <div class="datepicker position-relative border-1 p-4">
-                    <input type="text" id="dtcobro_final" class="form-control" data-provide="datepicker">
+                    <input type="text" id="dtpago_final" class="form-control" data-provide="datepicker">
                    </div>
                 </td>
               </tr>
@@ -412,6 +412,17 @@ $(".nav a").on("click", function(){
     mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,pag);
 
     });
+    $('#dtpago_inicial').datepicker().on('changeDate', function (event) {
+      parametros.dtpago_inicial = event.format().slice(6,10) + '-' + event.format().slice(3,5) + '-' + event.format().slice(0,2);
+      console.log(parametros.dtpago_inicial)
+      mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,pag);
+  
+      });
+      $('#dtpago_final').datepicker().on('changeDate', function (event) {
+      parametros.dtpago_final = event.format().slice(6,10) + '-' + event.format().slice(3,5) + '-' + event.format().slice(0,2);
+      mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,pag);
+  
+      });
    // $('#GeneratePDFView').on('click', function () {
    //   alert("Archivo generado exitosamente");
    //   

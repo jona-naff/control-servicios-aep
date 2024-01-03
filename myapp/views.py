@@ -362,10 +362,10 @@ def query_by_date(dtcreate_inicial, dtcreate_final, dtsolicitud_inicial, dtsolic
 
 
     if (dtpago_inicial != '0000-00-00' and dtpago_inicial != ''):
-        pago_range = Q(dtpago__range=[dtpago_inicial,'2100-10-10'])
+        pago_range &= Q(dtpago__range=[dtpago_inicial,'2100-10-10'])
 
     if (dtpago_final != '0000-00-00' and dtpago_final != ''):
-        pago_range = Q(dtpago__range=['1890-10-10',dtpago_final])
+        pago_range &= Q(dtpago__range=['1890-10-10',dtpago_final])
 
 
     return create_range & solicitud_range & valuador_range & cliente_range & cobro_range & pago_range
@@ -726,12 +726,11 @@ class GeneratePDFView(View):
         w, h = table1.wrap(0, 0)
         # Draw the table on the canvas
         table1.wrapOn(p, 400,400)
-        table1.drawOn(p, inch-75, 800 - h)
+        table1.drawOn(p, inch-75, 797 - h)
         
 
         #table3.wrapOn(p, 800,800)
         #table3.drawOn(p, inch-130, 610 - h)
-
         dtcrt_inicial = dtcreate_inicial
         dtcrt_final = dtcreate_final
         dtsol_inicial = dtsolicitud_inicial
@@ -745,45 +744,6 @@ class GeneratePDFView(View):
         dtpg_inicial = dtpago_inicial
         dtpg_final = dtpago_final
 
-        if (dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == ''):
-            dtcrt_inicial = ''
-
-        if (dtcreate_final == '0000-00-00') or (dtcreate_final == ''):
-            dtcrt_final = ''
-
-        if (dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == ''):
-            dtsol_inicial = ''
-
-        if (dtsolicitud_final == '0000-00-00') or (dtsolicitud_final == ''):
-            dtsol_final = ''
-
-        if (dtvaluador_inicial == '0000-00-00' or dtvaluador_inicial == ''):
-            dtval_inicial = ''
-
-        if (dtvaluador_final == '0000-00-00' or dtvaluador_final == ''):
-            dtval_final = ''
-
-
-        if (dtcliente_inicial == '0000-00-00' or dtcliente_inicial == ''):
-            dtclt_inicial = ''
-
-        if (dtcliente_final == '0000-00-00' or dtcliente_final == ''):
-            dtclt_final = ''
-
-
-        if (dtcobro_inicial == '0000-00-00' or dtcobro_inicial == ''):
-            dtcbr_inicial = ''
-
-        if (dtcobro_final == '0000-00-00' or dtcobro_final == ''):
-            dtcbr_final = ''
-
-        if (dtpago_inicial == '0000-00-00' or dtpago_inicial == ''):
-            dtpg_inicial = ''
-
-        if (dtpago_final == '0000-00-00' or dtpago_final == ''):
-            dtpg_final = ''
-
-
         data2 = [['Parámetros','',''],
         ['Fecha','Inicio','Fin'],
         ['Alta', dtcrt_inicial,dtcrt_final],
@@ -793,32 +753,98 @@ class GeneratePDFView(View):
         ['Cobro', dtcbr_inicial,dtcbr_final],
         ['Pago', dtpg_inicial,dtpg_final]]
 
-        col_widths2 = [80, 80]
-        table2 = Table(data2,colWidths=col_widths2)
-        style = [('BACKGROUND', (0, 0), (-1, 1), fill_color),
-                            ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
-                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                            ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
-                            ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
-                            ('GRID',(0,0),(-1,-1),0.5,colors.black),
-                            ('SPAN', (0, 0), (-1, 0))]
-        for i in range(2, len(data)):
-            if i % 2 == 1:  # Alternating rows
-                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
-                               ('BOX', (0, i), (-1, i), 0.25, 'black'),
-                               ('BOTTOMPADDING', (0, i), (-1, i), 5)])
-            if i % 2 == 0:  # Alternating rows
-                style += ([('BACKGROUND', (0, i), (-1, i), Color(0.8, 0.8, 0.8)),
-                            ('BOX', (0, i), (-1, i), 0.25, 'black'),
-                            ('BOTTOMPADDING', (0, i), (-1, i), 5)])
-            
-        style = TableStyle(style)
-        table2.setStyle(style)
-        w, h = table2.wrap(0, 0)
-        # Draw the table on the canvas
-        table2.wrapOn(p, 400,400)
-        table2.drawOn(p, inch+165, 637)
+        data2_dict = {'header1':['Parámetros','',''],
+        'header2':['Fecha','Inicio','Fin']}
+
+
+        log_list = [((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')),((dtcreate_final == '0000-00-00') or (dtcreate_final == '')),((dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == '')),( (dtsolicitud_final == '0000-00-00') or (dtsolicitud_final == '')),((dtvaluador_inicial == '0000-00-00' or dtvaluador_inicial == '')),((dtvaluador_final == '0000-00-00' or dtvaluador_final == '')),((dtcliente_inicial == '0000-00-00' or dtcliente_inicial == '')),((dtcliente_final == '0000-00-00' or dtcliente_final == '')),((dtcobro_inicial == '0000-00-00' or dtcobro_inicial == ''))and((dtcobro_final == '0000-00-00' or dtcobro_final == '')),((dtpago_inicial == '0000-00-00' or dtpago_inicial == '')),((dtpago_final == '0000-00-00' or dtpago_final == ''))]
+
+        log_val = False
+
+        for x in log_list:
+            log_val = log_val or x
+     
+
+        if log_val == True:
+            print(not ((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')and(dtcreate_final == '0000-00-00') or (dtcreate_final == '')))
+            if not ((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')and(dtcreate_final == '0000-00-00') or (dtcreate_final == '')):
+                
+                data2_dict['alta'] = ['Alta', '','']
+                
+                if not ((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')):
+                    data2_dict['alta'][1] = formato_fechas(dtcrt_inicial)
+                if not ((dtcreate_final == '0000-00-00') or (dtcreate_final == '')):
+                    data2_dict['alta'][2] = formato_fechas(dtcrt_final)
+
+            if not ((dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == '')and(dtsolicitud_final == '0000-00-00') or (dtsolicitud_final == '')):
+                data2_dict['solicitud'] = ['Solicitud', '','']
+                if not ((dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == '')):
+                    data2_dict['solicitud'][1] = formato_fechas(dtsol_inicial)
+                if not ((dtsolicitud_final == '0000-00-00') or (dtsolicitud_final == '')):
+                    data2_dict['solicitud'][2] = formato_fechas(dtsol_final)
+
+            if not ((dtvaluador_inicial == '0000-00-00') or (dtvaluador_inicial == '')and(dtvaluador_final == '0000-00-00') or (dtvaluador_final == '')):
+                data2_dict['valuador'] = ['Valuador', '','']
+                if not ((dtvaluador_inicial == '0000-00-00' or dtvaluador_inicial == '')):
+                    data2_dict['valuador'][1] = formato_fechas(dtval_inicial)
+                if not ((dtvaluador_final == '0000-00-00' or dtvaluador_final == '')):
+                    data2_dict['valuador'][2] = formato_fechas(dtval_final)
+
+            if not ((dtcliente_inicial == '0000-00-00') or (dtcliente_inicial == '')and(dtcliente_final == '0000-00-00') or (dtcliente_final == '')):
+                data2_dict['cliente'] = ['Cliente', '','']
+                if not ((dtcliente_inicial == '0000-00-00' or dtcliente_inicial == '')):
+                    data2_dict['cliente'][1] = formato_fechas(dtclt_inicial)
+                if not ((dtcliente_final == '0000-00-00' or dtcliente_final == '')):
+                    data2_dict['cliente'][2] = formato_fechas(dtclt_final)
+
+            if not ((dtcobro_inicial == '0000-00-00') or (dtcobro_inicial == '')and(dtcobro_final == '0000-00-00') or (dtcobro_final == '')):
+                data2_dict['cobro'] = ['Cobro', '','']
+                if not ((dtcobro_inicial == '0000-00-00' or dtcobro_inicial == '')):
+                    data2_dict['cobro'][1] = formato_fechas(dtcbr_inicial)
+                if not ((dtcobro_final == '0000-00-00' or dtcobro_final == '')):
+                    data2_dict['cobro'][2] = formato_fechas(dtcbr_final)
+
+            if not ((dtpago_inicial == '0000-00-00') or (dtpago_inicial == '')and(dtpago_final == '0000-00-00') or (dtpago_final == '')):
+                data2_dict['pago'] = ['Pago', '','']
+                if not ((dtpago_inicial == '0000-00-00' or dtpago_inicial == '')):
+                    data2_dict['pago'][1] = formato_fechas(dtpg_inicial)
+                if not ((dtpago_final == '0000-00-00' or dtpago_final == '')):
+                    data2_dict['pago'][2] = formato_fechas(dtpg_final)
+
+            print(data2_dict)
+            data2 = []
+
+            for x in data2_dict:
+                print(x)
+                data2.append(data2_dict[x])
+
+            print(data2)
+            col_widths2 = [80, 80]
+            table2 = Table(data2,colWidths=col_widths2)
+            style = [('BACKGROUND', (0, 0), (-1, 1), fill_color),
+                                ('TEXTCOLOR', (0, 0), (-1, 0), 'black'),
+                                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                                ('INNERGRID', (0, 0), (-1, -1), 0.25, 'black'),
+                                ('BOX', (0, 0), (-1, -1), 0.25, 'black'),
+                                ('GRID',(0,0),(-1,-1),0.5,colors.black),
+                                ('SPAN', (0, 0), (-1, 0))]
+            for i in range(2, len(data2)):
+                if i % 2 == 1:  # Alternating rows
+                    style += ([('BACKGROUND', (0, i), (-1, i), Color(0.9, 0.9, 0.9)),
+                                ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                                ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+                if i % 2 == 0:  # Alternating rows
+                    style += ([('BACKGROUND', (0, i), (-1, i), Color(0.8, 0.8, 0.8)),
+                                ('BOX', (0, i), (-1, i), 0.25, 'black'),
+                                ('BOTTOMPADDING', (0, i), (-1, i), 5)])
+                
+            style = TableStyle(style)
+            table2.setStyle(style)
+            w, h = table2.wrap(0, 0)
+            # Draw the table on the canvas
+            table2.wrapOn(p, 400,400)
+            table2.drawOn(p, inch+165, 797-h)
         
 
 
@@ -1079,6 +1105,13 @@ class GeneratePDFView(View):
 def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final):
     # Your dictionary data
     data = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final)
+    # Create a response object with appropriate Excel headers
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="output.xlsx"'
+
+    # Create a new Excel workbook and add a worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
     data = json.loads(data.content)
     avaluos = data['avaluos']
     data = {
@@ -1088,6 +1121,7 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
         'Cliente':[],
         'Valuador':[],
         'Estatus':[],
+        'Folio':[]
     }
     for avaluo in avaluos:
         data["Id"].append(avaluo["id"])
@@ -1096,6 +1130,7 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
         data["Cliente"].append(avaluo["cliente"])
         data["Valuador"].append(avaluo["valuador"])
         data["Estatus"].append(avaluo["estatus"])
+        data["Folio"].append(avaluo['tipo']  + '-' + avaluo['cliente'] + '/' + avaluo['dtcreate'][5:7] + '-' + avaluo['dtcreate'][2:4] + '/'  +avaluo['consecutivo'] + '-' + avaluo['valuador'])
 
 
     estado = Estados.objects.get(estado_id = estado_id)
@@ -1116,70 +1151,6 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     params1 = {'Parámetros':['Estado','Municipio','Colonia','Tipo de servicio','Cliente','Valuador','Estatus'],
             '': [estado.nombre,municipio.nombre,colonia.nombre, tipo.display,cliente.nombre,valuador.display,estatus.nombre]}
 
-
-    dtcrt_inicial = dtcreate_inicial
-    dtcrt_final = dtcreate_final
-    dtsol_inicial = dtsolicitud_inicial
-    dtsol_final = dtsolicitud_final
-    dtval_inicial = dtvaluador_inicial
-    dtval_final = dtvaluador_final
-    dtclt_inicial = dtcliente_inicial
-    dtclt_final = dtcliente_final
-    dtcbr_inicial = dtcobro_inicial
-    dtcbr_final = dtcobro_final
-    dtpg_inicial = dtpago_inicial
-    dtpg_final = dtpago_final
-
-    if (dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == ''):
-        dtcrt_inicial = ''
-
-    if (dtcreate_final == '0000-00-00') or (dtcreate_final == ''):
-        dtcrt_final = ''
-
-    if (dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == ''):
-        dtsol_inicial = ''
-
-    if (dtsolicitud_final == '0000-00-00') or (dtsolicitud_final == ''):
-        dtsol_final = ''
-
-    if (dtvaluador_inicial == '0000-00-00' or dtvaluador_inicial == ''):
-        dtval_inicial = ''
-
-    if (dtvaluador_final == '0000-00-00' or dtvaluador_final == ''):
-        dtval_final = ''
-
-
-    if (dtcliente_inicial == '0000-00-00' or dtcliente_inicial == ''):
-        dtclt_inicial = ''
-
-    if (dtcliente_final == '0000-00-00' or dtcliente_final == ''):
-        dtclt_final = ''
-
-
-    if (dtcobro_inicial == '0000-00-00' or dtcobro_inicial == ''):
-        dtcbr_inicial = ''
-
-    if (dtcobro_final == '0000-00-00' or dtcobro_final == ''):
-        dtcbr_final = ''
-
-    if (dtpago_inicial == '0000-00-00' or dtpago_inicial == ''):
-        dtpg_inicial = ''
-
-    if (dtpago_final == '0000-00-00' or dtpago_final == ''):
-        dtpg_final = ''
-
-    params2 = {'Parámetros':['Fecha','Solicitud','Alta','Entrega cliente','Entrega valuador','Cobro','Pago'],
-            '1': ['Inicio',dtsol_inicial,'',dtclt_inicial, dtval_inicial,dtcbr_inicial,''],
-            '2': ['Fin',dtsol_final,'',dtclt_final, dtval_final,dtcbr_final,'']}
-
-    # Create a response object with appropriate Excel headers
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="output.xlsx"'
-
-    # Create a new Excel workbook and add a worksheet
-    workbook = openpyxl.Workbook()
-    worksheet = workbook.active
-
     headers_params1 = list(params1.keys())
     for col_num, header in enumerate(headers_params1, start=1):
         cell = worksheet.cell(row=1, column=col_num, value=header)
@@ -1197,18 +1168,109 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     num_rows = max(len(params1[field]) for field in headers_params1)
     num_cols = len(list(params1.keys()))
 
-    headers_params2 = list(params2.keys())
-    for col_num, header in enumerate(headers_params2, start=1):
-        cell = worksheet.cell(row=1, column=col_num+num_cols+1, value=header)
-        cell.font = openpyxl.styles.Font(bold=True)
-        cell.fill = openpyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
+    dtcrt_inicial = dtcreate_inicial
+    dtcrt_final = dtcreate_final
+    dtsol_inicial = dtsolicitud_inicial
+    dtsol_final = dtsolicitud_final
+    dtval_inicial = dtvaluador_inicial
+    dtval_final = dtvaluador_final
+    dtclt_inicial = dtcliente_inicial
+    dtclt_final = dtcliente_final
+    dtcbr_inicial = dtcobro_inicial
+    dtcbr_final = dtcobro_final
+    dtpg_inicial = dtpago_inicial
+    dtpg_final = dtpago_final
 
-    # Write data to the Excel file and apply formatting
-   # num_rows = max(len(params1[field]) for field in headers_params1)
-    for row_num in range(1, num_rows + 1):
-        for col_num, field in enumerate(headers_params2, start=1):
-            cell = worksheet.cell(row=row_num + 1, column=col_num+num_cols+1, value=params2[field][row_num - 1])
-            cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
+    data2_dict = {'header1':['Parámetros','',''],
+    'header2':['Fecha','Inicio','Fin']}
+
+
+    log_list = [((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')),((dtcreate_final == '0000-00-00') or (dtcreate_final == '')),((dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == '')),( (dtsolicitud_final == '0000-00-00') or (dtsolicitud_final == '')),((dtvaluador_inicial == '0000-00-00' or dtvaluador_inicial == '')),((dtvaluador_final == '0000-00-00' or dtvaluador_final == '')),((dtcliente_inicial == '0000-00-00' or dtcliente_inicial == '')),((dtcliente_final == '0000-00-00' or dtcliente_final == '')),((dtcobro_inicial == '0000-00-00' or dtcobro_inicial == ''))and((dtcobro_final == '0000-00-00' or dtcobro_final == '')),((dtpago_inicial == '0000-00-00' or dtpago_inicial == '')),((dtpago_final == '0000-00-00' or dtpago_final == ''))]
+
+    log_val = False
+
+    for x in log_list:
+        log_val = log_val or x
+    
+    
+    params2 = {'Parámetros':['Fecha'],
+                '': ['Inicio'],
+                '.': ['Fin']}
+    if log_val == True:
+        print(not ((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')and(dtcreate_final == '0000-00-00') or (dtcreate_final == '')))
+        if not ((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')and(dtcreate_final == '0000-00-00') or (dtcreate_final == '')):
+            
+            params2['Parámetros'].append('Alta')
+            params2[''].append('')
+            params2['.'].append('')
+            if not ((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')):
+                params2[''][1] = formato_fechas(dtcrt_inicial)
+            if not ((dtcreate_final == '0000-00-00') or (dtcreate_final == '')):
+                params2['.'][1] = formato_fechas(dtcrt_final)
+
+        if not ((dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == '')and(dtsolicitud_final == '0000-00-00') or (dtsolicitud_final == '')):
+            params2['Parámetros'].append('Solicitud')
+            params2[''].append('')
+            params2['.'].append('')
+            if not ((dtsolicitud_inicial == '0000-00-00') or (dtsolicitud_inicial == '')):
+                params2[''][2] = formato_fechas(dtsol_inicial)
+            if not ((dtsolicitud_final == '0000-00-00') or (dtsolicitud_final == '')):
+                params2['.'][2] = formato_fechas(dtsol_final)
+
+        if not ((dtvaluador_inicial == '0000-00-00') or (dtvaluador_inicial == '')and(dtvaluador_final == '0000-00-00') or (dtvaluador_final == '')):
+            params2['Parámetros'].append('Valuador')
+            params2[''].append('')
+            params2['.'].append('')
+            if not ((dtvaluador_inicial == '0000-00-00' or dtvaluador_inicial == '')):
+                params2[''][3] = formato_fechas(dtval_inicial)
+            if not ((dtvaluador_final == '0000-00-00' or dtvaluador_final == '')):
+                params2['.'][3] = formato_fechas(dtval_final)
+
+        if not ((dtcliente_inicial == '0000-00-00') or (dtcliente_inicial == '')and(dtcliente_final == '0000-00-00') or (dtcliente_final == '')):
+            params2['Parámetros'].append('Cliente')
+            params2[''].append('')
+            params2['.'].append('')
+            if not ((dtcliente_inicial == '0000-00-00' or dtcliente_inicial == '')):
+                params2[''][4] = formato_fechas(dtclt_inicial)
+            if not ((dtcliente_final == '0000-00-00' or dtcliente_final == '')):
+                params2['.'][4] = formato_fechas(dtclt_final)
+
+        if not ((dtcobro_inicial == '0000-00-00') or (dtcobro_inicial == '')and(dtcobro_final == '0000-00-00') or (dtcobro_final == '')):
+            params2['Parámetros'].append('Cobro')
+            params2[''].append('')
+            params2['.'].append('')
+            if not ((dtcobro_inicial == '0000-00-00' or dtcobro_inicial == '')):
+                params2[''][5] = formato_fechas(dtcbr_inicial)
+            if not ((dtcobro_final == '0000-00-00' or dtcobro_final == '')):
+                params2['.'][5] = formato_fechas(dtcbr_final)
+
+        if not ((dtpago_inicial == '0000-00-00') or (dtpago_inicial == '')and(dtpago_final == '0000-00-00') or (dtpago_final == '')):
+            params2['Parámetros'].append('Pago')
+            params2[''].append('')
+            params2['.'].append('')
+            if not ((dtpago_inicial == '0000-00-00' or dtpago_inicial == '')):
+                params2[''][6] = formato_fechas(dtpg_inicial)
+            if not ((dtpago_final == '0000-00-00' or dtpago_final == '')):
+                params2['.'][6] = formato_fechas(dtpg_final)
+
+        print(params2)
+
+        num_rows2 = max(len(params2[field]) for field in headers_params1)
+        num_cols2 = len(list(params2.keys()))
+        headers_params2 = list(params2.keys())
+        for col_num, header in enumerate(headers_params2, start=1):
+            cell = worksheet.cell(row=1, column=col_num+num_cols2+1, value=header)
+            cell.font = openpyxl.styles.Font(bold=True)
+            cell.fill = openpyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
+            cell = worksheet.cell(row=2, column=col_num+num_cols2+1, value=header)
+            cell.font = openpyxl.styles.Font(bold=True)
+            cell.fill = openpyxl.styles.PatternFill(start_color="C0C0C0", end_color="C0C0C0", fill_type="solid")
+        # Write data to the Excel file and apply formatting
+    # num_rows = max(len(params1[field]) for field in headers_params1)
+        for row_num in range(1, num_rows2 + 1):
+            for col_num, field in enumerate(headers_params2, start=1):
+                cell = worksheet.cell(row=row_num + 1, column=col_num+num_cols2+1, value=params2[field][row_num - 1])
+                cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
 
 
     
@@ -1278,8 +1340,7 @@ def nuevo_avaluo(request):
             var_coms = int(request.POST["control_comentarios"])
             var_hons = int(request.POST["control_honorarios"])
             #comentarios_request = {"comentario":[],"avaluo_id":[var]}
-            print(var_hons)
-            print(request.POST)
+            
 
             for i in range(0,var_coms):
                 num = str(i+1)
