@@ -592,7 +592,7 @@ $(document).ready(function() {
         var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_pdf/' + url;
 
         // Redirect to the constructed URL
-        console.log(redirectUrl);
+    
         window.location.href = redirectUrl;
       });    
 

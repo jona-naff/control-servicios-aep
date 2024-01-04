@@ -4,9 +4,27 @@
 
     {% load static %}
 
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Página de servicios</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="{% static 'styles/bootstrap-datepicker.min.css' %}">
+        <script src="{% static 'js/detalles.js' %}"></script>
+        <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/navbar.js' %}"></script>
+        <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+        <script src="{% static 'styles/bootstrap-combined.min.css' %}"></script>
+        
+    </head>
     
     {% for i in avaluo %}
+    {{error}}
     <div id="contenedor" align="center">
+    <form action="" method="POST" onSubmit="return confirm('¿Está seguro de que quiere editar este servicio?') ">
+    {% csrf_token %}
         <table>
             <tr>
                 <td style="display: table-cell; vertical-align: top;">
@@ -19,46 +37,47 @@
                                 <th scope="col">Servicio:</td><td>{{ i.avaluoid }}</td> 
                             </tr>
                             <tr>
-                                <th scope="col">Tipo servicio:</td><td>{{ i.tip }}</td>
+                                <th scope="col">Tipo servicio:</td><td id="tipo_td">{{ i.tip }} &nbsp <a id="tipo_href" href="">editar</a> </td>
                             </tr>
                             <tr>
-                                <th scope="col">M2 Construcción:</td><td>{{ i.m2c }}</td>
+                                <th scope="col">M2 Construcción:</td><td id="m2c_td">{{ i.m2c }} &nbsp <a id="m2c_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">M2 terreno:</td><td>{{ i.m2t }}</td>
+                                <th scope="col">M2 terreno:</td><td id="m2t_td">{{ i.m2t }} &nbsp <a id="m2t_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">No. Factura:</td><td>{{ i.nofactura }}</td>
+                                <th scope="col">No. Factura:</td><td id="nofactura_td">{{ i.nofactura }} &nbsp <a id="nofactura_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">Tipo Inmueble:</td><td>{{ i.tipoimb }}</td>
+                                <th scope="col">Tipo Inmueble:</td><td id="tipoimb_td">{{ i.tipoimb }}&nbsp <a id="tipoimb_href" href="">editar</a> </td>
                             </tr>
                             <tr>
-                                <th scope="col">Valor inmueble:</td><td>{{ i.valor }}</td>
+                                <th scope="col">Valor inmueble:</td><td id="valor_td">{{ i.valor }}&nbsp <a id="valor_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">Estado:</td><td>{{ i.estado }}</td>
+                                <th scope="col">Estado:</td><td id="estado_td">{{ i.estado }}</td>
                             </tr>
                             <tr>
-                                <th scope="col">Municipio:</td><td>{{ i.municipio }}</td>
+                                <th scope="col">Municipio:</td><td id="municipio_td">{{ i.municipio }} </td>
+
                             </tr>
                             <tr>
-                                <th scope="col">Colonia:</td><td>{{ i.colo }}</td>
+                                <th scope="col">Colonia:</td><td id="colonia_td">{{ i.colo }} &nbsp <a id="colonia_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">Calle:</td><td>{{ i.calle }}</td>
+                                <th scope="col">Calle:</td><td id="calle_td">{{ i.calle }} &nbsp <a id="calle_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">Num. Ext.:</td><td>{{ i.numero }}</td>
+                                <th scope="col">Num. Ext.:</td><td id="numero_td">{{ i.numero }} &nbsp <a id="numero_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">Num. Int.:</td><td>{{ i.numeroint }}</td>
+                                <th scope="col">Num. Int.:</td><td id="numeroint_td">{{ i.numeroint }} &nbsp <a id="numeroint_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">Manzana:</td><td>{{ i.manzana }}</td>
+                                <th scope="col">Manzana:</td><td id="manzana_td">{{ i.manzana }} &nbsp <a id="manzana_href" href="">editar</a></td>
                             </tr>
                             <tr>
-                                <th scope="col">Lote:</td><td>{{ i.lote }}</td>
+                                <th scope="col">Lote:</td><td id="lote_td">{{ i.lote }} &nbsp <a id="lote_href" href="">editar</a></td>
                             </tr>
                         </table>
                     </div>
@@ -95,6 +114,12 @@
                 </td>
             </tr>
         </table>
+    <button>
+        Guardar
+    </button>
+    </form>
     </div>
     {% endfor %}
+
+
 {% endblock %}

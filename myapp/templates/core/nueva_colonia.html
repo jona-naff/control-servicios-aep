@@ -23,7 +23,7 @@
 
 {{error}}
 
-<form action="nueva_colonia" method="POST">
+<form action="nueva_colonia" method="POST" onSubmit="return confirm('¿Está seguro de que quiere editar este servicio?')>
 
     {% csrf_token %}
     <br>

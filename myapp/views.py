@@ -2,7 +2,7 @@ from django.http import JsonResponse, FileResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
-from .models import  Avaluos, Clientes, Estados, Municipios, Colonias, Tipos, Valuadores, Estatus, Comentarios, Honorarios, Comentarios, Honorarios
+from .models import  Avaluos, Clientes, Estados, Municipios, Colonias, Tipos, Valuadores, Estatus, Comentarios, Honorarios, Comentarios, Honorarios,Tiposimb
 from openpyxl import Workbook
 import openpyxl
 from openpyxl.styles import *
@@ -115,7 +115,17 @@ def get_clientes(request):
         
     return JsonResponse(data)
   
-  
+def get_tiposimb(request):
+    tiposimb=list(Tiposimb.objects.values())
+    
+    if (len(tiposimb)>0):
+        data={'message':"Success",'tiposimb': tiposimb}
+    else:
+        data={'message': "Not Found"}
+        
+    return JsonResponse(data)
+
+
     
 def get_tipos(request):
     tipos=list(Tipos.objects.values())
@@ -271,12 +281,51 @@ def get_avaluo(request, avaluoid):
     comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
 
     honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
+    if request.method == 'GET': 
+        return render(request,'core/detalles.html',{
+            'avaluo': avaluo,
+            'comentarios': comentarios,
+            'honorarios': honorarios,
+            'AvaluoForm': AvaluoForm,
+            'ComentariosForm': ComentariosForm,
+            'HonorariosForm': HonorariosForm
+        })
 
-    return render(request,'core/detalles.html',{
-         'avaluo': avaluo,
-         'comentarios': comentarios,
-         'honorarios': honorarios
-    })
+    else: 
+        try:
+            avaluo_editar = Avaluos.objects.get(avaluoid=avaluoid)
+          
+            avaluo_editar.tipo=Tipos.objects.get(tipoid = request.POST.get("tipo",avaluo_editar.tipo.tipoid))
+            avaluo_editar.m2c=request.POST.get("m2c",avaluo_editar.m2c)
+            avaluo_editar.m2t=request.POST.get("m2t",avaluo_editar.m2t)
+            avaluo_editar.nofactura=request.POST.get("nofactura",avaluo_editar.nofactura)
+            avaluo_editar.tipoimb=Tiposimb.objects.get(tipoimbid = request.POST.get("tipoimb",avaluo_editar.tipoimb.tipoimbid))
+            avaluo_editar.valor=request.POST.get("valor",avaluo_editar.valor)
+            avaluo_editar.calle=request.POST.get("calle",avaluo_editar.calle)
+            avaluo_editar.numero=request.POST.get("numero",avaluo_editar.numero)
+            avaluo_editar.numeroint=request.POST.get("numeroint",avaluo_editar.numeroint)
+            avaluo_editar.manzana=request.POST.get("manzana",avaluo_editar.manzana)
+            avaluo_editar.lote=request.POST.get("lote",avaluo_editar.lote)
+            avaluo_editar.colonia=Colonias.objects.get(colonia_id = request.POST.get("colonia",avaluo_editar.colonia.colonia_id))
+            avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','numeroint','manzana','lote','colonia'])
+
+        
+            return render(request,'core/detalles.html',{
+            'avaluo': avaluo,
+            'comentarios': comentarios,
+            'honorarios': honorarios,
+            'AvaluoForm': AvaluoForm,
+            'ComentariosForm': ComentariosForm,
+            'HonorariosForm': HonorariosForm
+        })
+        except ValueError:
+            return render(request, 'core/detalles.html',{
+            'form': AvaluoForm,
+            'form1': ComentariosForm,
+            'form2': HonorariosForm,
+            'error': 'Please provide valide data'
+                })
+
 
 
 def query_by_id(cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id):
@@ -1322,7 +1371,7 @@ def nuevo_avaluo(request):
             if len(request.POST["dtpago"]) != 0:
                 request.POST["dtpago"] = formato_fechas_inverso(request.POST["dtpago"])
             #d1 = today.strftime("%Y-%m-%d")
-            form = AvaluoForm(request.POST)
+            form = AvaluoForm(request.POST,request.FILES)
             #form.dtcreate  = today
             #print(form.dtcreate)
            #fecha_alta = AvaluoForm()
@@ -1374,6 +1423,7 @@ def nuevo_avaluo(request):
 
 
 def nueva_colonia(request):
+
     if request.method == 'GET':       
         return render(request, 'core/nueva_colonia.html',{
             'ColoniaForm': ColoniaForm
@@ -1390,3 +1440,6 @@ def nueva_colonia(request):
             'form': ColoniaForm,
             'error': 'Please provide valide data'
                 })
+        
+
+

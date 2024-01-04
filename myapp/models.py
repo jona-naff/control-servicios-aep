@@ -153,6 +153,8 @@ class Avaluos(models.Model):
     numero_dictamen = models.CharField(max_length=100,blank=True)
     nombre_proyecto = models.CharField(max_length=200,blank=True)
 
+    imagen = models.ImageField(upload_to="fotos", blank=True,null=True)
+
     #def __str__(self):
     #    return f"Servicio {self.avaluoid}"    
     

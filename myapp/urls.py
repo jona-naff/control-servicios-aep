@@ -1,11 +1,14 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('',views.index,name="index"),
     path('servicios/',views.servicios,name="servicios"),
     path('servicios/clientes',views.get_clientes,name="get_clientes"),
     path('servicios/tipos',views.get_tipos,name="get_tipos"),
+    path('servicios/tiposimb',views.get_tiposimb,name="get_tiposimb"),
     path('servicios/valuadores',views.get_valuadores,name="get_valuadores"),
     path('servicios/estatus',views.get_estatus,name="get_estatus"),
     path("servicios/estados/", views.get_estados, name="get_estados"),
@@ -24,3 +27,5 @@ urlpatterns = [
     path("servicios/avaluos/<int:municipio_id>", views.get_avaluos_bymunicipio, name="get_avaluos_bymunicipio"),
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -7,7 +7,7 @@ class AvaluoForm(ModelForm):
     #colonias = forms.ModelChoiceField(queryset=Group.objects.all())
     class Meta: 
         model = Avaluos
-        fields=['colonia','cliente', 'tipo','valuador','estatus', 'calle','numero','numeroint','entrecalle1','entrecalle2','edad','tipoimb', 'manzana', 'lote','m2t','m2c','dtcreate','dtsolicitud','dtvaluador','dtcliente','dtcobro','dtpago','valor','nofactura','nofolio','monto']
+        fields=['colonia','cliente', 'tipo','valuador','estatus', 'calle','numero','numeroint','entrecalle1','entrecalle2','edad','tipoimb', 'manzana', 'lote','m2t','m2c','dtcreate','dtsolicitud','dtvaluador','dtcliente','dtcobro','dtpago','valor','nofactura','nofolio','monto','imagen']
 
 
 
