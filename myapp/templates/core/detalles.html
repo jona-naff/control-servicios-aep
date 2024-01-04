@@ -112,6 +112,26 @@
                     </div>
                     
                 </td>
+                <td style="display: table-cell; vertical-align: top;">
+                    <div id="imagen_info" >
+                        <table class="table">
+                            <tr><th colspan="2" align="center">Imagen</th></tr>
+                            {% for k in avaluo %}
+                            <tr>
+                                {% if k.imagen %}
+                                <td><img src="{{ k.imagen.url }}" width="200" height="200"></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                </td>
             </tr>
         </table>
     <button>

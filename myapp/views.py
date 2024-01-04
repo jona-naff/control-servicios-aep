@@ -7,7 +7,6 @@ from openpyxl import Workbook
 import openpyxl
 from openpyxl.styles import *
 import decimal
-
 import csv
 
 from django.db.models import Q
@@ -89,6 +88,7 @@ def servicios(request):
     page = request.GET.get('page')
     avaluos_pag = p.get_page(page)
     nums = []
+    
     for i in range(avaluos_pag.paginator.num_pages):
         nums.append(i)
     return render(request,'core/servicios.html',{
@@ -106,7 +106,12 @@ def exit(request):
 
 
 def get_clientes(request):
-    clientes=list(Clientes.objects.values())
+    clientes=list(Clientes.objects.values().order_by('nombre'))
+    for i in range(len(clientes)):
+        if clientes[i]['clienteid'] == 0:
+            del clientes[i]
+            break
+    clientes = [list(Clientes.objects.values())[0]]+clientes
     
     if (len(clientes)>0):
         data={'message':"Success",'clientes':clientes}
@@ -116,8 +121,13 @@ def get_clientes(request):
     return JsonResponse(data)
   
 def get_tiposimb(request):
-    tiposimb=list(Tiposimb.objects.values())
-    
+    #tiposimb=list(Tiposimb.objects.values())
+    tiposimb=list(Tiposimb.objects.values().order_by('nombre'))
+    for i in range(len(tiposimb)):
+        if tiposimb[i]['tipoimbid'] == 0:
+            del tiposimb[i]
+            break
+    tiposimb = [list(Tiposimb.objects.values())[0]]+tiposimb
     if (len(tiposimb)>0):
         data={'message':"Success",'tiposimb': tiposimb}
     else:
@@ -128,8 +138,12 @@ def get_tiposimb(request):
 
     
 def get_tipos(request):
-    tipos=list(Tipos.objects.values())
-    
+    tipos=list(Tipos.objects.values().order_by('display'))
+    for i in range(len(tipos)):
+        if tipos[i]['tipoid'] == 0:
+            del tipos[i]
+            break
+    tipos = [list(Tipos.objects.values())[0]]+tipos
     if (len(tipos)>0):
         data={'message':"Success",'tipos': tipos}
     else:
@@ -140,7 +154,12 @@ def get_tipos(request):
 
 
 def get_valuadores(request):
-    valuadores=list(Valuadores.objects.values())
+    valuadores=list(Valuadores.objects.values().order_by('display'))
+    for i in range(len(valuadores)):
+        if valuadores[i]['valuadorid'] == 0:
+            del valuadores[i]
+            break
+    valuadores = [list(Valuadores.objects.values())[0]]+valuadores
     
     if (len(valuadores)>0):
         data={'message':"Success",'valuadores': valuadores}
@@ -151,7 +170,12 @@ def get_valuadores(request):
 
 
 def get_estatus(request):
-    estatus=list(Estatus.objects.values())
+    estatus=list(Estatus.objects.values().order_by('nombre'))
+    for i in range(len(estatus)):
+        if estatus[i]['estatusid'] == 0:
+            del estatus[i]
+            break
+    estatus = [list(Estatus.objects.values())[0]]+estatus
     
     if (len(estatus)>0):
         data={'message':"Success",'estatus': estatus}
@@ -175,7 +199,7 @@ def get_estados(request):
 
 def get_municipios(request, estado_id):
     if estado_id < 1:
-        municipios = list(Municipios.objects.values())[0:200]
+        municipios = list(Municipios.objects.values())
     else:
         municipios = [list(Municipios.objects.values())[0]]
         municipios += list(Municipios.objects.order_by('nombre').filter(estado_id=estado_id).values())
@@ -1155,8 +1179,12 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     # Your dictionary data
     data = get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final)
     # Create a response object with appropriate Excel headers
+    today = str(date.today())
+    today = today[2:4]+today[5:7]+today[8:10]
+
+
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="output.xlsx"'
+    response['Content-Disposition'] = 'attachment; filename='+today+'"_reporte_control_servicios.xlsx"'
 
     # Create a new Excel workbook and add a worksheet
     workbook = openpyxl.Workbook()
@@ -1405,16 +1433,22 @@ def nuevo_avaluo(request):
                 hons = Honorarios(razon=request.POST["razon_"+num],monto=request.POST["monto_"+num],avaluo_id=avaluo_id)
                 print(hons)
                 hons.save()
-            #print(request.POST)
             
-            #nuevos_comentarios = form.save(commit=False)
-            #nuevos_comentarios.save()
-            #print(comentarios_request)
             
+            avaluo = Avaluos.objects.filter(avaluoid=avaluo_id)
+            comentarios = Comentarios.objects.filter(avaluo_id= avaluo_id)
+            honorarios = Honorarios.objects.filter(avaluo_id= avaluo_id)
 
-            return redirect('servicios')
+            return render(request,'core/detalles.html',{
+            'avaluo': avaluo,
+            'comentarios': comentarios,
+            'honorarios': honorarios,
+            'AvaluoForm': AvaluoForm,
+            'ComentariosForm': ComentariosForm,
+            'HonorariosForm': HonorariosForm
+        })
         except ValueError:
-            return render(request, 'core/nuevo_avaluo.html',{
+            return render(request, 'core/detalles.html',{
             'form': AvaluoForm,
             'form1': ComentariosForm,
             'form2': HonorariosForm,
@@ -1433,8 +1467,22 @@ def nueva_colonia(request):
             form = ColoniaForm(request.POST)
             nueva_colonia = form.save(commit=False)
             nueva_colonia.save()
-            print(nueva_colonia)
-            return redirect('servicios')
+            col_id = Colonias.objects.last().colonia_id
+            col_render = Colonias.objects.get(colonia_id=col_id)
+            mun_id = col_render.municipio_id
+            col_render = col_render.nombre
+            mun_render = Municipios.objects.get(municipio_id = mun_id)
+            est_id = mun_render.estado_id
+            mun_render = mun_render.nombre
+            est_render = Estados.objects.get(estado_id = est_id)
+            est_render = est_render.nombre
+            cp = request.POST["cp"]
+            return render(request, 'core/colonia_verificacion.html',{
+            'colonia': col_render,
+            'municipio': mun_render,
+            'estado': est_render,
+            "cp": cp
+                })
         except ValueError:
             return render(request, 'core/nueva_colonia.html',{
             'form': ColoniaForm,

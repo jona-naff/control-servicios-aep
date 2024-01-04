@@ -19,13 +19,8 @@
 <br>
 <br>
 <div align="center">
-<h4>Agregar Colonia</h4>
+<h4>Colonia creada exitosamente</h4>
 
-{{error}}
-
-<form action="" method="POST" onSubmit="return confirm('¿Está seguro de que quiere guardar una nueva colonia?')">
-
-    {% csrf_token %}
     <br>
     <table>
         <tr>
@@ -47,7 +42,7 @@
                 Estado:
             </td>
             <td>
-                <select name="" id="cboEstado"></select>
+               {{ estado }}
             </td>
         </tr>
         <tr>
@@ -55,7 +50,7 @@
                 Municipio:
             </td>
             <td>
-                <select name="municipio" required id="id_municipio"><option value="indef">Indefinido</option></select>
+                {{ municipio }}
             </td>
         </tr>
         <tr>
@@ -63,7 +58,7 @@
                 Colonia:
             </td>
             <td>
-                {{ ColoniaForm.nombre }}
+                {{ colonia }}
             </td>
         </tr>
         <tr>
@@ -71,19 +66,12 @@
                 Código postal:
             </td>
             <td>
-                {{ ColoniaForm.cp }}
+                {{ cp }}
             </td>
         </tr>
     </table>
     
     <br>    
-        
-    <button>
-        Guardar
-    </button>
-    <br>
-    <br>
 
-    </form>
     </div>
 {% endblock %}
