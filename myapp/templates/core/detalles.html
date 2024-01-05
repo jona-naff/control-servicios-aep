@@ -126,12 +126,15 @@
                         <table id="table_comentarios" class="table">
                             <tr><th colspan="2" align="center">Comentarios</th></tr>
                             <tr><th>Fecha</th><th>Comentario</th></tr>
+                          
                             {% for j in comentarios %}
                             <tr id="tr_comentarios">
                                 <td>{{ j.fecha|date:"d/m/Y" }}</td>
                                 <td>{{ j.comentario }}</td>
                             </tr>
                             {% endfor %}
+                            
+
                            </table>
                             
                             <input type="button" id="agregar_comentario" name="agregar_comentario" onclick="agrega_comentario()" value="Agregar" />
@@ -145,12 +148,14 @@
                         <table id = "table_honorarios" class="table">
                             <tr><th colspan="2" align="center">Honorarios</th></tr>
                             <tr><th>Razón Social</th><th>Importe Facturado</th></tr>
+    
                             {% for k in honorarios %}
                             <tr>
                                 <td>{{ k.razon }}</td>
                                 <td>{{ k.monto }}</td>
                             </tr>
                             {% endfor %}
+       
                         
                     </div>
                         

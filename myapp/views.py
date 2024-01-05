@@ -342,7 +342,7 @@ def get_avaluo(request, avaluoid):
             
             today = date.today()
             var_coms = int(request.POST.get("control_comentarios",0))
-            var_hons = int(request.POST["control_honorarios"])
+            var_hons = int(request.POST.get("control_honorarios",0))
             for i in range(0,var_coms):
                 num = str(i+1)
                 
@@ -356,17 +356,12 @@ def get_avaluo(request, avaluoid):
                 hons.save()
             comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
             honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
-            if len(list(comentarios))>0:
-                for comentario in comentarios:
-                    print(comentario.fecha)
-                    fecha_comentario = comentario.fecha
-                    texto_comentario = comentario.comentario
-                    comentarios_dic.append({'fecha': fecha_comentario, 'comentario': texto_comentario})
+            
             
             
             return render(request,'core/detalles.html',{
             'avaluo': avaluo,
-            'comentarios': comentarios_dic,
+            'comentarios': comentarios,
             'honorarios': honorarios,
             'AvaluoForm': AvaluoForm,
             'ComentariosForm': ComentariosForm,
@@ -374,10 +369,11 @@ def get_avaluo(request, avaluoid):
         })
         except ValueError:
             return render(request, 'core/detalles.html',{
-            'form': AvaluoForm,
-            'form1': ComentariosForm,
-            'form2': HonorariosForm,
-            'error': 'Please provide valide data'
+           
+            'AvaluoForm': AvaluoForm,
+            'ComentariosForm': ComentariosForm,
+            'HonorariosForm': HonorariosForm,
+            'error': 'Provea información válida'
                 })
 
 
@@ -1522,7 +1518,7 @@ def nuevo_avaluo(request):
                 hons.save()
             
             
-            avaluo = Avaluos.objects.filter(avaluoid=avaluo_id)
+            avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluo_id])
             comentarios = Comentarios.objects.filter(avaluo_id= avaluo_id)
             
             honorarios = Honorarios.objects.filter(avaluo_id= avaluo_id)
