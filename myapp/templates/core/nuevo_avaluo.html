@@ -66,7 +66,7 @@
 <br>
 <br>
 
-<form action="" method="POST" enctype="multipart/form-data" onSubmit="return confirm('¿Está seguro de que quiere guardar este servicio?')">
+<form action="" method="POST" enctype="multipart/form-data" onSubmit="return confirm('¿Seguro que quiere guardar este servicio?')">
 
     {% csrf_token %}
     <br>
@@ -230,20 +230,16 @@
                 Tipo de servicio
                 
             </td>
-            <td>
-                <div class="border-1 p-4">
-                {{ AvaluoForm.tipo }}
-                </div>
-            </td>
+            
+            <td name="" id=""><div class="border-1 p-4"><select name="tipo" required id="id_tipo"></select></div> </td>
+            </div>
         </tr>
         <tr>
             <td>
                 Cliente del servicio
             </td>
             <td>
-                <div class="border-1 p-4">
-                {{ AvaluoForm.cliente }}
-                </div>
+                <div class="border-1 p-4"><select name="cliente" required id="id_cliente"></select></div>
             </td>
         </tr>
         <tr>
@@ -251,9 +247,7 @@
                 Valuador a cargo
             </td>
             <td>
-                <div class="border-1 p-4">
-                {{ AvaluoForm.valuador }}
-                </div>
+                <div class="border-1 p-4"><select name="valuador" required id="id_valuador"></select></div>
             </td>
         </tr>
         <tr>
@@ -261,9 +255,7 @@
                 Estatus
             </td>
             <td>
-                <div class="border-1 p-4">
-                {{ AvaluoForm.estatus }}
-                </div>
+                <div class="border-1 p-4"><select name="estatus" required id="id_estatus"></select></div>
             </td>
         </tr>
         <tr>
@@ -271,9 +263,7 @@
                 Tipo de Inmueble
             </td>
             <td>
-                <div class="border-1 p-4">
-                {{ AvaluoForm.tipoimb }}
-                </div>
+                <div class="border-1 p-4"><select name="tipoimb" required id="id_tipoimb"></select></div>
             </td>
         </tr>
     </table>
@@ -281,9 +271,6 @@
     
     <div>
 
-       <!-- <p>Valuador {{ AvaluoForm.dtvaluador }}</p>
-        <p>Entrega cliente {{ AvaluoForm.dtcliente }}</p>
-        <p>Cobro Cliente {{ AvaluoForm.dtcobro }}</p>-->
     </div>
     <br>
 

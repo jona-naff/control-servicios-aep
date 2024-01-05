@@ -1,4 +1,5 @@
 
+
 const listarColonias = async (municipio_id) =>{
     try{
         const baseUrl = "http://127.0.0.1:8000";
@@ -64,21 +65,141 @@ const listarEstados=async()=>{
 };
 
 
-/*const cambiarHTML=async(peticion)=>{
+const listarTipos = async () =>{
     try{
-        const value = String(peticion);
-        $('#id_colonia').val(value);
-            
+        const baseUrl = "http://127.0.0.1:8000";
+        const endpoint = "/servicios/tipos";
+        const response=await fetch(baseUrl+endpoint);
+        const data =await response.json();
         
+        if(data.message=="Success"){
+            let opciones=``;
+            opciones += ``
+            data.tipos.forEach((tipo)=>{
+                opciones+=`<option value='${tipo.tipoid}'>${tipo.display}</option>`;
+            });
+            opciones+=`</select>`
+            id_tipo.innerHTML = opciones;
+        }else{
+            alert("Tipos no encontradas");
+        }
     }catch(error){
         console.log(error);
-    }
-};*/
+    }   
+};
 
+
+const listarClientes = async () =>{
+    try{
+        const baseUrl = "http://127.0.0.1:8000";
+        const endpoint = "/servicios/clientes";
+        const response=await fetch(baseUrl+endpoint);
+        const data =await response.json();
+        
+        if(data.message=="Success"){
+            let opciones=``;
+            opciones += ``
+            data.clientes.forEach((cliente)=>{
+                opciones+=`<option value='${cliente.clienteid}'>${cliente.nombre}</option>`;
+            });
+            opciones+=`</select>`
+            id_cliente.innerHTML = opciones;
+        }else{
+            alert("Tipos no encontradas");
+        }
+    }catch(error){
+        console.log(error);
+    }   
+};
+
+
+const listarValuadores = async () =>{
+    try{
+        const baseUrl = "http://127.0.0.1:8000";
+        const endpoint = "/servicios/valuadores";
+        const response=await fetch(baseUrl+endpoint);
+        const data =await response.json();
+        
+        if(data.message=="Success"){
+            let opciones=``;
+            opciones += ``
+            data.valuadores.forEach((valuador)=>{
+                opciones+=`<option value='${valuador.valuadorid}'>${valuador.display}</option>`;
+            });
+            opciones+=`</select>`
+            id_valuador.innerHTML = opciones;
+        }else{
+            alert("Tipos no encontradas");
+        }
+    }catch(error){
+        console.log(error);
+    }   
+};
+
+
+
+const listarEstatus = async () =>{
+    try{
+        const baseUrl = "http://127.0.0.1:8000";
+        const endpoint = "/servicios/estatus";
+        const response=await fetch(baseUrl+endpoint);
+        const data =await response.json();
+        
+        if(data.message=="Success"){
+            let opciones=``;
+            opciones += ``;
+            data.estatus.forEach((estatu)=>{
+                opciones+=`<option value='${estatu.estatusid}'>${estatu.nombre}</option>`;
+            });
+            opciones+=`</select>`
+            id_estatus.innerHTML = opciones;
+        }else{
+            alert("Tipos no encontradas");
+        }
+    }catch(error){
+        console.log(error);
+    }   
+};
+
+
+
+
+const listarTiposImb = async () =>{
+    try{
+        const baseUrl = "http://127.0.0.1:8000";
+        const endpoint = "/servicios/tiposimb";
+        const response=await fetch(baseUrl+endpoint);
+        const data =await response.json();
+        
+        if(data.message=="Success"){
+            let opciones=``;
+            opciones += ``
+            data.tiposimb.forEach((tipoimb)=>{
+                opciones+=`<option value='${tipoimb.tipoimbid}'>${tipoimb.nombre}</option>`;
+            });
+            opciones+=`</select>`
+            id_tipoimb.innerHTML = opciones;
+        }else{
+            alert("Tipos no encontradas");
+        }
+    }catch(error){
+        console.log(error);
+    }   
+};
 
 const cargaInicial=async()=>{
 
     await listarEstados();
+
+    await listarTipos();
+
+    await listarClientes();
+
+    await listarValuadores();
+
+    await listarEstatus();
+
+    await listarTiposImb();
 
     cboEstado.addEventListener("change",(event)=>{
         listarMunicipios(event.target.value);
@@ -90,9 +211,7 @@ const cargaInicial=async()=>{
 
     });
 
-    /*cboColonia.addEventListener("change",(event)=>{
-
-    });*/
+    
 
 };
 
@@ -100,3 +219,6 @@ const cargaInicial=async()=>{
 window.addEventListener("load", async () => {
     await cargaInicial();
 });
+
+    
+
