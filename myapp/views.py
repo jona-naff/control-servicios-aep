@@ -348,8 +348,14 @@ def get_avaluo(request, avaluoid):
                 
                 coms = Comentarios(comentario=request.POST["comentario_"+num],avaluo_id=avaluoid,fecha=today)
                 coms.save()
+            for i in range(0,var_hons):
+                num = str(i+1)
 
+                hons = Honorarios(razon=request.POST["razon_"+num],monto=request.POST["monto_"+num],avaluo_id=avaluoid)
+            
+                hons.save()
             comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
+            honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
             if len(list(comentarios))>0:
                 for comentario in comentarios:
                     print(comentario.fecha)
@@ -357,17 +363,7 @@ def get_avaluo(request, avaluoid):
                     texto_comentario = comentario.comentario
                     comentarios_dic.append({'fecha': fecha_comentario, 'comentario': texto_comentario})
             
-            #comentarios_request = {"comentario":[],"avaluo_id":[var]}
             
-            
-            
-
-            for i in range(0,var_hons):
-                num = str(i+1)
-
-                hons = Honorarios(razon=request.POST["razon_"+num],monto=request.POST["monto_"+num],avaluo_id=avaluoid)
-                print(hons)
-                hons.save()
             return render(request,'core/detalles.html',{
             'avaluo': avaluo,
             'comentarios': comentarios_dic,
@@ -714,8 +710,6 @@ def max_words_per_line(cell_width, font_size, text):
     return max_words_list
 
 
-
-
 class GeneratePDFView(View):
 
     def get(self, request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final,*args, **kwargs):
@@ -869,9 +863,8 @@ class GeneratePDFView(View):
         log_val = False
 
         for x in log_list:
-            log_val = log_val or x
-     
-
+            log_val = log_val or not x
+        
         if log_val == True:
             print(not ((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')and(dtcreate_final == '0000-00-00') or (dtcreate_final == '')))
             if not ((dtcreate_inicial == '0000-00-00') or (dtcreate_inicial == '')and(dtcreate_final == '0000-00-00') or (dtcreate_final == '')):
@@ -918,14 +911,14 @@ class GeneratePDFView(View):
                 if not ((dtpago_final == '0000-00-00' or dtpago_final == '')):
                     data2_dict['pago'][2] = formato_fechas(dtpg_final)
 
-            print(data2_dict)
+        
             data2 = []
 
             for x in data2_dict:
-                print(x)
+                
                 data2.append(data2_dict[x])
 
-            print(data2)
+         
             col_widths2 = [80, 80]
             table2 = Table(data2,colWidths=col_widths2)
             style = [('BACKGROUND', (0, 0), (-1, 1), fill_color),
@@ -1277,7 +1270,9 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
         if avaluo['dtpago'] == 'None' or avaluo['dtpago'] == "0000-00-00":
             dtpgo = "No disponible"
         else:
-            dtpgo = formato_fechas(avaluo['dtcobro'])
+            dtpgo = formato_fechas(avaluo['dtpago'])
+
+
         data["Id"].append(avaluo["id"])
         ubicacion =  avaluo["estado"] + ',' + chr(10) + avaluo["municipio"] + ',' + chr(10)+ avaluo["colonia"] + ',' + chr(10)+ avaluo["calle"] +' '+ avaluo['numero'] + chr(10) + 'Lote: '+ avaluo['lote']
         data["Ubicacion"].append(ubicacion)

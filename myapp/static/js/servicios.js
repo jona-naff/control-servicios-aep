@@ -63,7 +63,6 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                                     <th>Ubicación</th>
                                     <th>Fechas</th>
                                     <th>Cliente</th>
-                                    <th>Valuador</th>
                                     <th>Estatus</th>
                                     <th>Folio</th>
                                 </tr>
@@ -125,7 +124,6 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 opciones+=`<td> ${avaluo.estado}, <br> ${avaluo.municipio}, <br> ${avaluo.colonia}, <br> ${avaluo.calle} ${avaluo.numero}, <br> Lote: ${avaluo.lote} </td>`;
                 opciones+=`<td>Fecha de alta : `+ dtcrte + `<br> Fecha de solicitud : `+ dtsol + `  <br> Fecha de valuador :`+ dtval+ `<br> Entrega cliente :`+ dtclt+ ` <br> Fecha de cobro :`+ dtcbr +`<br> Fecha de pago : ` +dtcbr+` </td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
-                opciones+=`<td>${avaluo.valuador}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
                 opciones+=`<td>` + folio +  `<br> Dictamen: ${avaluo.dictamen} <br> Proyecto: ${avaluo.proyecto} </td>`;
                 opciones+=`<td></tr><div sytle="display: flex; align-items: center; justify-content: center;"><a class="nav-link" href="/servicios/avaluo/${avaluo.id}">Detalle</a></div></td>`;
