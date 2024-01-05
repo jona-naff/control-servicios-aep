@@ -1123,8 +1123,20 @@ class GeneratePDFView(View):
             table3.drawOn(p, inch-115, 610 - h)
             p.setFillColor("black")
             p.setFont("Helvetica", 8)
-            footer = "Av. Río Mixcoac 88-201. Col. Actipan del Valle, Alcaldía Benito Juárez, Ciudad de México 03100 Teléfonos 5662-1573 "
-            p.drawString(inch - 90, letter[1]/2-200, footer)
+            footer1 = "Av. Río Mixcoac 88-201. Col. Actipan del Valle, Alcaldía Benito Juárez, Ciudad de México 03100 Teléfonos 5662-1573 "
+            p.drawString(inch - 90, letter[1]/2-210, footer1)
+            footer2 = "E-mail:info@aep.com.mx"
+            p.drawString(inch - 90, letter[1]/2-220, footer2)
+            footer3 = "5663-4892"
+            p.drawString(inch + 293, letter[1]/2-220, footer3)
+            tot_pags = num_pages + 1
+            current_page = i+1
+            current_page = 'página' + '' + '1' + '/' + str(tot_pags)
+            p.drawString(inch + 400, letter[1]/2-220, current_page)
+            today = date.today()
+            # dd/mm/YY
+            d1 = today.strftime("%d/%m/%Y")
+            p.drawString(inch + 400, letter[1]/2-210, d1)
 
             p.showPage()
 
