@@ -366,7 +366,7 @@ def get_avaluo(request, avaluoid):
             'ComentariosForm': ComentariosForm,
             'HonorariosForm': HonorariosForm
         })
-        except ValueError:
+        except Avaluos.DoesNotExist:
             return render(request, 'core/detalles.html',{
            
             'AvaluoForm': AvaluoForm,
