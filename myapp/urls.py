@@ -24,7 +24,7 @@ urlpatterns = [
     path("servicios/avaluos/nueva_colonia", views.nueva_colonia, name="nueva_colonia"),
     path('logout/',views.exit,name='exit'),
     path("servicios/avaluo/<int:avaluoid>", views.get_avaluo, name="get_avaluo"),
-    path("servicios/avaluos/<int:municipio_id>", views.get_avaluos_bymunicipio, name="get_avaluos_bymunicipio"),
+    path("servicios/last_serv", views.get_details, name="get_details"),
 ]
 
 if settings.DEBUG:

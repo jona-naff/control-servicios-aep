@@ -338,7 +338,7 @@ def get_avaluo(request, avaluoid):
             avaluo_editar.lote=request.POST.get("lote",avaluo_editar.lote)
             avaluo_editar.colonia=Colonias.objects.get(colonia_id = request.POST.get("colonia",avaluo_editar.colonia.colonia_id))
             avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','numeroint','manzana','lote','colonia'])
-            comentarios_dic = []
+          
             
             today = date.today()
             var_coms = int(request.POST.get("control_comentarios",0))
@@ -358,7 +358,6 @@ def get_avaluo(request, avaluoid):
             honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
             
             
-            
             return render(request,'core/detalles.html',{
             'avaluo': avaluo,
             'comentarios': comentarios,
@@ -376,6 +375,23 @@ def get_avaluo(request, avaluoid):
             'error': 'Provea información válida'
                 })
 
+
+def get_details(request):
+    avaluoid=Avaluos.objects.last().avaluoid
+    avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluoid])
+    comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
+
+    honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
+
+        
+    return render(request,'core/detalles_mid.html',{
+    'avaluo': avaluo,
+    'comentarios': comentarios,
+    'honorarios': honorarios,
+    'AvaluoForm': AvaluoForm,
+    'ComentariosForm': ComentariosForm,
+    'HonorariosForm': HonorariosForm
+})
 
 
 def query_by_id(cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id):
@@ -1535,7 +1551,7 @@ def nuevo_avaluo(request):
             
             honorarios = Honorarios.objects.filter(avaluo_id= avaluo_id)
 
-            return render(request,'core/detalles.html',{
+            return render(request,'core/detalles_mid.html',{
             'avaluo': avaluo,
             'comentarios': comentarios,
             'honorarios': honorarios,

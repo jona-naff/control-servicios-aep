@@ -20,32 +20,7 @@
         <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
         <script src="{% static 'styles/bootstrap-combined.min.css' %}"></script>
         <script type="text/javascript">
-            function agrega_comentario(){
-               var contador_comentario = parseInt($("#control_comentarios").val())+1;
-               var f = new Date();
-               var hoy = f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear();
-               var new_control = '';
-                new_control += '<td><input type="text" value="'+hoy+'" name = "fecha_'+contador_comentario+'" id = "fecha_'+contador_comentario+'" disabled></td>';
-                new_control += '<td><textarea name="comentario_'+contador_comentario+'" id = "comentario_'+contador_comentario+'"></textarea></td>';
-                new_control += '<td><button>Borrar</button></td>';
-                new_control += ''; 
-                console.log(new_control)
-                $("#table_comentarios").append(new_control); 
-                $("#control_comentarios").val(contador_comentario);
-                
-            };
-            function agrega_honorario(){
-                var contador_honorario = parseInt($("#control_honorarios").val())+1;
-                var new_control = '<tr>';
-                    new_control += '<td><input type ="text" id="razon_'+contador_honorario+'" name="razon_'+contador_honorario+'"></td>';
-                    new_control += '<td><input type ="text" id="monto_'+contador_honorario+'" name="monto_'+contador_honorario+'"></td>';
-                    new_control += '<td><button>Borrar</button></td>';
-                    new_control += '</tr>';
-    
-                    $("#table_honorarios").append(new_control);
-                    $("#control_honorarios").val(contador_honorario);
-                    console.log(contador_honorario)
-            };
+            
     
             $.fn.datepicker.defaults.format = "dd/mm/yyyy";
             $('.date').datepicker({
@@ -62,7 +37,7 @@
     {% for i in avaluo %}
 
     <div id="contenedor" align="center">
-    <form action="" method="POST" onSubmit="return confirm('¿Seguro que quiere editar este servicio?') ">
+
     {% csrf_token %}
         <table>
             <tr>
@@ -76,22 +51,22 @@
                                 <th scope="col">Servicio:</td><td>{{ i.avaluoid }}</td> 
                             </tr>
                             <tr>
-                                <th scope="col">Tipo servicio:</td><td id="tipo_td">{{ i.tip }} &nbsp <a id="tipo_href" href="">editar</a> </td>
+                                <th scope="col">Tipo servicio:</td><td id="tipo_td">{{ i.tip }} </td>
                             </tr>
                             <tr>
-                                <th scope="col">M2 Construcción:</td><td id="m2c_td">{{ i.m2c }} &nbsp <a id="m2c_href" href="">editar</a></td>
+                                <th scope="col">M2 Construcción:</td><td id="m2c_td">{{ i.m2c }}</td>
                             </tr>
                             <tr>
-                                <th scope="col">M2 terreno:</td><td id="m2t_td">{{ i.m2t }} &nbsp <a id="m2t_href" href="">editar</a></td>
+                                <th scope="col">M2 terreno:</td><td id="m2t_td">{{ i.m2t }} </td>
                             </tr>
                             <tr>
-                                <th scope="col">No. Factura:</td><td id="nofactura_td">{{ i.nofactura }} &nbsp <a id="nofactura_href" href="">editar</a></td>
+                                <th scope="col">No. Factura:</td><td id="nofactura_td">{{ i.nofactura }} </td>
                             </tr>
                             <tr>
-                                <th scope="col">Tipo Inmueble:</td><td id="tipoimb_td">{{ i.tipoimb }}&nbsp <a id="tipoimb_href" href="">editar</a> </td>
+                                <th scope="col">Tipo Inmueble:</td><td id="tipoimb_td">{{ i.tipoimb }} </td>
                             </tr>
                             <tr>
-                                <th scope="col">Valor inmueble:</td><td id="valor_td">{{ i.valor }}&nbsp <a id="valor_href" href="">editar</a></td>
+                                <th scope="col">Valor inmueble:</td><td id="valor_td">{{ i.valor }}</td>
                             </tr>
                             <tr>
                                 <th scope="col">Estado:</td><td id="estado_td">{{ i.estado }}</td>
@@ -101,22 +76,22 @@
 
                             </tr>
                             <tr>
-                                <th scope="col">Colonia:</td><td id="colonia_td">{{ i.colo }} &nbsp <a id="colonia_href" href="">editar</a></td>
+                                <th scope="col">Colonia:</td><td id="colonia_td">{{ i.colo }} </td>
                             </tr>
                             <tr>
-                                <th scope="col">Calle:</td><td id="calle_td">{{ i.calle }} &nbsp <a id="calle_href" href="">editar</a></td>
+                                <th scope="col">Calle:</td><td id="calle_td">{{ i.calle }} </td>
                             </tr>
                             <tr>
-                                <th scope="col">Num. Ext.:</td><td id="numero_td">{{ i.numero }} &nbsp <a id="numero_href" href="">editar</a></td>
+                                <th scope="col">Num. Ext.:</td><td id="numero_td">{{ i.numero }} </td>
                             </tr>
                             <tr>
-                                <th scope="col">Num. Int.:</td><td id="numeroint_td">{{ i.numeroint }} &nbsp <a id="numeroint_href" href="">editar</a></td>
+                                <th scope="col">Num. Int.:</td><td id="numeroint_td">{{ i.numeroint }}</td>
                             </tr>
                             <tr>
-                                <th scope="col">Manzana:</td><td id="manzana_td">{{ i.manzana }} &nbsp <a id="manzana_href" href="">editar</a></td>
+                                <th scope="col">Manzana:</td><td id="manzana_td">{{ i.manzana }} </td>
                             </tr>
                             <tr>
-                                <th scope="col">Lote:</td><td id="lote_td">{{ i.lote }} &nbsp <a id="lote_href" href="">editar</a></td>
+                                <th scope="col">Lote:</td><td id="lote_td">{{ i.lote }} </td>
                             </tr>
                         </table>
                     </div>
@@ -138,8 +113,7 @@
 
                            </table>
                             
-                            <input type="button" id="agregar_comentario" name="agregar_comentario" onclick="agrega_comentario()" value="Agregar" />
-                            <input type="hidden" id="control_comentarios" name="control_comentarios" value="0">
+                        
                         </div>
                     </div>
                     
@@ -162,8 +136,6 @@
                     </div>
                         
                     </table>
-                    <input type="button" id="agregar_honorario" name="agregar_honorario" onclick="agrega_honorario()" value="Agregar" >
-                    <input type="hidden" id="control_honorarios" name="control_honorarios" value="0">
                     </div>
                     
                 </td>
@@ -190,11 +162,12 @@
                 </td>
             </tr>
         </table>
-    <button>
-        Guardar
-    </button>
-    </form>
+        {% for k in avaluo %}
+        ¿Quiere editar este servicio?  &nbsp  <a id="redirect-href" href="{% url 'get_avaluo' avaluoid=k.avaluoid %}">Editar servicio</a></p>
+        {% endfor %}
     </div>
+    <br>
+    <br>
     {% endfor %}
 
 
