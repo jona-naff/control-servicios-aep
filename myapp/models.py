@@ -121,8 +121,8 @@ class Avaluos(models.Model):
     estatus = models.ForeignKey(Estatus, to_field='estatusid', on_delete=models.CASCADE)
     
     calle = models.CharField(max_length=100,blank=True)
-    numero = models.IntegerField(blank=True)
-    numeroint = models.IntegerField(blank=True)
+    numero = models.IntegerField(blank=True,null=True)
+    numeroint = models.IntegerField(blank=True,null=True)
 
     entrecalle1 = models.CharField(max_length=200,blank=True)
     entrecalle2 = models.CharField(max_length=200,blank=True)

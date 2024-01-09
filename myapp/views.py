@@ -333,11 +333,18 @@ def get_avaluo(request, avaluoid):
             avaluo_editar.valor=request.POST.get("valor",avaluo_editar.valor)
             avaluo_editar.calle=request.POST.get("calle",avaluo_editar.calle)
             avaluo_editar.numero=request.POST.get("numero",avaluo_editar.numero)
-            avaluo_editar.numeroint=request.POST.get("numeroint",avaluo_editar.numeroint)
+            
+            #elif not isinstance(avaluo_editar.numeroint, int):
+            #    avaluo_editar.numeroint=0
             avaluo_editar.manzana=request.POST.get("manzana",avaluo_editar.manzana)
             avaluo_editar.lote=request.POST.get("lote",avaluo_editar.lote)
             avaluo_editar.colonia=Colonias.objects.get(colonia_id = request.POST.get("colonia",avaluo_editar.colonia.colonia_id))
-            avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','numeroint','manzana','lote','colonia'])
+            if "numeroint" in request.POST:
+                avaluo_editar.numeroint=request.POST.get("numeroint",0)
+                
+                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','numeroint','manzana','lote','colonia'])
+            else:
+                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','manzana','lote','colonia'])
           
             
             today = date.today()
@@ -368,7 +375,6 @@ def get_avaluo(request, avaluoid):
         })
         except Avaluos.DoesNotExist:
             return render(request, 'core/detalles.html',{
-           
             'AvaluoForm': AvaluoForm,
             'ComentariosForm': ComentariosForm,
             'HonorariosForm': HonorariosForm,
@@ -727,9 +733,11 @@ class GeneratePDFView(View):
     def get(self, request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id,dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtvaluador_inicial, dtvaluador_final, dtcliente_inicial, dtcliente_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final,*args, **kwargs):
         # Create a response object with PDF content type
         response = HttpResponse(content_type='application/pdf')
-
+        today = str(date.today())
+        today = today[2:4]+today[5:7]+today[8:10]
+        filename = today+"_reporte_control_servicios.pdf"
         # Set the Content-Disposition header to force download
-        response['Content-Disposition'] = 'inline; filename="listado.pdf"'
+        response['Content-Disposition'] = 'inline; filename="{}"'.format(filename)
 
         # Create the PDF using the ReportLab canvas
         p = canvas.Canvas(response, pagesize=letter+(2000,0))
@@ -1248,7 +1256,7 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
         'Ubicacion':[],
         'Fechas':[],
         'Cliente':[],
-        'Valuador':[],
+       #'Valuador':[],
         'Estatus':[],
         'Folio':[]
     }
@@ -1304,7 +1312,7 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
 
         data["Fechas"].append(fecha)
         data["Cliente"].append(avaluo["cliente"])
-        data["Valuador"].append(avaluo["valuador"])
+        #data["Valuador"].append(avaluo["valuador"])
         data["Estatus"].append(avaluo["estatus"])
         data["Folio"].append(avaluo['tipo']  + '-' + avaluo['cliente'] + '/' + avaluo['dtcreate'][5:7] + '-' + avaluo['dtcreate'][2:4] + '/'  +avaluo['consecutivo'] + '-' + avaluo['valuador'])
 
@@ -1368,7 +1376,7 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     log_val = False
 
     for x in log_list:
-        log_val = log_val or x
+        log_val = log_val or not x
     
     
     params2 = {'Parámetros':['Fecha'],
