@@ -86,6 +86,31 @@ const listarTipos = async () =>{
     }   
 };
 
+const listarValuadores = async () =>{
+    try{
+        const baseUrl = "http://127.0.0.1:8000";
+        const endpoint = "/servicios/valuadores";
+        const response=await fetch(baseUrl+endpoint);
+        const data =await response.json();
+        
+        if(data.message=="Success"){
+            console.log(data)
+            let opciones=``;
+            opciones += `<select name="valuador" required id="id_valuador">`
+            data.valuadores.forEach((valuador)=>{
+                opciones+=`<option value='${valuador.valuadorid}'>${valuador.display}</option>`;
+            });
+            opciones+=`</select>`
+            valuador_td.innerHTML = opciones;
+        }else{
+            alert("Valuadores no encontradas");
+        }
+    }catch(error){
+        console.log(error);
+    }   
+};
+
+
 const campoM2c = async () =>{
     try{
         
@@ -281,6 +306,13 @@ $(document).ready(function() {
         e.preventDefault();
         
         listarTipos();
+    });
+    $('#valuador_href').on('click',function(e) {
+        // Prevent the default behavior of the link
+        
+        e.preventDefault();
+        
+        listarValuadores();
     });
     $('#m2c_href').on('click',function(e) {
         // Prevent the default behavior of the link

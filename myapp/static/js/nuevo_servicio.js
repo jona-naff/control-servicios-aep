@@ -187,6 +187,40 @@ const listarTiposImb = async () =>{
     }   
 };
 
+
+const mostrarDictamen = async (tipoid) =>{
+    try{
+        const baseUrl = "http://127.0.0.1:8000";
+        const endpoint = "/servicios/tipobyid/"+tipoid;
+        const response=await fetch(baseUrl+endpoint);
+        const data =await response.json();
+        console.log(data);
+        if(data.message=="Success"){
+            
+            let opciones1=``;
+            let opciones2=``;
+            if(data.tipo != "OV"  &&  data.tipo != "AV" ){
+            opciones1+=`Número de dictamen`
+            opciones1+=`<input type="text" name="dictamen" maxlength="100" id="id_dictamen">`;
+            opciones2+=`Nombre del proyecto`
+            opciones2+=`<input type="text" name="proyecto" maxlength="200" id="id_proyecto">`;
+            tipodictamen.innerHTML = opciones1;
+            tipoproyecto.innerHTML = opciones2;
+            }else{
+            opciones1+=``
+            opciones2+=``
+            tipodictamen.innerHTML = opciones1;
+            tipoproyecto.innerHTML = opciones2;
+            }
+        }else{
+            alert("Tipos no encontradas");
+        }
+    }catch(error){
+        console.log(error);
+    }   
+};
+
+
 const cargaInicial=async()=>{
 
     await listarEstados();
@@ -211,8 +245,12 @@ const cargaInicial=async()=>{
 
     });
 
-    
+    id_tipo.addEventListener("change",(event)=>{
+        console.log(event)
+        mostrarDictamen(event.target.value)
+    });
 
+    
 };
 
 

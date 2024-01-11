@@ -233,6 +233,19 @@ def get_colonias(request, municipio_id):
     return JsonResponse(data)
 
 
+def get_tipo_byid(request,tipoid):
+    tipo = Tipos.objects.get(tipoid=tipoid)
+    display = tipo.display
+    tipoid = tipo.tipoid
+
+    if tipo:
+        data={'message':"Success", 'tipo': display, 'tipoid': tipoid}
+    else:
+        data={'message': "Not Found"}
+
+    return JsonResponse(data)
+
+
 def get_avaluos_inic(request):
     avaluos = Avaluos.objects.order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
     avaluos_dic = []
@@ -308,13 +321,22 @@ def operator_or(val1,val2):
 
 def get_avaluo(request, avaluoid):
     avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluoid])
+   
     comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
 
     honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
 
+    
+    av = Avaluos.objects.get(avaluoid=avaluoid)
+    if av.consecutivo:
+        folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + str(av.consecutivo) + '-' + av.valuador.display
+    else:
+        folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + 'None' + '-' + av.valuador.display
     for av in avaluo:
+        
         if av.valor:
             av.valor = '{:,}'.format(av.valor)
+            
         else:
             av.valor = 0
 
@@ -323,6 +345,7 @@ def get_avaluo(request, avaluoid):
             'avaluo': avaluo,
             'comentarios': comentarios,
             'honorarios': honorarios,
+            'folio': folio,
             'AvaluoForm': AvaluoForm,
             'ComentariosForm': ComentariosForm,
             'HonorariosForm': HonorariosForm
@@ -338,6 +361,10 @@ def get_avaluo(request, avaluoid):
             avaluo_editar.m2t=request.POST.get("m2t",avaluo_editar.m2t)
             avaluo_editar.nofactura=request.POST.get("nofactura",avaluo_editar.nofactura)
             avaluo_editar.tipoimb=Tiposimb.objects.get(tipoimbid = request.POST.get("tipoimb",avaluo_editar.tipoimb.tipoimbid))
+            print(request.POST.get("valuador",avaluo_editar.valuador))
+            valuador = request.POST.get("valuador",avaluo_editar.valuador)
+            if "valuador" in request.POST:
+                avaluo_editar.valuador=Valuadores.objects.get(valuadorid = request.POST.get("valuador",avaluo_editar.valuador))
             avaluo_editar.valor=request.POST.get("valor",avaluo_editar.valor)
             #if avaluo_editar.valor:
             #    avaluo_editar.valor = float('{:,}'.format(int(avaluo_editar.valor)))
@@ -350,12 +377,15 @@ def get_avaluo(request, avaluoid):
             avaluo_editar.manzana=request.POST.get("manzana",avaluo_editar.manzana)
             avaluo_editar.lote=request.POST.get("lote",avaluo_editar.lote)
             avaluo_editar.colonia=Colonias.objects.get(colonia_id = request.POST.get("colonia",avaluo_editar.colonia.colonia_id))
+            if "valuador" in request.POST:
+                avaluo_editar.valuador=Valuadores.objects.get(valuadorid = request.POST.get("valuador",avaluo_editar.valuador))
+                
             if "numeroint" in request.POST:
                 avaluo_editar.numeroint=request.POST.get("numeroint",0)
                 
-                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','numeroint','manzana','lote','colonia'])
+                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','numeroint','manzana','lote','colonia','valuador'])
             else:
-                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','manzana','lote','colonia'])
+                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','manzana','lote','colonia','valuador'])
           
             
             today = date.today()
@@ -372,17 +402,19 @@ def get_avaluo(request, avaluoid):
 
                 hons = Honorarios(razon=request.POST["razon_"+num],monto=request.POST["monto_"+num],avaluo_id=avaluoid)
                 hons.save()
-                for com in coms:
-                    if com.valor:
-                        print(av.valor)
-                        av.valor = '{:,}'.format(av.valor)
-                    else:
-                        av.valor = 0
+                
 
             comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
             honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
-            print(type(avaluo_editar.valor))
+            for hon in honorarios:
+                    if hon.monto:
+                        print(hon.monto)
+                        hon.monto = '{:,}'.format(hon.monto)
+                    else:
+                        hon.monto = 0
+
             avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluoid])
+            
 
             if "valor" in request.POST:
                 for av in avaluo:
@@ -391,12 +423,24 @@ def get_avaluo(request, avaluoid):
                         av.valor = '{:,}'.format(av.valor)
                     else:
                         av.valor = 0
-
+            av = Avaluos.objects.get(avaluoid=avaluoid)
+            if av.consecutivo:
+                folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + str(av.consecutivo) + '-' + av.valuador.display
+            else:
+                folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + 'None' + '-' + av.valuador.display
+            for av in avaluo:
+                
+                if av.valor:
+                    av.valor = '{:,}'.format(av.valor)
+                    
+                else:
+                    av.valor = 0
             
             return render(request,'core/detalles.html',{
             'avaluo': avaluo,
             'comentarios': comentarios,
             'honorarios': honorarios,
+            'folio': folio,
             'AvaluoForm': AvaluoForm,
             'ComentariosForm': ComentariosForm,
             'HonorariosForm': HonorariosForm
@@ -564,8 +608,8 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
         consecutivo = str(avaluo.consecutivo)
         tipoimbid = str(avaluo.tipoimb.nombre)
         valor = str(avaluo.valor)
-        dictamen = str(avaluo.numero_dictamen)
-        proyecto = str(avaluo.nombre_proyecto)
+        dictamen = str(avaluo.dictamen)
+        proyecto = str(avaluo.proyecto)
         avaluos_dic.append({'id': id, 
                             'estado': estado_nombre,
                             'municipio': municipio_nombre,
@@ -1553,6 +1597,12 @@ def nuevo_avaluo(request):
             today = date.today()
             request.POST = request.POST.copy()
             request.POST["dtcreate"] = today
+            year = str(today)
+            year = year[0:4]+'-'+'01-01'
+         
+            cons = len(list(Avaluos.objects.filter(dtcreate__range=[year,'2100-10-10']).order_by('-avaluoid').select_related('cliente','tipo','valuador','estatus')))
+            print(cons)
+            request.POST["consecutivo"] = cons
        
             if len(request.POST["dtsolicitud"]) != 0:
                 request.POST["dtsolicitud"] = formato_fechas_inverso(request.POST["dtsolicitud"])

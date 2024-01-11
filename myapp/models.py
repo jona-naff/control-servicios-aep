@@ -150,8 +150,8 @@ class Avaluos(models.Model):
 
     tipoimb = models.ForeignKey(Tiposimb, to_field='tipoimbid', blank = True, default='80', on_delete=models.CASCADE)
 
-    numero_dictamen = models.CharField(max_length=100,blank=True)
-    nombre_proyecto = models.CharField(max_length=200,blank=True)
+    dictamen = models.CharField(max_length=100,blank=True)
+    proyecto = models.CharField(max_length=200,blank=True)
 
     imagen = models.ImageField(upload_to="fotos", blank=True,null=True)
 
