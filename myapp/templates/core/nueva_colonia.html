@@ -19,12 +19,12 @@
 <br>
 <br>
 <div align="center">
-    <p>Regresar <a href="{% url 'nuevo_avaluo' %}">Crear servicio</a></p>
+    <p>Regresar <a href="{% url 'servicios' %}">Crear servicio</a></p>
 <h4>Agregar Colonia</h4>
 
 {{error}}
 
-<form action="" method="POST" onSubmit="return confirm('¿Seguro que quiere guardar una nueva colonia?')">
+<form action="" method="POST" onSubmit="return confirm('¿Está seguro que quiere guardar una nueva colonia?')">
 
     {% csrf_token %}
     <br>

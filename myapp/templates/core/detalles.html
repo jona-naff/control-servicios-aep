@@ -56,6 +56,11 @@
                 todayHighlight:true,
             });
         </script>
+        <style>
+            .agregar-boton {
+                text-align: center;
+                }
+        </style>
         
     </head>
     {{ error }}
@@ -136,14 +141,15 @@
                             {% endif %}
                             
 
-                           </table>
+                        </table>
+                        <div class="agregar-boton"><input type="button" id="agregar_comentario" name="agregar_comentario" onclick="agrega_comentario()" value="Agregar" /></div>
                             
-                            <input type="button" id="agregar_comentario" name="agregar_comentario" onclick="agrega_comentario()" value="Agregar" />
                             <input type="hidden" id="control_comentarios" name="control_comentarios" value="0">
-                        </div>
+                        
                     </div>
                     
                 </td>
+                <td>&nbsp &nbsp &nbsp  &nbsp</td>
                 <td style="display: table-cell; vertical-align: top;">
                     <div id="comentarios_info" >
                         <table id = "table_honorarios" class="table">
@@ -159,14 +165,18 @@
                             {% endfor %}
                             {% endif %}
                             
-                    </div>
-                        
                     </table>
-                    <input type="button" id="agregar_honorario" name="agregar_honorario" onclick="agrega_honorario()" value="Agregar" >
+                    <div class="agregar-boton"><input type="button" id="agregar_honorario" name="agregar_honorario" onclick="agrega_honorario()" value="Agregar" ></div>
+                </div>
+                    
+                 
+                    
                     <input type="hidden" id="control_honorarios" name="control_honorarios" value="0">
-                    </div>
+                    
                     
                 </td>
+                <td>&nbsp &nbsp &nbsp &nbsp </td>
+                
                 <td style="display: table-cell; vertical-align: top;">
                     <div id="imagen_info" >
                         <table class="table">

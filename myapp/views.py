@@ -311,6 +311,13 @@ def get_avaluo(request, avaluoid):
     comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
 
     honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
+
+    for av in avaluo:
+        if av.valor:
+            av.valor = '{:,}'.format(av.valor)
+        else:
+            av.valor = 0
+
     if request.method == 'GET': 
         return render(request,'core/detalles.html',{
             'avaluo': avaluo,
@@ -323,6 +330,7 @@ def get_avaluo(request, avaluoid):
 
     else: 
         try:
+            print(request.POST)
             avaluo_editar = Avaluos.objects.get(avaluoid=avaluoid)
             request.POST = request.POST.copy()
             avaluo_editar.tipo=Tipos.objects.get(tipoid = request.POST.get("tipo",avaluo_editar.tipo.tipoid))
@@ -331,6 +339,9 @@ def get_avaluo(request, avaluoid):
             avaluo_editar.nofactura=request.POST.get("nofactura",avaluo_editar.nofactura)
             avaluo_editar.tipoimb=Tiposimb.objects.get(tipoimbid = request.POST.get("tipoimb",avaluo_editar.tipoimb.tipoimbid))
             avaluo_editar.valor=request.POST.get("valor",avaluo_editar.valor)
+            #if avaluo_editar.valor:
+            #    avaluo_editar.valor = float('{:,}'.format(int(avaluo_editar.valor)))
+
             avaluo_editar.calle=request.POST.get("calle",avaluo_editar.calle)
             avaluo_editar.numero=request.POST.get("numero",avaluo_editar.numero)
             
@@ -355,15 +366,32 @@ def get_avaluo(request, avaluoid):
                 
                 coms = Comentarios(comentario=request.POST["comentario_"+num],avaluo_id=avaluoid,fecha=today)
                 coms.save()
+                
             for i in range(0,var_hons):
                 num = str(i+1)
 
                 hons = Honorarios(razon=request.POST["razon_"+num],monto=request.POST["monto_"+num],avaluo_id=avaluoid)
-            
                 hons.save()
+                for com in coms:
+                    if com.valor:
+                        print(av.valor)
+                        av.valor = '{:,}'.format(av.valor)
+                    else:
+                        av.valor = 0
+
             comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
             honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
-            
+            print(type(avaluo_editar.valor))
+            avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluoid])
+
+            if "valor" in request.POST:
+                for av in avaluo:
+                    if av.valor:
+                        print(av.valor)
+                        av.valor = '{:,}'.format(av.valor)
+                    else:
+                        av.valor = 0
+
             
             return render(request,'core/detalles.html',{
             'avaluo': avaluo,
@@ -389,7 +417,8 @@ def get_details(request):
 
     honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
 
-        
+ 
+
     return render(request,'core/detalles_mid.html',{
     'avaluo': avaluo,
     'comentarios': comentarios,
@@ -975,7 +1004,7 @@ class GeneratePDFView(View):
         
         data3 = []#[['Id','Dirección', 'Fechas','Cliente','Estatus', 'Folio','Tipo Inmueble','Valor']]
 
-        col_widths3 = [35,105,95,65,62,65,60,58]
+        col_widths3 = [35,105,95,65,62,65,60,70]
 
         for avaluo in avaluos:
             small_style = getSampleStyleSheet()
@@ -1045,7 +1074,12 @@ class GeneratePDFView(View):
             estatus = Paragraph(avaluo['estatus'].replace(' ', '<br />'), custom_style)#getSampleStyleSheet()['BodyText'])
 
             tipoimb = Paragraph(avaluo['tipoimbid'].replace(' ', '<br />'), custom_style)
-            data3.append([avaluo['id'],ubicacion,fechas,cliente,estatus,folio,tipoimb,avaluo['valor']])
+            if avaluo['valor'] == 'None':
+                valor = 0
+            else:
+                valor = '{:,}'.format(float(avaluo['valor']))
+            
+            data3.append([avaluo['id'],ubicacion,fechas,cliente,estatus,folio,tipoimb,valor])
 
         
 
@@ -1144,7 +1178,8 @@ class GeneratePDFView(View):
             w, h = table3.wrap(0, 0)
 
             table3.wrapOn(p, 800,800)
-            table3.drawOn(p, inch-115, 610 - h)
+            x_coord = inch-115
+            table3.drawOn(p, x_coord, 610 - h)
             p.setFillColor("black")
             p.setFont("Helvetica", 8)
             footer1 = "Av. Río Mixcoac 88-201. Col. Actipan del Valle, Alcaldía Benito Juárez, Ciudad de México 03100 Teléfonos 5662-1573 "
@@ -1207,7 +1242,7 @@ class GeneratePDFView(View):
                     #x_coord = inch-100
                     y_coord = 820 - h
                 #p.setFont("Helvetica", 10)
-                x_coord = inch-105
+                x_coord = inch-115
                 table3.drawOn(p, x_coord, y_coord)
                 p.setFillColor("black")
                 p.setFont("Helvetica", 8)
@@ -1253,12 +1288,15 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     avaluos = data['avaluos']
     data = {
         'Id':[],
-        'Ubicacion':[],
+        'Dirección':[],
         'Fechas':[],
         'Cliente':[],
        #'Valuador':[],
         'Estatus':[],
-        'Folio':[]
+        'Folio':[],
+        'Tipo de inmueble':[],
+        'Valor':[],
+        
     }
     dtcrt = 0
     dtsol = 0
@@ -1307,15 +1345,24 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
 
         data["Id"].append(avaluo["id"])
         ubicacion =  avaluo["estado"] + ',' + chr(10) + avaluo["municipio"] + ',' + chr(10)+ avaluo["colonia"] + ',' + chr(10)+ avaluo["calle"] +' '+ avaluo['numero'] + chr(10) + 'Lote: '+ avaluo['lote']
-        data["Ubicacion"].append(ubicacion)
+        data["Dirección"].append(ubicacion)
         fecha =  "Alta:  " + dtcrt + chr(10) + "Solicitud:  " + dtsol + chr(10) + "Valuador:  " + dtval + chr(10) + "Cobro:  " + dtcbr + chr(10)  + "Pago:  " + dtpgo
 
         data["Fechas"].append(fecha)
         data["Cliente"].append(avaluo["cliente"])
         #data["Valuador"].append(avaluo["valuador"])
         data["Estatus"].append(avaluo["estatus"])
+        
         data["Folio"].append(avaluo['tipo']  + '-' + avaluo['cliente'] + '/' + avaluo['dtcreate'][5:7] + '-' + avaluo['dtcreate'][2:4] + '/'  +avaluo['consecutivo'] + '-' + avaluo['valuador'])
+        print(avaluo)
+        data["Tipo de inmueble"].append(avaluo["tipoimbid"])
 
+        if avaluo['valor'] == 'None':
+            valor = 0
+        else:
+            valor = '{:,}'.format(float(avaluo["valor"]))
+
+        data["Valor"].append(valor)
 
     estado = Estados.objects.get(estado_id = estado_id)
 
