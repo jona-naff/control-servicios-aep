@@ -221,6 +221,7 @@ const mostrarDictamen = async (tipoid) =>{
 };
 
 
+
 const cargaInicial=async()=>{
 
     await listarEstados();

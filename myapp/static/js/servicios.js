@@ -119,13 +119,19 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 } else {
                 dtpgo = dtpgo.slice(8,10) + '/' + dtpgo.slice(5,7) + '/' + dtpgo.slice(0,4);
                 }
+                let dict_proy = ``;
+                let tipo = `${avaluo.tipo}`;
+
+                if(tipo != "OV"  &&  tipo != "AV" ){
+                    dict_proy+=`<br> Dictamen: ${avaluo.dictamen} <br> Proyecto: ${avaluo.proyecto} </td>`;
+                    }
                 opciones+=`<tr value="${avaluo.id}">`;
                 opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
                 opciones+=`<td> ${avaluo.estado}, <br> ${avaluo.municipio}, <br> ${avaluo.colonia}, <br> ${avaluo.calle} ${avaluo.numero}, <br> Lote: ${avaluo.lote} </td>`;
                 opciones+=`<td>Fecha de alta: `+ ` `+ dtcrte + `<br> Fecha de solicitud: `+ ` ` + dtsol + `  <br> Fecha de valuador: `+ ` ` + dtval+ `<br> Entrega cliente: `+ ` ` + dtclt+ ` <br> Fecha de cobro: `+ ` ` + dtcbr +`<br> Fecha de pago:  ` +` ` +dtcbr+` </td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
-                opciones+=`<td>` + folio +  `<br> Dictamen: ${avaluo.dictamen} <br> Proyecto: ${avaluo.proyecto} </td>`;
+                opciones+=`<td>` + folio +  dict_proy;
                 opciones+=`<td></tr><div sytle="display: flex; align-items: center; justify-content: center;"><a class="nav-link" href="/servicios/avaluo/${avaluo.id}">Detalle</a></div></td>`;
                 opciones+=`</tbody>`;
             });

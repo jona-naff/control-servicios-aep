@@ -86,6 +86,32 @@ const listarTipos = async () =>{
     }   
 };
 
+const mostrarDictamen = async () =>{
+    try{
+      
+            let opciones = ``;
+            opciones+=`<input type="text" name="dictamen" maxlength="100" id="id_dictamen">`;
+            
+            dictamen_td.innerHTML = opciones;
+            
+       
+    }catch(error){
+        console.log(error);
+    }   
+};
+
+const mostrarProyecto = async (tipoid) =>{
+    try{
+            let opciones = ``;
+            opciones+=`<input type="text" name="proyecto" maxlength="200" id="id_proyecto">`;
+            proyecto_td.innerHTML = opciones;
+            
+    }catch(error){
+        console.log(error);
+    }   
+};
+
+
 const listarValuadores = async () =>{
     try{
         const baseUrl = "http://127.0.0.1:8000";
@@ -304,8 +330,22 @@ $(document).ready(function() {
         // Prevent the default behavior of the link
         
         e.preventDefault();
-        
+    
         listarTipos();
+    });
+    $('#dictamen_href').on('click',function(e) {
+        // Prevent the default behavior of the link
+        
+        e.preventDefault();
+    
+        mostrarDictamen();
+    });
+    $('#proyecto_href').on('click',function(e) {
+        // Prevent the default behavior of the link
+        
+        e.preventDefault();
+    
+        mostrarProyecto();
     });
     $('#valuador_href').on('click',function(e) {
         // Prevent the default behavior of the link

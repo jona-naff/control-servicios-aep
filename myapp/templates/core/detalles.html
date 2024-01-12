@@ -66,6 +66,7 @@
     {{ error }}
     {% for i in avaluo %}
 
+
     <div id="contenedor" align="center">
     <form action="" method="POST" onSubmit="return confirm('¿Seguro que quiere editar este servicio?') ">
     {% csrf_token %}
@@ -75,7 +76,7 @@
                     <div id="avaluo_info">
                         <table class="table">
                             <tr>
-                                <td><a href="javascript:history.go(-1)">regresar...</a></td>
+                                <td><a href="{% url 'servicios' %}">regresar...</a></td>
                             </tr>
                             <tr>
                                 <th scope="col">Servicio:</td><td>{{ i.avaluoid }}</td> 
@@ -86,6 +87,14 @@
                             <tr>
                                 <th scope="col">Tipo servicio:</td><td id="tipo_td">{{ i.tip }} &nbsp <a id="tipo_href" href="">editar</a> </td>
                             </tr>
+                            {% if indicador %}
+                            <tr id="dictamencombo">
+                                <th scope="col">Dictamen:</td><td id="dictamen_td">{{ i.dictamen }} &nbsp <a id="dictamen_href" href="">editar</a> </td>
+                            </tr>
+                            <tr id="nombrecombo">
+                                <th scope="col">Nombre del proyecto:</td><td id="proyecto_td">{{ i.proyecto }} &nbsp <a id="proyecto_href" href="">editar</a> </td>
+                            </tr>
+                            {% endif %}
                             <tr>
                                 <th scope="col">M2 Construcción:</td><td id="m2c_td">{{ i.m2c }} &nbsp <a id="m2c_href" href="">editar</a></td>
                             </tr>

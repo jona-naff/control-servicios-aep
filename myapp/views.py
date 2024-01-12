@@ -332,16 +332,32 @@ def get_avaluo(request, avaluoid):
         folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + str(av.consecutivo) + '-' + av.valuador.display
     else:
         folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + 'None' + '-' + av.valuador.display
+
+    indicador_tipo = 1
     for av in avaluo:
-        
         if av.valor:
             av.valor = '{:,}'.format(av.valor)
+        if av.tipo.display == "AV" or av.tipo.display == "OV":
+            indicador_tipo = 0
             
         else:
             av.valor = 0
 
     if request.method == 'GET': 
-        return render(request,'core/detalles.html',{
+        print(indicador_tipo)
+        if indicador_tipo == 1:
+            return render(request,'core/detalles.html',{
+            'avaluo': avaluo,
+            'comentarios': comentarios,
+            'honorarios': honorarios,
+            'folio': folio,
+            'indicador':indicador_tipo,
+            'AvaluoForm': AvaluoForm,
+            'ComentariosForm': ComentariosForm,
+            'HonorariosForm': HonorariosForm
+        })
+        else:
+            return render(request,'core/detalles.html',{
             'avaluo': avaluo,
             'comentarios': comentarios,
             'honorarios': honorarios,
@@ -350,6 +366,7 @@ def get_avaluo(request, avaluoid):
             'ComentariosForm': ComentariosForm,
             'HonorariosForm': HonorariosForm
         })
+
 
     else: 
         try:
@@ -377,16 +394,19 @@ def get_avaluo(request, avaluoid):
             avaluo_editar.manzana=request.POST.get("manzana",avaluo_editar.manzana)
             avaluo_editar.lote=request.POST.get("lote",avaluo_editar.lote)
             avaluo_editar.colonia=Colonias.objects.get(colonia_id = request.POST.get("colonia",avaluo_editar.colonia.colonia_id))
+            avaluo_editar.dictamen=request.POST.get("dictamen",avaluo_editar.dictamen)
+            avaluo_editar.proyecto=request.POST.get("proyecto",avaluo_editar.proyecto)
             if "valuador" in request.POST:
                 avaluo_editar.valuador=Valuadores.objects.get(valuadorid = request.POST.get("valuador",avaluo_editar.valuador))
                 
             if "numeroint" in request.POST:
                 avaluo_editar.numeroint=request.POST.get("numeroint",0)
                 
-                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','numeroint','manzana','lote','colonia','valuador'])
+                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','numeroint','manzana','lote','colonia','valuador','dictamen','proyecto'])
             else:
-                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','manzana','lote','colonia','valuador'])
+                avaluo_editar.save(update_fields=['tipo','m2c','m2t','nofactura','tipoimb','valor','calle','numero','manzana','lote','colonia','valuador','dictamen','proyecto'])
           
+            
             
             today = date.today()
             var_coms = int(request.POST.get("control_comentarios",0))
@@ -435,16 +455,38 @@ def get_avaluo(request, avaluoid):
                     
                 else:
                     av.valor = 0
+
+            indicador_tipo = 1
+            for av in avaluo:
+                if av.valor:
+                    av.valor = '{:,}'.format(av.valor)
+                if av.tipo.display == "AV" or av.tipo.display == "OV":
+                    indicador_tipo = 0
+                    
+                else:
+                    av.valor = 0
             
-            return render(request,'core/detalles.html',{
-            'avaluo': avaluo,
-            'comentarios': comentarios,
-            'honorarios': honorarios,
-            'folio': folio,
-            'AvaluoForm': AvaluoForm,
-            'ComentariosForm': ComentariosForm,
-            'HonorariosForm': HonorariosForm
-        })
+            if indicador_tipo == 1:
+                return render(request,'core/detalles.html',{
+                'avaluo': avaluo,
+                'comentarios': comentarios,
+                'honorarios': honorarios,
+                'folio': folio,
+                'indicador':indicador_tipo,
+                'AvaluoForm': AvaluoForm,
+                'ComentariosForm': ComentariosForm,
+                'HonorariosForm': HonorariosForm
+            })
+            else:
+                return render(request,'core/detalles.html',{
+                'avaluo': avaluo,
+                'comentarios': comentarios,
+                'honorarios': honorarios,
+                'folio': folio,
+                'AvaluoForm': AvaluoForm,
+                'ComentariosForm': ComentariosForm,
+                'HonorariosForm': HonorariosForm
+            })
         except Avaluos.DoesNotExist:
             return render(request, 'core/detalles.html',{
             'AvaluoForm': AvaluoForm,
