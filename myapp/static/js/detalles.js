@@ -316,6 +316,13 @@ const cargaInicial=async()=>{
 
     });
 
+    cboMunicipio.addEventListener("change",(event)=>{
+        listarColonias(event.target.value);
+
+    });
+
+    
+
 };
 
 
