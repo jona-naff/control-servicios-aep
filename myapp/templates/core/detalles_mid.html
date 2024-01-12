@@ -45,7 +45,7 @@
                     <div id="avaluo_info">
                         <table class="table">
                             <tr>
-                                <td><a href="javascript:history.go(-1)">regresar...</a></td>
+                                <td><a href="{% url 'servicios' %}">regresar...</a></td>
                             </tr>
                             <tr>
                                 <th scope="col">Servicio:</td><td>{{ i.avaluoid }}</td> 
@@ -54,8 +54,16 @@
                                 <th scope="col">Folio:</td><td>{{ folio }}</td> 
                             </tr>
                             <tr>
-                                <th scope="col">Tipo servicio:</td><td id="tipo_td">{{ i.tip }} </td>
+                                <th scope="col">Tipo servicio:</td><td id="tipo_td">{{ i.tipo }} </td>
                             </tr>
+                            {% if indicador %}
+                            <tr id="dictamencombo">
+                                <th scope="col">Dictamen:</td><td id="dictamen_td">{{ i.dictamen }}  </td>
+                            </tr>
+                            <tr id="nombrecombo">
+                                <th scope="col">Nombre del proyecto:</td><td id="proyecto_td">{{ i.proyecto }}  </td>
+                            </tr>
+                            {% endif %}
                             
                             <tr>
                                 <th scope="col">M2 Construcción:</td><td id="m2c_td">{{ i.m2c }}</td>
@@ -76,14 +84,14 @@
                                 <th scope="col">Valor inmueble:</td><td id="valor_td">{{ i.valor }}</td>
                             </tr>
                             <tr>
-                                <th scope="col">Estado:</td><td id="estado_td">{{ i.estado }}</td>
+                                <th scope="col">Estado:</td><td id="estado_td">{{ estado }}</td>
                             </tr>
                             <tr>
-                                <th scope="col">Municipio:</td><td id="municipio_td">{{ i.municipio }} </td>
+                                <th scope="col">Municipio:</td><td id="municipio_td">{{ municipio }} </td>
 
                             </tr>
                             <tr>
-                                <th scope="col">Colonia:</td><td id="colonia_td">{{ i.colo }} </td>
+                                <th scope="col">Colonia:</td><td id="colonia_td">{{ i.colonia }} </td>
                             </tr>
                             <tr>
                                 <th scope="col">Calle:</td><td id="calle_td">{{ i.calle }} </td>

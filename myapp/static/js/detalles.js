@@ -141,7 +141,7 @@ const campoM2c = async () =>{
     try{
         
             let opciones=``;
-            opciones += `<input type="number" name="m2c" step="any" id="id_m2c">`;
+            opciones += `<input type="text" name="m2c" id="id_m2c">`;
             opciones+=`</input>`;
             m2c_td.innerHTML = opciones;
         
@@ -154,7 +154,7 @@ const campoM2t = async () =>{
     try{
         
             let opciones=``;
-            opciones += `<input type="number" name="m2t" step="any" id="id_m2t">`;
+            opciones += `<input type="text" name="m2t" id="id_m2t">`;
             opciones+=`</input>`;
             m2t_td.innerHTML = opciones;
         
@@ -169,7 +169,7 @@ const campoValorImb = async () =>{
     try{
         
             let opciones=``;
-            opciones += `<input type="number" name="valor" step="any" id="id_valor">`;
+            opciones += `<input type="text" name="valor" id="id_valor">`;
             opciones+=`</input>`;
             valor_td.innerHTML = opciones;
         

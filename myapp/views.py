@@ -321,6 +321,8 @@ def operator_or(val1,val2):
 
 def get_avaluo(request, avaluoid):
     avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluoid])
+    
+    avaluo = Avaluos.objects.filter(avaluoid=avaluoid)
    
     comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
 
@@ -328,26 +330,39 @@ def get_avaluo(request, avaluoid):
 
     
     av = Avaluos.objects.get(avaluoid=avaluoid)
+    colonia_id = av.colonia_id
     if av.consecutivo:
         folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + str(av.consecutivo) + '-' + av.valuador.display
     else:
         folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + 'None' + '-' + av.valuador.display
 
-    indicador_tipo = 1
+    indicador_tipo = 0
     for av in avaluo:
         if av.valor:
             av.valor = '{:,}'.format(av.valor)
-        if av.tipo.display == "AV" or av.tipo.display == "OV":
-            indicador_tipo = 0
+        if av.m2c:
+            av.m2c = '{:,}'.format(av.m2c)
+        if av.m2t:
+            av.m2t = '{:,}'.format(av.m2t)
+        if av.tipo.display == "SUP" or av.tipo.display == "VER":
+            indicador_tipo = 1
             
-        else:
-            av.valor = 0
 
+    municipio_id = Colonias.objects.get(colonia_id=colonia_id)
+    municipio_id = municipio_id.municipio_id
+    municipio = Municipios.objects.get(municipio_id=municipio_id)
+    estado_id = municipio.estado_id
+    municipio=municipio.nombre
+    
+    estado = Estados.objects.get(estado_id=estado_id)
+    estado=estado.nombre
     if request.method == 'GET': 
-        print(indicador_tipo)
+        
         if indicador_tipo == 1:
             return render(request,'core/detalles.html',{
             'avaluo': avaluo,
+            'estado':estado,
+            'municipio':municipio,
             'comentarios': comentarios,
             'honorarios': honorarios,
             'folio': folio,
@@ -359,6 +374,8 @@ def get_avaluo(request, avaluoid):
         else:
             return render(request,'core/detalles.html',{
             'avaluo': avaluo,
+            'estado':estado,
+            'municipio':municipio,
             'comentarios': comentarios,
             'honorarios': honorarios,
             'folio': folio,
@@ -374,15 +391,14 @@ def get_avaluo(request, avaluoid):
             avaluo_editar = Avaluos.objects.get(avaluoid=avaluoid)
             request.POST = request.POST.copy()
             avaluo_editar.tipo=Tipos.objects.get(tipoid = request.POST.get("tipo",avaluo_editar.tipo.tipoid))
-            avaluo_editar.m2c=request.POST.get("m2c",avaluo_editar.m2c)
-            avaluo_editar.m2t=request.POST.get("m2t",avaluo_editar.m2t)
+            
             avaluo_editar.nofactura=request.POST.get("nofactura",avaluo_editar.nofactura)
             avaluo_editar.tipoimb=Tiposimb.objects.get(tipoimbid = request.POST.get("tipoimb",avaluo_editar.tipoimb.tipoimbid))
             print(request.POST.get("valuador",avaluo_editar.valuador))
             valuador = request.POST.get("valuador",avaluo_editar.valuador)
             if "valuador" in request.POST:
                 avaluo_editar.valuador=Valuadores.objects.get(valuadorid = request.POST.get("valuador",avaluo_editar.valuador))
-            avaluo_editar.valor=request.POST.get("valor",avaluo_editar.valor)
+            
             #if avaluo_editar.valor:
             #    avaluo_editar.valor = float('{:,}'.format(int(avaluo_editar.valor)))
 
@@ -398,6 +414,17 @@ def get_avaluo(request, avaluoid):
             avaluo_editar.proyecto=request.POST.get("proyecto",avaluo_editar.proyecto)
             if "valuador" in request.POST:
                 avaluo_editar.valuador=Valuadores.objects.get(valuadorid = request.POST.get("valuador",avaluo_editar.valuador))
+            if "m2c" in request.POST:
+                request.POST["m2c"] = float(quitar_comas(request.POST["m2c"]))
+                avaluo_editar.m2c=request.POST.get("m2c",avaluo_editar.m2c)
+
+            if "m2t" in request.POST:
+                request.POST["m2t"] = float(quitar_comas(request.POST["m2t"]))
+                avaluo_editar.m2t=request.POST.get("m2t",avaluo_editar.m2t)
+
+            if "valor" in request.POST:
+                request.POST["valor"] = float(quitar_comas(request.POST["valor"]))
+                avaluo_editar.valor=request.POST.get("valor",avaluo_editar.valor)
                 
             if "numeroint" in request.POST:
                 avaluo_editar.numeroint=request.POST.get("numeroint",0)
@@ -419,7 +446,7 @@ def get_avaluo(request, avaluoid):
                 
             for i in range(0,var_hons):
                 num = str(i+1)
-
+                request.POST["monto_"+num] = float(quitar_comas(request.POST["monto_"+num]))
                 hons = Honorarios(razon=request.POST["razon_"+num],monto=request.POST["monto_"+num],avaluo_id=avaluoid)
                 hons.save()
                 
@@ -434,41 +461,47 @@ def get_avaluo(request, avaluoid):
                         hon.monto = 0
 
             avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluoid])
+            avaluo = Avaluos.objects.filter(avaluoid=avaluoid)
             
 
-            if "valor" in request.POST:
-                for av in avaluo:
-                    if av.valor:
-                        print(av.valor)
-                        av.valor = '{:,}'.format(av.valor)
-                    else:
+            #if "valor" in request.POST:
+            for av in avaluo:
+                if av.valor:
+                    print(av.valor)
+                    av.valor = '{:,}'.format(av.valor)
+                else:
                         av.valor = 0
             av = Avaluos.objects.get(avaluoid=avaluoid)
             if av.consecutivo:
                 folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + str(av.consecutivo) + '-' + av.valuador.display
             else:
                 folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + 'None' + '-' + av.valuador.display
-            for av in avaluo:
-                
-                if av.valor:
-                    av.valor = '{:,}'.format(av.valor)
-                    
-                else:
-                    av.valor = 0
+            
 
-            indicador_tipo = 1
+            indicador_tipo = 0
             for av in avaluo:
-                if av.valor:
-                    av.valor = '{:,}'.format(av.valor)
-                if av.tipo.display == "AV" or av.tipo.display == "OV":
-                    indicador_tipo = 0
+
+                if av.m2c:
+                    av.m2c = '{:,}'.format(av.m2c)
+                if av.m2t:
+                    av.m2t = '{:,}'.format(av.m2t)
+                if av.tipo.display == "SUP" or av.tipo.display == "VER":
+                    indicador_tipo = 1
                     
-                else:
-                    av.valor = 0
+            municipio_id = Colonias.objects.get(colonia_id=colonia_id)
+            municipio_id = municipio_id.municipio_id
+            municipio = Municipios.objects.get(municipio_id=municipio_id)
+            estado_id = municipio.estado_id
+            municipio=municipio.nombre
+            
+            estado = Estados.objects.get(estado_id=estado_id)
+            estado=estado.nombre
             
             if indicador_tipo == 1:
                 return render(request,'core/detalles.html',{
                 'avaluo': avaluo,
+                'estado':estado,
+                'municipio':municipio,
                 'comentarios': comentarios,
                 'honorarios': honorarios,
                 'folio': folio,
@@ -480,6 +513,8 @@ def get_avaluo(request, avaluoid):
             else:
                 return render(request,'core/detalles.html',{
                 'avaluo': avaluo,
+                'estado':estado,
+                'municipio':municipio,
                 'comentarios': comentarios,
                 'honorarios': honorarios,
                 'folio': folio,
@@ -499,20 +534,71 @@ def get_avaluo(request, avaluoid):
 def get_details(request):
     avaluoid=Avaluos.objects.last().avaluoid
     avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluoid])
+    av = Avaluos.objects.get(avaluoid=avaluoid)
+    if av.consecutivo:
+        folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + str(av.consecutivo) + '-' + av.valuador.display
+    else:
+        folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + 'None' + '-' + av.valuador.display
+
+    avaluo = Avaluos.objects.filter(avaluoid=avaluoid)
+    colonia_id = av.colonia_id
     comentarios = Comentarios.objects.raw("Select * from comentarios where avaluo_id = %s", [avaluoid])
 
     honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
+    #av = Avaluos.objects.get(avaluoid=avaluoid)
+    indicador_tipo = 0
+    for av in avaluo:
+        if av.valor:
+            av.valor = '{:,}'.format(av.valor)
+            
+        else:
+            av.valor = 0
+    for av in avaluo:
+        if av.m2c:
+            av.m2c = '{:,}'.format(av.m2c)
+        if av.m2t:
+            av.m2t = '{:,}'.format(av.m2t)
+        if av.tipo.display == "SUP" or av.tipo.display == "VER":
+            indicador_tipo = 1
+        
+        
 
- 
+    municipio_id = Colonias.objects.get(colonia_id=colonia_id)
+    municipio_id = municipio_id.municipio_id
+    municipio = Municipios.objects.get(municipio_id=municipio_id)
+    estado_id = municipio.estado_id
+    municipio=municipio.nombre
+    
+    estado = Estados.objects.get(estado_id=estado_id)
+    estado=estado.nombre
+         
+    
+    if indicador_tipo == 1:
+        return render(request,'core/detalles_mid.html',{
+        'avaluo': avaluo,
+        'estado': estado,
+        'municipio': municipio,
+        'comentarios': comentarios,
+        'honorarios': honorarios,
+        'folio': folio,
+        'indicador':indicador_tipo,
+        'AvaluoForm': AvaluoForm,
+        'ComentariosForm': ComentariosForm,
+        'HonorariosForm': HonorariosForm
+    })
+    else:
+        return render(request,'core/detalles_mid.html',{
+        'avaluo': avaluo,
+        'comentarios': comentarios,
+        'estado': estado,
+        'municipio': municipio,
+        'honorarios': honorarios,
+        'folio': folio,
+        'AvaluoForm': AvaluoForm,
+        'ComentariosForm': ComentariosForm,
+        'HonorariosForm': HonorariosForm
+    })
 
-    return render(request,'core/detalles_mid.html',{
-    'avaluo': avaluo,
-    'comentarios': comentarios,
-    'honorarios': honorarios,
-    'AvaluoForm': AvaluoForm,
-    'ComentariosForm': ComentariosForm,
-    'HonorariosForm': HonorariosForm
-})
 
 
 def query_by_id(cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id):
@@ -1626,6 +1712,10 @@ def generar_excel(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_
     return response
 
 
+def quitar_comas(string):
+        var = string.replace(',','')
+        return var
+
 @login_required
 def nuevo_avaluo(request):
     if request.method == 'GET':       
@@ -1643,7 +1733,6 @@ def nuevo_avaluo(request):
             year = year[0:4]+'-'+'01-01'
          
             cons = len(list(Avaluos.objects.filter(dtcreate__range=[year,'2100-10-10']).order_by('-avaluoid').select_related('cliente','tipo','valuador','estatus')))
-            print(cons)
             request.POST["consecutivo"] = cons
        
             if len(request.POST["dtsolicitud"]) != 0:
@@ -1656,11 +1745,19 @@ def nuevo_avaluo(request):
                 request.POST["dtcobro"] = formato_fechas_inverso(request.POST["dtcobro"])
             if len(request.POST["dtpago"]) != 0:
                 request.POST["dtpago"] = formato_fechas_inverso(request.POST["dtpago"])
-            #d1 = today.strftime("%Y-%m-%d")
+
+            if "m2c" in request.POST:
+                request.POST["m2c"] = float(quitar_comas(request.POST["m2c"]))
+
+            if "m2t" in request.POST:
+                request.POST["m2t"] = float(quitar_comas(request.POST["m2t"]))
+
+            if "valor" in request.POST:
+                request.POST["valor"] = float(quitar_comas(request.POST["valor"]))
+            
+            
             form = AvaluoForm(request.POST,request.FILES)
-            #form.dtcreate  = today
-            #print(form.dtcreate)
-           #fecha_alta = AvaluoForm()
+            
             
             
             #nuevo_avaluo = form.save(commit=False)
@@ -1694,19 +1791,70 @@ def nuevo_avaluo(request):
             
             
             avaluo = Avaluos.objects.raw("SELECT *,  m.nombre as municipio, c.nombre as colo, e.nombre as estado, t.descripcion as tip, cl.nombre as client, va.display as valua, t.descripcion as tipo_desc, es.nombre as est FROM avaluos as a INNER JOIN colonias AS c on c.colonia_id = a.colonia_id INNER JOIN municipios AS m on m.municipio_id = c.municipio_id INNER JOIN estados AS e on e.estado_id = m.estado_id INNER JOIN tipos AS t on t.tipoid = a.tipo_id  INNER JOIN clientes AS cl on cl.clienteid = a.cliente_id INNER JOIN valuadores AS va on va.valuadorid = a.valuador_id INNER JOIN estatus AS es on es.estatusid = a.estatus_id where avaluoid = %s; ", [avaluo_id])
+            avaluo = Avaluos.objects.filter(avaluoid=avaluo_id)
             comentarios = Comentarios.objects.filter(avaluo_id= avaluo_id)
             
             honorarios = Honorarios.objects.filter(avaluo_id= avaluo_id)
 
-            return render(request,'core/detalles_mid.html',{
-            'avaluo': avaluo,
-            'comentarios': comentarios,
-            'honorarios': honorarios,
-            'AvaluoForm': AvaluoForm,
-            'ComentariosForm': ComentariosForm,
-            'HonorariosForm': HonorariosForm
-        })
-        except ValueError:
+            indicador_tipo = 0
+            for av in avaluo:
+                if av.valor:
+                    av.valor = '{:,}'.format(av.valor)
+                    
+                else:
+                    av.valor = 0
+            for av in avaluo:
+                if av.m2c:
+                    av.m2c = '{:,}'.format(av.m2c)
+                if av.m2t:
+                    av.m2t = '{:,}'.format(av.m2t)
+                if av.tipo.display == "SUP" or av.tipo.display == "VER":
+                    indicador_tipo = 1
+                
+            av = Avaluos.objects.get(avaluoid=avaluo_id)
+            if av.consecutivo:
+                folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + str(av.consecutivo) + '-' + av.valuador.display
+            else:
+                folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + 'None' + '-' + av.valuador.display
+
+            av = Avaluos.objects.get(avaluoid=avaluo_id)
+            colonia_id = av.colonia_id
+            municipio_id = Colonias.objects.get(colonia_id=colonia_id)
+            municipio_id = municipio_id.municipio_id
+            municipio = Municipios.objects.get(municipio_id=municipio_id)
+            estado_id = municipio.estado_id
+            municipio=municipio.nombre
+
+            estado = Estados.objects.get(estado_id=estado_id)
+            estado=estado.nombre
+
+            if indicador_tipo == 1:
+                return render(request,'core/detalles_mid.html',{
+                'avaluo': avaluo,
+                'estado': estado,
+                'municipio': municipio,
+                'comentarios': comentarios,
+                'honorarios': honorarios,
+                'folio':folio,
+                'indicador': indicador_tipo,
+                'AvaluoForm': AvaluoForm,
+                'ComentariosForm': ComentariosForm,
+                'HonorariosForm': HonorariosForm
+            })
+            else:
+                return render(request,'core/detalles_mid.html',{
+                'avaluo': avaluo,
+                'estado': estado,
+                'municipio': municipio,
+                'comentarios': comentarios,
+                'honorarios': honorarios,
+                'folio': folio,
+                'AvaluoForm': AvaluoForm,
+                'ComentariosForm': ComentariosForm,
+                'HonorariosForm': HonorariosForm
+            })
+
+        except Avaluos.DoesNotExist:
             return render(request, 'core/detalles.html',{
             'form': AvaluoForm,
             'form1': ComentariosForm,

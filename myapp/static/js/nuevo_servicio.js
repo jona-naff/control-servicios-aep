@@ -124,6 +124,7 @@ const listarValuadores = async () =>{
             let opciones=``;
             opciones += ``
             data.valuadores.forEach((valuador)=>{
+                
                 opciones+=`<option value='${valuador.valuadorid}'>${valuador.display}</option>`;
             });
             opciones+=`</select>`
@@ -199,7 +200,7 @@ const mostrarDictamen = async (tipoid) =>{
             
             let opciones1=``;
             let opciones2=``;
-            if(data.tipo != "OV"  &&  data.tipo != "AV" ){
+            if(data.tipo == "SUP" || data.tipo == "VER"){
             opciones1+=`Número de dictamen`
             opciones1+=`<input type="text" name="dictamen" maxlength="100" id="id_dictamen">`;
             opciones2+=`Nombre del proyecto`
