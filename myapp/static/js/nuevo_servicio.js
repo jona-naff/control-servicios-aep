@@ -1,8 +1,8 @@
-
+let baseUrl = "http://127.0.0.1:8000";
 
 const listarColonias = async (municipio_id) =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
+        
         const endpoint = "/servicios/colonias/";
         const response=await fetch(baseUrl+endpoint+municipio_id);
         const data =await response.json();
@@ -23,7 +23,6 @@ const listarColonias = async (municipio_id) =>{
 
 const listarMunicipios = async (estado_id) =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/municipios/";
         const response=await fetch(baseUrl+endpoint+estado_id);
         const data =await response.json();
@@ -44,7 +43,6 @@ const listarMunicipios = async (estado_id) =>{
 
 const listarEstados=async()=>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/estados";
         const response=await fetch(baseUrl+endpoint);
         const data=await response.json();
@@ -67,7 +65,6 @@ const listarEstados=async()=>{
 
 const listarTipos = async () =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/tipos";
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -91,7 +88,6 @@ const listarTipos = async () =>{
 
 const listarClientes = async () =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/clientes";
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -115,7 +111,6 @@ const listarClientes = async () =>{
 
 const listarValuadores = async () =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/valuadores";
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -141,7 +136,6 @@ const listarValuadores = async () =>{
 
 const listarEstatus = async () =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/estatus";
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -167,7 +161,6 @@ const listarEstatus = async () =>{
 
 const listarTiposImb = async () =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/tiposimb";
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -191,7 +184,6 @@ const listarTiposImb = async () =>{
 
 const mostrarDictamen = async (tipoid) =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/tipobyid/"+tipoid;
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -251,7 +243,6 @@ const cargaInicial=async()=>{
         console.log(event)
         mostrarDictamen(event.target.value)
     });
-
     
 };
 

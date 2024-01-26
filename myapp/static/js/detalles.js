@@ -1,6 +1,7 @@
+const baseUrl = "http://127.0.0.1:8000";
+
 const listarColonias = async (municipio_id) =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/colonias/";
         const response=await fetch(baseUrl+endpoint+municipio_id);
         const data =await response.json();
@@ -21,7 +22,6 @@ const listarColonias = async (municipio_id) =>{
 
 const listarMunicipios = async (estado_id) =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/municipios/";
         const response=await fetch(baseUrl+endpoint+estado_id);
         const data =await response.json();
@@ -42,7 +42,6 @@ const listarMunicipios = async (estado_id) =>{
 
 const listarEstados=async()=>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/estados";
         const response=await fetch(baseUrl+endpoint);
         const data=await response.json();
@@ -65,7 +64,6 @@ const listarEstados=async()=>{
 
 const listarTipos = async () =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/tipos";
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -114,7 +112,6 @@ const mostrarProyecto = async (tipoid) =>{
 
 const listarValuadores = async () =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/valuadores";
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -183,7 +180,7 @@ const campoNumExt = async () =>{
     try{
         
             let opciones=``;
-            opciones += `<input type="number" name="numero" step="any" id="id_numero">`;
+            opciones += `<input type="text" maxlength="50" name="numero" id="id_numero">`;
             opciones+=`</input>`;
             numero_td.innerHTML = opciones;
         
@@ -196,7 +193,7 @@ const campoNumInt = async () =>{
     try{
         
             let opciones=``;
-            opciones += `<input type="number" name="numeroint" step="any" id="id_numeroint">`;
+            opciones += `<input type="text" name="numeroint" maxlength="50" id="id_numeroint">`;
             opciones+=`</input>`;
             numeroint_td.innerHTML = opciones;
         
@@ -280,7 +277,6 @@ const campoUbicacion = async () =>{
 
 const listarTiposImb = async () =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/tiposimb";
         const response=await fetch(baseUrl+endpoint);
         const data =await response.json();
@@ -333,6 +329,9 @@ window.addEventListener("load", async () => {
 
 
 $(document).ready(function() {
+    
+
+
     $('#tipo_href').on('click',function(e) {
         // Prevent the default behavior of the link
         

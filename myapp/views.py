@@ -64,6 +64,7 @@ def servicios(request):
     avaluos_por_mes = Avaluos.objects.raw("select '1' as avaluoid, CASE WHEN MONTH(dtcreate) = 1 THEN 'Enero' WHEN MONTH(dtcreate) = 2 THEN 'Febrero' WHEN MONTH(dtcreate) = 3 THEN 'Marzo' WHEN MONTH(dtcreate) = 4 THEN 'Abril' WHEN MONTH(dtcreate) = 5 THEN 'Mayo' WHEN MONTH(dtcreate) = 6 THEN 'Junio' WHEN MONTH(dtcreate) = 7 THEN 'Julio' WHEN MONTH(dtcreate) = 8 THEN 'Agosto' WHEN MONTH(dtcreate) = 9 THEN 'Septiembre' WHEN MONTH(dtcreate) = 10 THEN 'Octubre' WHEN MONTH(dtcreate) = 11 THEN 'Noviembre' WHEN MONTH(dtcreate) = 12 THEN 'Diciembre' ELSE 'Esto no es un mes' END AS 'mes', year(dtcreate) as anho,count(*) as numero from avaluos where colonia_id<>50144 group by month(dtcreate), year(dtcreate) order by year(dtcreate) desc, month(dtcreate) desc")
     avaluos = Avaluos.objects.order_by('-dtsolicitud').select_related('cliente','tipo','valuador','estatus')
     avaluos_dic = []
+    primer_dia_mes = formato_fechas(str(date.today().replace(day=1)))
     for avaluo in avaluos:
         id = str(avaluo.avaluoid)
         cliente = str(avaluo.cliente)
@@ -102,6 +103,7 @@ def servicios(request):
          'avaluos_por_mes': avaluos_por_mes,
          'avaluos_pag': avaluos_pag,
          'nums': nums,
+         'primer_dia_mes': primer_dia_mes
     })
    #return render(request,'core/servicios.html')
 
@@ -328,6 +330,12 @@ def get_avaluo(request, avaluoid):
 
     honorarios = Honorarios.objects.raw("Select * from honorarios where avaluo_id = %s", [avaluoid])
 
+    honorarios_dict = []
+    for hon in honorarios:
+        if hon.monto:
+            hon.monto = '{:,}'.format(hon.monto)
+        honorarios_dict.append({'razon': hon.razon, 'monto': hon.monto})
+
     
     av = Avaluos.objects.get(avaluoid=avaluoid)
     colonia_id = av.colonia_id
@@ -337,15 +345,17 @@ def get_avaluo(request, avaluoid):
         folio = av.tipo.display  + '-' + av.cliente.nombre + '/' + av.dtcreate[5:7] + '-' + av.dtcreate[2:4] + '/' + 'None' + '-' + av.valuador.display
 
     indicador_tipo = 0
+    avaluoid=0
     for av in avaluo:
-        if av.valor:
-            av.valor = '{:,}'.format(av.valor)
+        
         if av.m2c:
             av.m2c = '{:,}'.format(av.m2c)
         if av.m2t:
             av.m2t = '{:,}'.format(av.m2t)
         if av.tipo.display == "SUP" or av.tipo.display == "VER":
             indicador_tipo = 1
+
+        avaluoid=av.avaluoid
             
 
     municipio_id = Colonias.objects.get(colonia_id=colonia_id)
@@ -361,10 +371,11 @@ def get_avaluo(request, avaluoid):
         if indicador_tipo == 1:
             return render(request,'core/detalles.html',{
             'avaluo': avaluo,
+            'avaluoid': avaluoid,
             'estado':estado,
             'municipio':municipio,
             'comentarios': comentarios,
-            'honorarios': honorarios,
+            'honorarios': honorarios_dict,
             'folio': folio,
             'indicador':indicador_tipo,
             'AvaluoForm': AvaluoForm,
@@ -707,7 +718,6 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
     
     
     avaluos_dic = []
-    #avaluos_tiposimb = Avaluos.objects.filter(reduce(operator_and,ids) & reduce(operator_or,ids_or)).raw("SELECT control_servicios.avaluos.avaluoid, control_servicios.avaluos.tipoimbid, control_servicios.tiposimb.nombre FROM control_servicios.avaluos LEFT JOIN control_servicios.tiposimb ON control_servicios.avaluos.tipoimbid = control_servicios.tiposimb.tipoimbid ORDER BY control_servicios.avaluos.avaluoid;")
     
     for avaluo in avaluos:
         id = str(avaluo.avaluoid)
@@ -760,7 +770,7 @@ def get_avaluos(request, cliente_id, tipo_id, valuador_id, estatus_id, estado_id
                             'tipoimbid':tipoimbid,
                             'valor': valor,
                             'dictamen': dictamen,
-                            'proyectos': proyecto
+                            'proyecto': proyecto
                             })
     
     if (len(avaluos_dic)>0):

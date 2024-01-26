@@ -1,8 +1,7 @@
-
+const baseUrl = "http://127.0.0.1:8000";
 
 const listarMunicipios = async (estado_id) =>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/municipios/";
         const response=await fetch(baseUrl+endpoint+estado_id);
         const data =await response.json();
@@ -23,7 +22,6 @@ const listarMunicipios = async (estado_id) =>{
 
 const listarEstados=async()=>{
     try{
-        const baseUrl = "http://127.0.0.1:8000";
         const endpoint = "/servicios/estados";
         const response=await fetch(baseUrl+endpoint);
         const data=await response.json();

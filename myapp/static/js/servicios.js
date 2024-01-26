@@ -56,7 +56,7 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
         const data =await response.json();
         
         if(data.message=="Success"){
-            console.log(data)
+            
             let opciones=`<thead>
                                 <tr>
                                     <th>Id</th>
@@ -119,19 +119,35 @@ const mostrarTabla = async (cliente_id, tipo_id, valuador_id, estatus_id, estado
                 } else {
                 dtpgo = dtpgo.slice(8,10) + '/' + dtpgo.slice(5,7) + '/' + dtpgo.slice(0,4);
                 }
-                let dict_proy = ``;
+                let html_dict = ``;
+                let html_proy = ``;
                 let tipo = `${avaluo.tipo}`;
-
-                if(tipo != "OV"  &&  tipo != "AV" ){
-                    dict_proy+=`<br> Dictamen: ${avaluo.dictamen} <br> Proyecto: ${avaluo.proyecto} </td>`;
-                    }
+                let dict = `${avaluo.dictamen}`;
+                let proy = `${avaluo.proyecto}`;
+                let lote = `${avaluo.lote}`;
+                let manzana = `${avaluo.manzana}`;
+                if(dict != "" && dict != "Undefined"){
+                    html_dict+=`<br> Dictamen: ${avaluo.dictamen} `;
+                   }
+                if(proy != "" && proy != "Undefined"){
+                html_proy+=`<br> Proyecto: ${avaluo.proyecto} </td>`;
+                }
+                if(lote != "" && lote != "Undefined"){
+                    lote = `Lote: ` + `${avaluo.lote}`; 
+                }else{
+                    lote = ``;
+                }
+                if(manzana != "" && manzana != "Undefined"){
+                    manzana = `Manzana: ` + `${avaluo.manzana}`; 
+                }
+                
                 opciones+=`<tr value="${avaluo.id}">`;
-                opciones+=`<td>${avaluo.id}</td>`;//<input type="checkbox" id="${avaluo.avaluoid}"></input>
-                opciones+=`<td> ${avaluo.estado}, <br> ${avaluo.municipio}, <br> ${avaluo.colonia}, <br> ${avaluo.calle} ${avaluo.numero}, <br> Lote: ${avaluo.lote} </td>`;
+                opciones+=`<td>${avaluo.id}</td>`;
+                opciones+=`<td> ${avaluo.estado}, <br> ${avaluo.municipio}, <br> ${avaluo.colonia}, <br> ${avaluo.calle} ${avaluo.numero}, <br> ` + lote + `<br>` + manzana + ` </td>`;
                 opciones+=`<td>Fecha de alta: `+ ` `+ dtcrte + `<br> Fecha de solicitud: `+ ` ` + dtsol + `  <br> Fecha de valuador: `+ ` ` + dtval+ `<br> Entrega cliente: `+ ` ` + dtclt+ ` <br> Fecha de cobro: `+ ` ` + dtcbr +`<br> Fecha de pago:  ` +` ` +dtcbr+` </td>`;
                 opciones+=`<td>${avaluo.cliente}</td>`;
                 opciones+=`<td>${avaluo.estatus}</td>`;
-                opciones+=`<td>` + folio +  dict_proy;
+                opciones+=`<td>` + folio +  html_dict + html_proy;
                 opciones+=`<td></tr><div sytle="display: flex; align-items: center; justify-content: center;"><a class="nav-link" href="/servicios/avaluo/${avaluo.id}">Detalle</a></div></td>`;
                 opciones+=`</tbody>`;
             });
@@ -253,9 +269,9 @@ const mostrarTabla_porfechas = async (dtsolicitud_inicial, dtsolicitud_final, dt
 
 
 
-const mostrarTabla_Inicial = async (pag) => {
+const mostrarTabla_Inicial = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id, dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtcliente_inicial, dtcliente_final, dtvaluador_inicial, dtvaluador_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final,pag) => {
     try{
-        const response=await fetch("./avaluos/");
+        const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id + '/' + dtcreate_inicial + '/' + dtcreate_final + '/' + dtsolicitud_inicial + '/' + dtsolicitud_final + '/' + dtcliente_inicial + '/' + dtcliente_final + '/' + dtvaluador_inicial + '/' + dtvaluador_final + '/' + dtcobro_inicial + '/' + dtcobro_final + '/' + dtpago_inicial + '/' + dtpago_final);
         const data =await response.json();
         if(data.message=="Success"){
             let opciones=`<thead>
@@ -544,6 +560,7 @@ const cargaInicial=async()=>{
     cboColonia.addEventListener("change",(event)=>{
         parametros.colonia_id = event.target.value;
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,pag);
+        
     });
 
 
@@ -579,18 +596,38 @@ const cargaInicial=async()=>{
 
 window.addEventListener("load", async () => {
     await cargaInicial();
+
+    
 });
 
-function callback(orders) {
-    //Lo que sea que quieras hacer con la variable orders
-     console.log(orders);
- }
+
+
+function firstDay(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    //return [year, month, day].join('-');
+    return [year, month, '01'].join('-');
+}
+
+
 
 $(document).ready(function() {
+    let primer_dia = new Date();
+    parametros.dtcreate_inicial = firstDay(primer_dia);
+    mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,pag);
+    
     $('#GeneratePDFView').on('click',function(e) {
         // Prevent the default behavior of the link
         e.preventDefault();
-
+        
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
         url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id  + '/' + parametros.dtcreate_inicial + '/' + parametros.dtcreate_final + '/' + parametros.dtsolicitud_inicial + '/' + parametros.dtsolicitud_final + '/' +  parametros.dtcliente_inicial + '/' + parametros.dtcliente_final + '/' + parametros.dtvaluador_inicial + '/' + parametros.dtvaluador_final + '/' + parametros.dtcobro_inicial + '/' + parametros.dtcobro_final + '/' + parametros.dtpago_inicial + '/' + parametros.dtpago_final;
         var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_pdf/' + url;
@@ -638,6 +675,7 @@ $(document).ready(function() {
                 } */
         
         
+
     
         if (Number.isInteger(parseInt(clickedLinkId))){
         mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,parseInt(clickedLinkId));

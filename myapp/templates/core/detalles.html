@@ -46,6 +46,8 @@
                     $("#control_honorarios").val(contador_honorario);
                     console.log(contador_honorario)
             };
+
+            
     
             $.fn.datepicker.defaults.format = "dd/mm/yyyy";
             $('.date').datepicker({
@@ -76,7 +78,7 @@
                     <div id="avaluo_info">
                         <table class="table">
                             <tr>
-                                <td><a href="{% url 'servicios' %}">regresar...</a></td>
+                                <td><a id="regresar" href="javascript:history.back()">regresar...</a></td>
                             </tr>
                             <tr>
                                 <th scope="col">Servicio:</td><td>{{ i.avaluoid }}</td> 
@@ -215,12 +217,23 @@
                 </td>
             </tr>
         </table>
-    <button>
+    <button  id="guardar">
         Guardar
     </button>
     </form>
     </div>
     {% endfor %}
 
+   <!-- <script> 
+    $('#guardar').on('click',function(e) {
+    // Prevent the default behavior of the link
+    
+    e.preventDefault();
 
+    $('#regresar'). attr('href', '{% url 'servicios' %}');
+
+    window.location.href = 'http://127.0.0.1:8000/servicios/avaluo/'+ {{ avaluoid }};
+
+});
+</script>-->
 {% endblock %}

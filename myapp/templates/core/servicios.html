@@ -66,8 +66,7 @@
             </div>
           </div>
           
-
-
+          
           <div class="tab-pane" id="fechas">
             <br>
             <h4>Fechas</h4>
@@ -79,7 +78,7 @@
                 </td>
                 <td>
                   <div class="datepicker input-group date position-relative border-1 p-4">
-                    <input type="text" id="dtcreate_inicial" class="form-control" data-provide="datepicker">
+                    <input type="text" id="dtcreate_inicial" class="form-control" data-provide="datepicker"  placeholder="{{ primer_dia_mes }}">
                     
                    </div>
                 </td>
@@ -189,16 +188,7 @@
             </table>
           </div> 
 
-          
-          <!--<input type="text" class="" data-provide="datepicker">
-          <div class="tab-pane" id="fechas">
-            <div class="input-group date" data-provide="datepicker">
-              <input type="text" class="form-control">
-                <div class="input-group-addon">
-                    
-                </div>
-            </div>
-          </div>-->
+         
         
           <br>
           <div class="tab-pane fade" id="informacion">
@@ -331,7 +321,6 @@ $(".nav a").on("click", function(){
 
     $('#dtcreate_inicial').datepicker().on('changeDate', function (event) {
       parametros.dtcreate_inicial = event.format().slice(6,10) + '-' + event.format().slice(3,5) + '-' + event.format().slice(0,2);
-      console.log(event.format());
       mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,pag);
   
       });
@@ -344,7 +333,6 @@ $(".nav a").on("click", function(){
 
     $('#dtsolicitud_inicial').datepicker().on('changeDate', function (event) {
     parametros.dtsolicitud_inicial = event.format().slice(6,10) + '-' + event.format().slice(3,5) + '-' + event.format().slice(0,2);
-    console.log(event.format());
     mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,pag);
 
     });
