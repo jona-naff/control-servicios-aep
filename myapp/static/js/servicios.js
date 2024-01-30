@@ -1,3 +1,5 @@
+const baseUrl = "http://127.0.0.1:8000";
+
 const cantidadPaginas = async (cliente_id, tipo_id, valuador_id, estatus_id, estado_id, municipio_id, colonia_id, dtcreate_inicial, dtcreate_final,dtsolicitud_inicial, dtsolicitud_final, dtcliente_inicial, dtcliente_final, dtvaluador_inicial, dtvaluador_final, dtcobro_inicial, dtcobro_final,dtpago_inicial, dtpago_final) => {
     try{
         const response=await fetch("./avaluos/"+ cliente_id + '/' + tipo_id + '/' + valuador_id + '/' + estatus_id + '/' + estado_id + '/' + municipio_id + '/' + colonia_id + '/' + dtcreate_inicial + '/' + dtcreate_final + '/' + dtsolicitud_inicial + '/' + dtsolicitud_final + '/' + dtcliente_inicial + '/' + dtcliente_final + '/' + dtvaluador_inicial + '/' + dtvaluador_final + '/' + dtcobro_inicial + '/' + dtcobro_final + '/' + dtpago_inicial + '/' + dtpago_final);
@@ -630,7 +632,7 @@ $(document).ready(function() {
         
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
         url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id  + '/' + parametros.dtcreate_inicial + '/' + parametros.dtcreate_final + '/' + parametros.dtsolicitud_inicial + '/' + parametros.dtsolicitud_final + '/' +  parametros.dtcliente_inicial + '/' + parametros.dtcliente_final + '/' + parametros.dtvaluador_inicial + '/' + parametros.dtvaluador_final + '/' + parametros.dtcobro_inicial + '/' + parametros.dtcobro_final + '/' + parametros.dtpago_inicial + '/' + parametros.dtpago_final;
-        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_pdf/' + url;
+        var redirectUrl = baseUrl+'/servicios/avaluos/generar_pdf/' + url;
 
         // Redirect to the constructed URL
     
@@ -643,10 +645,9 @@ $(document).ready(function() {
 
         var url = parametros.cliente_id + '/' + parametros.tipo_id + '/' + parametros.valuador_id + '/' + parametros.estatus_id + '/' ;
         url += parametros.estado_id + '/' + parametros.municipio_id + '/' +  parametros.colonia_id  + '/' + parametros.dtcreate_inicial + '/' + parametros.dtcreate_final + '/' + parametros.dtsolicitud_inicial + '/' + parametros.dtsolicitud_final + '/' +  parametros.dtcliente_inicial + '/' + parametros.dtcliente_final + '/' + parametros.dtvaluador_inicial + '/' + parametros.dtvaluador_final + '/' + parametros.dtcobro_inicial + '/' + parametros.dtcobro_final + '/' + parametros.dtpago_inicial + '/' + parametros.dtpago_final;
-        var redirectUrl = 'http://127.0.0.1:8000/servicios/avaluos/generar_excel/' + url;
+        var redirectUrl = baseUrl+'/servicios/avaluos/generar_excel/' + url;
 
         // Redirect to the constructed URL
-        console.log(redirectUrl);
         window.location.href = redirectUrl;
       });    
     
@@ -712,49 +713,18 @@ $(document).ready(function() {
         
             }else if (clickedLinkId == "Ultima") {
                 indicador = 1;
-                //prevElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
                 mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,"Ultima");
                 
         
                 }else if (clickedLinkId == "Primera") {
                     nextpag=2;
-                    //nextElementId = $(this).parent().prev('.page-item').find('.page-link').attr('id');
                     mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,parametros.dtcreate_inicial,parametros.dtcreate_final,parametros.dtsolicitud_inicial,parametros.dtsolicitud_final,parametros.dtcliente_inicial,parametros.dtcliente_final,parametros.dtvaluador_inicial,parametros.dtvaluador_final,parametros.dtcobro_inicial,parametros.dtcobro_final,parametros.dtpago_inicial,parametros.dtpago_final,1);
             
             }
     
         
-            
-        /*else if (pag === "Siguiente"){
-                nextpag = parseInt(nextpag);
-                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,nextpag);
-        }        
-        else if (pag === "Anterior"){
-                prevpag = parseInt(prevpag);
-                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,prevpag);
-                }*/
-
-       /* if (pag == "Primera") {
-            mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
-        } else if (pag == "Ultima") {
-            mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
-        } else if (pag == "Anterior") {
-            if (pag > 1) {
-                
-                mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,pag-1);
-            }
-            mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,1);
-        } else if (pag == "Siguiente") {
-            mostrarTabla(parametros.cliente_id,parametros.tipo_id,parametros.valuador_id,parametros.estatus_id,parametros.estado_id,parametros.municipio_id,parametros.colonia_id,nextpag);
-        }  */
-        
-        
-        //console.log('Clicked Link ID:', pag);
-
-        //console.log('Next Element ID:', nextElementId);
-        
-        
-        
+       
+     
         
     });
 
