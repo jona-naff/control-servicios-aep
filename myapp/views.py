@@ -1757,13 +1757,13 @@ def nuevo_avaluo(request):
                 request.POST["dtpago"] = formato_fechas_inverso(request.POST["dtpago"])
 
             if "m2c" in request.POST:
-                request.POST["m2c"] = float(quitar_comas(request.POST["m2c"]))
+                request.POST["m2c"] = quitar_comas(request.POST["m2c"])
 
             if "m2t" in request.POST:
-                request.POST["m2t"] = float(quitar_comas(request.POST["m2t"]))
+                request.POST["m2t"] = quitar_comas(request.POST["m2t"])
 
             if "valor" in request.POST:
-                request.POST["valor"] = float(quitar_comas(request.POST["valor"]))
+                request.POST["valor"] = quitar_comas(request.POST["valor"])
             
             
             form = AvaluoForm(request.POST,request.FILES)
