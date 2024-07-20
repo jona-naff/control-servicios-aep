@@ -1765,6 +1765,9 @@ def nuevo_avaluo(request):
             if "valor" in request.POST:
                 request.POST["valor"] = quitar_comas(request.POST["valor"])
             
+            if "monto" in request.POST:
+                request.POST["monto"] = quitar_comas(request.POST["monto"])
+            
             
             form = AvaluoForm(request.POST,request.FILES)
             
@@ -1794,9 +1797,8 @@ def nuevo_avaluo(request):
 
             for i in range(0,var_hons):
                 num = str(i+1)
-
-                hons = Honorarios(razon=request.POST["razon_"+num],monto=request.POST["monto_"+num],avaluo_id=avaluo_id)
-                print(hons)
+                monto_sin_comas = quitar_comas(request.POST["monto_"+num])
+                hons = Honorarios(razon=request.POST["razon_"+num],monto=monto_sin_comas,avaluo_id=avaluo_id)
                 hons.save()
             
             
